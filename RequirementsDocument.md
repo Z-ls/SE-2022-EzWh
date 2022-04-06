@@ -1,12 +1,12 @@
-#Requirements Document
+# Requirements Document
 
-Date: 22 march 2022
+Date: 6 april 2022
 
-Version: 0.0
+Version: 1.0
 
-| Version number | Change |
-| -------------- | :----- |
-|                |        |
+| Version number | Change                                                                                     |
+| -------------- | :----------------------------------------------------------------------------------------- |
+| 1.0            | Stakeholders, context diagram, FR and NR, UC diagram, glossary and Deployment digram added |
 
 # Contents
 
@@ -432,7 +432,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 #### Scenario 9.1
 
 | Scenario 9.1   |                                                                                Nominal scenario                                                                                 |
-| :-------------- |:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | 
+| :------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | 
 | Precondition   |                                                      Quality check user is logged in and there are products to be checked                                                       |
 | Post condition |                                                                  Products are updated in system with the check                                                                  | and its evaluation |
 | Step#          |                                                                                   Description                                                                                   |
@@ -443,7 +443,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 #### Scenario 9.2
 
 | Scenario 9.2   |                                                   Products already checked                                                    |
-| -------------- | :---------------------------------------------------------------------------------------------------------------------------: | 
+| -------------- | :---------------------------------------------------------------------------------------------------------------------------: |
 | Precondition   |                            Quality check user is logged in and there are products already checked                             |
 | Post condition |                                         Products are updated in system with the check                                         | and its evaluation |
 | Step#          |                                                          Description                                                          |
