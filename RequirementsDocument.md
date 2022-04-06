@@ -1,14 +1,14 @@
 
  #Requirements Document 
 
-Date: 22 march 2022
+Date:  6 april 2022
 
-Version: 0.0
+Version: 1.0
 
- 
+
 | Version number | Change |
 | ----------------- |:-----------|
-| | | 
+| 1.0 | Stake holders, context diagram, FR and NR, UC diagram, glossary and Deployment digram added |
 
 
 # Contents
@@ -164,7 +164,6 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 # Deployment Diagram 
 
 \<describe here deployment diagram >
-
 
 
 
