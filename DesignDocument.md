@@ -79,3 +79,9 @@ It is assumed that for the repository design the EZWH system works with only one
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
+
+
+#### Use case 9, UC9 - Manage internal orders creation and acceptance - Scenario 9-1
+
+![](images/Internal Order IO accepted Sequence Diagram.jpg)
+
