@@ -64,7 +64,7 @@ It is assumed that for the repository design the EZWH system works with only one
 
 # Verification traceability matrix
 
-\<for each functional requirement from the requirement document, list which classes concur to implement it>
+![](images/TraceabilityMatrix.png)
 
 
 
