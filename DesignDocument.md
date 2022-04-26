@@ -1,12 +1,10 @@
-# Design Document 
-
+# Design Document
 
 Authors: Edoardo Novara, Riccardo Salvatelli, Zhao Longsheng, Sebastian Gutierrez
 
 Date: 25/04/2022
 
 Version: 1.1
-
 
 # Contents
 
@@ -19,7 +17,7 @@ Version: 1.1
 
 The design must satisfy the Official Requirements document, notably functional and non functional requirements, and be consistent with the APIs
 
-# High level design 
+# High level design
 
 ## **MVC - Client-Server Architecture**
 
@@ -43,9 +41,6 @@ The entity package contains all the entities from the EXWH model which all the d
 
 This package is composed by repositories where each of which is related to a specific Entity. With this relation is possible to obtain the persistence for each Model class to the EZWH database.
 
-
-
-
 # Low level design
 
 ### Controller
@@ -66,22 +61,16 @@ It is assumed that for the repository design the EZWH system works with only one
 
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
 
+# Verification sequence diagrams
 
-
-
-
-
-
-
-
-
-
-# Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
-
-
 
 #### Use case 9, UC9 - Manage internal orders creation and acceptance - Scenario 9-1
 
-![](images/Internal Order IO accepted Sequence Diagram.jpg)
+| ![](images/Internal%20Order%20IO%20accepted%20Sequence%20Diagram.jpg) |
+| :-------------------------------------------------------------------: |
+|                      Internal order IO accepted                       |
 
+| ![](images/Sequence%20Diagram%205.3.1.jpg) |
+| :----------------------------------------: |
+|        Stock all SKU items of a RO         |
