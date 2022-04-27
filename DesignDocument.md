@@ -2,9 +2,9 @@
 
 Authors: Edoardo Novara, Riccardo Salvatelli, Zhao Longsheng, Sebastian Gutierrez
 
-Date: 25/04/2022
+Date: 27/04/2022
 
-Version: 1.1
+Version: 1.2
 
 # Contents
 
@@ -63,7 +63,6 @@ It is assumed that for the repository design the EZWH system works with only one
 
 # Verification sequence diagrams
 
-\<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 #### Use Case 1, UC1 - Manage SKUs - Scenario 1-1
 | ![](images/SeqDiag_S1.1.jpg) |
 | :------------------------------------------: |
@@ -80,6 +79,7 @@ It is assumed that for the repository design the EZWH system works with only one
 | :-------------------------------------------------------------------: |
 |                      Internal order IO accepted                       |
 
+#### Use case 5, UC5 - Stock all SKU items of a RO - Scenario 5-3-1
 | ![](images/Sequence%20Diagram%205.3.1.jpg) |
 | :----------------------------------------: |
 |        Stock all SKU items of a RO         |
