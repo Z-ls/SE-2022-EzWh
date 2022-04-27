@@ -45,15 +45,15 @@ This package is composed by repositories where each of which is related to a spe
 
 ### Controller
 
-![](images/Controller class diagram.jpg)
+![](images/Controller%20class%20diagram.jpg)
 
 ### Entity
 
-![](images/Entity class diagram.jpg)
+![](images/Entity%20class%20diagram.jpg)
 
 ### Repository
 
-![](images/Repository class diagram.jpg)
+![](images/Repository%20class%20diagram.jpg)
 
 It is assumed that for the repository design the EZWH system works with only one Warehouse and one Inventory.
 
