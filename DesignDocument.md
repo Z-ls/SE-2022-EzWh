@@ -64,6 +64,11 @@ It is assumed that for the repository design the EZWH system works with only one
 # Verification sequence diagrams
 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
+#### Use Case 1, UC1 - Manage SKUs - Scenario 1-1
+| ![](images/SeqDiag_S1.1.jpg) |
+| :------------------------------------------: |
+|  Create SKU S   |
+
 #### Use case 3, UC3 - Manage issue of restock orders - Scenario 3-2
 | ![](images/Sequence_Diagram_Scenario3-2.png) |
 | :------------------------------------------: |
