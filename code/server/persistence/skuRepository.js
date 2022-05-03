@@ -23,7 +23,7 @@ function skuRepository()
 
     this.newTableSKU = () =>{
         return new Promise((resolve, reject) => {
-            const sql = 'CREATE TABLE IF NOT EXISTS SKU(id INTEGER PRIMARY KEY AUTOINCREMENT, description VARCHAR, weight REAL, volume REAL, notes VARCHAR, position INTEGER, availablequantity INTEGER, price REAL)';
+            const sql = 'CREATE TABLE IF NOT EXISTS SKU(id INTEGER PRIMARY KEY AUTOINCREMENT, description VARCHAR, weight REAL, volume REAL, notes VARCHAR, position VARCHAR, availablequantity INTEGER, price REAL)';
             db.run(sql, (err) => {
                 if(err)
                 {
@@ -38,8 +38,38 @@ function skuRepository()
     this.addSKU = (sku)=>
     {
         return new Promise((resolve, reject) =>{
-            const sql = 'INSERT INTO SKU (description,weight,volume,notes,position,availablequantity,price) VALUES(?,?,?,?,?,?,?)';
-            db.run(sql,[sku.description, sku.weight, sku.volume, sku.notes, sku.position, sku.availableQuantity, sku.price],(err)=>{
+            const sql = 'INSERT INTO SKU (description,weight,volume,notes,availablequantity,price) VALUES(?,?,?,?,?,?)';
+            db.run(sql,[sku.description, sku.weight, sku.volume, sku.notes, sku.availableQuantity, sku.price],(err)=>{
+                if(err)
+                {
+                    reject(err);
+                }else{
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    this.editSKU = (sku,id)=>
+    {
+        return new Promise((resolve, reject) =>{
+            const sql = 'UPDATE SKU SET description = ? ,weight= ?,volume= ?,notes= ?,availablequantity= ?,price= ? WHERE id = ?';
+            db.run(sql,[sku.newDescription, sku.newWeight, sku.newVolume, sku.newNotes, sku.newAvailableQuantity, sku.newPrice, id],(err)=>{
+                if(err)
+                {
+                    reject(err);
+                }else{
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    this.editSKUPosition = (position,id)=>
+    {
+        return new Promise((resolve, reject) =>{
+            const sql = 'UPDATE SKU SET position = ? WHERE id = ?';
+            db.run(sql,[position,id],(err)=>{
                 if(err)
                 {
                     reject(err);
@@ -61,6 +91,36 @@ function skuRepository()
                     resolve(rows.map((s)=>{
                         return new SKU(s.id,s.description,s.weight,s.volume,s.notes,s.position, s.availablequantity, s.price);
                     }));
+                }
+            });
+        });
+    }
+
+    this.getSkuById = (id) =>{
+        return new Promise((resolve,reject)=>{
+            const sql = 'SELECT * FROM SKU WHERE id = ?';
+            db.all(sql, id, (err, rows) =>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(rows.map((s)=>{
+                        return new SKU(s.id,s.description,s.weight,s.volume,s.notes,s.position, s.availablequantity, s.price);
+                    }));
+                }
+            });
+        });
+    }
+
+    this.deleteSKU = (id)=>
+    {
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM SKU WHERE id = ?';
+            db.run(sql,id,(err)=>{
+                if(err)
+                {
+                    reject(err);
+                }else{
+                    resolve(true);
                 }
             });
         });

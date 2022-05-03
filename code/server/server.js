@@ -83,57 +83,6 @@ app.delete('/api/deletePosition/:id', (req,res)=>{
   return res.status(200).json(message);
 });
 
-//get SKUs
-app.get('/api/getSKU', (req,res)=>{
-  let message = {
-    message: 'List of all SKUs:'
-  }
-  return res.status(200).json(message);
-});
-
-//get Single SKU
-app.get('/api/getSingleSKU/:id', (req,res)=>{
-  let id = req.body.skuItemId
-  let message = {
-    message: 'Please enter SKU'
-  }
-  return res.status(200).json(message);
-});
-
-//add SKU
-app.post('/api/addSKU', (req,res)=>{
-  let message = {
-    message: 'Insert new SKU:'
-  }
-  return res.status(200).json(message);
-});
-
-//edit SKU
-app.put('/api/editSKU/:id', (req,res)=>{
-  let id = req.body.skuItemId
-  let message = {
-    message: 'Please enter the SKU to edit'
-  }
-  return res.status(200).json(message);
-});
-
-//delete SKU
-app.delete('/api/deleteSKU/:id', (req,res)=>{
-  let message = {
-    message: 'Please enter the SKU to delete'
-  }
-  return res.status(200).json(message);
-});
-
-//edit SKU position
-app.put('/api/editSKUPosition/:id', (req,res)=>{
-  let id = req.body.skuItemId
-  let message = {
-    message: 'Please enter the SKU to edit'
-  }
-  return res.status(200).json(message);
-});
-
 //get Test Descriptors
 app.get('/api/getTestDescriptors', (req,res)=>{
   let message = {
