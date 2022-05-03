@@ -1,10 +1,14 @@
 'use strict';
 const express = require('express');
+const skus = require('./routes/sku');
+
 // init express
 const app = new express();
 const port = 3001;
 
 app.use(express.json());
+
+app.use('/api',skus);
 
 //GET /api/test
 app.get('/api/hello', (req,res)=>{
