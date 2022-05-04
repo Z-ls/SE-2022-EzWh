@@ -30,7 +30,7 @@ function skuRepository()
                     reject(err);
                     return;
                 }
-                resolve('Row was added to the table: ' + this.lastID);
+                resolve(this.lastID);
             });
         });
     }

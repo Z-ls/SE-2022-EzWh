@@ -1,6 +1,7 @@
 'use strict';
 const express = require('express');
 const skus = require('./routes/sku');
+const skuItems = require('./routes/skuItems');
 
 // init express
 const app = new express();
@@ -9,6 +10,7 @@ const port = 3001;
 app.use(express.json());
 
 app.use('/api',skus);
+app.use('/api',skuItems);
 
 //GET /api/test
 app.get('/api/hello', (req,res)=>{
@@ -234,14 +236,6 @@ app.put('/api/restockOrder/:id/transportNote', (req,res)=>{
   let message = {
     message : 'PUT TransportNote with id ' + req.params.id + " to Restock Order received",
     body : req.body.newRO
-  }
-  return res.status(200).json(message);
-});
-
-//getSKUItems
-app.get('/api/skuitems', (req,res)=>{
-  let message = {
-    message : 'Get all SKU Items received',
   }
   return res.status(200).json(message);
 });
