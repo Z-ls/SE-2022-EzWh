@@ -240,15 +240,6 @@ app.put('/api/restockOrder/:id/transportNote', (req,res)=>{
   return res.status(200).json(message);
 });
 
-//addSKUItem
-app.post('/api/skuitem', (req,res)=>{
-  let message = {
-    message : 'Post SKU Item received',
-    body : req.body.newSkuItem
-  }
-  return res.status(200).json(message);
-});
-
 app.put('/api/restockOrder/:id/skuItems', (req,res)=>{
   let message = {
     message : 'PUT Skuitem with id to RestockOrder' + req.params.id + " received",
@@ -272,20 +263,6 @@ app.get('/api/skuitems/:rfid/testResults', (req,res)=>{
   return res.status(200).json(message);
 });
 
-app.get('/api/skuitems/:rfid', (req,res)=>{
-  let message = {
-    message : 'Get skuitem with rfid:' + req.params.rfid + 'received',
-  }
-  return res.status(200).json(message);
-});
-
-app.put('/api/skuitems/:rfid', (req,res)=>{
-  let message = {
-    message : 'Edit Skuitem with id ' + req.params.rfid + " received",
-    body : req.body.newSKUItem
-  }
-  return res.status(200).json(message);
-});
 
 app.get('/api/restockOrders/:id/returnItems', (req,res)=>{
   let message = {

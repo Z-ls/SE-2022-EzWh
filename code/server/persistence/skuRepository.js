@@ -8,6 +8,8 @@ function skuRepository()
         }
     });
 
+    db.run("PRAGMA foreign_keys = ON");
+
     this.dropTable = () =>{
         return new Promise((resolve, reject) =>{
             const sql = 'DROP TABLE IF EXISTS SKU';

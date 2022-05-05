@@ -12,7 +12,7 @@ const getSingleSKU = async (req, res) => {
     const skuRep = new skuRepository();
     const skuFound = await skuRep.getSkuById(req.params.id);
     let message;
-    if(skuFound.lenght !== 0)
+    if(skuFound.length !== 0)
     {
         message = skuFound[0];
         return res.status(200).json(message);

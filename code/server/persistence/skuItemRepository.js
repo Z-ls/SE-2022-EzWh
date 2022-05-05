@@ -9,6 +9,8 @@ function skuItemRepository(){
         }
     });
 
+    db.run("PRAGMA foreign_keys = ON");
+
     this.dropTable = () =>{
         return new Promise((resolve, reject) =>{
             const sql = 'DROP TABLE IF EXISTS SKUITEM';
@@ -24,7 +26,7 @@ function skuItemRepository(){
 
     this.newTableSKUItem = () =>{
         return new Promise((resolve, reject) => {
-            const sql = 'CREATE TABLE IF NOT EXISTS SKUITEM(RFID VARCHAR PRIMARY KEY, SKUId INTEGER, Available INTEGER, DateOfStock DATE, FOREIGN KEY(SKUId) REFERENCES SKU(id))';
+            const sql = 'CREATE TABLE IF NOT EXISTS SKUITEM(RFID VARCHAR PRIMARY KEY, SKUId INTEGER, Available INTEGER, DateOfStock DATE, FOREIGN KEY(SKUId) REFERENCES SKU(id));';
             db.run(sql, (err) => {
                 if(err)
                 {
@@ -52,12 +54,75 @@ function skuItemRepository(){
         });
     }
 
+    this.getSKUsBySKUId = (id)=>
+    {
+        return new Promise((resolve,reject)=>{
+            const sql = 'SELECT * FROM SKUITEM WHERE SKUId = ?';
+            db.all(sql, [id], (err, rows) =>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(rows.map((s)=>{
+                        return new SKUItem(s.RFID,s.SKUId, s.Available, dayjs(s.DateOfStock).format("YYYY/MM/DD HH:mm"));
+                    }));
+                }
+            });
+        });
+    }
+
+    this.getSingleSKUItem = (rfid)=>
+    {
+        return new Promise((resolve,reject)=>{
+            const sql = 'SELECT * FROM SKUITEM WHERE RFID = ?';
+            db.all(sql, [rfid], (err, rows) =>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(rows.map((s)=>{
+                        return new SKUItem(s.RFID,s.SKUId, s.Available, dayjs(s.DateOfStock).format("YYYY/MM/DD HH:mm"));
+                    }));
+                }
+            });
+        });
+    }
+
     this.addSKUItem = (skuItem)=>
     {
         console.log(skuItem);
         return new Promise((resolve, reject) =>{
             const sql = 'INSERT INTO SKUITEM (RFID,SKUId,DateOfStock) VALUES(?,?,?)';
             db.run(sql,[skuItem.RFID, skuItem.SKUId,skuItem.DateOfStock],(err)=>{
+                if(err)
+                {
+                    resolve(false);
+                }else{
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    this.editSKUItem = (skuItem,rfid)=>
+    {
+        console.log(skuItem);
+        return new Promise((resolve, reject) =>{
+            const sql = 'UPDATE SKUITEM SET RFID = ?, Available = ?, DateOfStock = ? WHERE RFID = ?;';
+            db.run(sql,[skuItem.newRFID, skuItem.newAvailable,skuItem.newDateOfStock,rfid],(err,rows)=>{
+                if(err)
+                {
+                    reject(err);
+                }else{
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    this.deleteSKUItem = (rfid)=>
+    {
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM SKUITEM WHERE RFID = ?';
+            db.run(sql,rfid,(err)=>{
                 if(err)
                 {
                     reject(err);
