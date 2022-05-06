@@ -2,6 +2,7 @@
 const express = require('express');
 const skus = require('./routes/sku');
 const skuItems = require('./routes/skuItems');
+const restockOrder = require('./routes/restockOrder');
 
 // init express
 const app = new express();
@@ -9,11 +10,12 @@ const port = 3001;
 
 app.use(express.json());
 
-app.use('/api',skus);
-app.use('/api',skuItems);
+app.use('/api', skus);
+app.use('/api', skuItems);
+app.use('/api', restockOrder);
 
 //GET /api/test
-app.get('/api/hello', (req,res)=>{
+app.get('/api/hello', (req, res) => {
   let message = {
     message: 'Hello World!'
   }
@@ -21,7 +23,7 @@ app.get('/api/hello', (req,res)=>{
 });
 
 //login
-app.get('/api/login/:id', (req,res)=>{
+app.get('/api/login/:id', (req, res) => {
   let message = {
     message: 'Hello World!'
   }
@@ -29,7 +31,7 @@ app.get('/api/login/:id', (req,res)=>{
 });
 
 //logout
-app.get('/api/logout', (req,res)=>{
+app.get('/api/logout', (req, res) => {
   app.logOut();
   let message = {
     message: 'Logging out'
@@ -38,7 +40,7 @@ app.get('/api/logout', (req,res)=>{
 });
 
 //get User Info
-app.get('/api/getUserInfo/:id', (req,res)=>{
+app.get('/api/getUserInfo/:id', (req, res) => {
   let message = {
     message: 'Please enter user:'
   }
@@ -46,7 +48,7 @@ app.get('/api/getUserInfo/:id', (req,res)=>{
 });
 
 //add Position
-app.post('/api/addPosition', (req,res)=>{
+app.post('/api/addPosition', (req, res) => {
   let message = {
     message: 'Insert new position:'
   }
@@ -54,7 +56,7 @@ app.post('/api/addPosition', (req,res)=>{
 });
 
 //get Positions
-app.get('/api/getPositions', (req,res)=>{
+app.get('/api/getPositions', (req, res) => {
   let message = {
     message: 'List of all positions:'
   }
@@ -62,7 +64,7 @@ app.get('/api/getPositions', (req,res)=>{
 });
 
 //edit Position
-app.put('/api/editPosition', (req,res)=>{
+app.put('/api/editPosition', (req, res) => {
   let message = {
     message: 'Please enter position to edit'
   }
@@ -70,7 +72,7 @@ app.put('/api/editPosition', (req,res)=>{
 });
 
 //edit Position Barcode
-app.put('/api/editPositionBarcode/:id', (req,res)=>{
+app.put('/api/editPositionBarcode/:id', (req, res) => {
   let message = {
     message: 'Please enter position to edit'
   }
@@ -78,7 +80,7 @@ app.put('/api/editPositionBarcode/:id', (req,res)=>{
 });
 
 //delete Position
-app.delete('/api/deletePosition/:id', (req,res)=>{
+app.delete('/api/deletePosition/:id', (req, res) => {
   let message = {
     message: 'Please enter position to delete'
   }
@@ -86,7 +88,7 @@ app.delete('/api/deletePosition/:id', (req,res)=>{
 });
 
 //get Test Descriptors
-app.get('/api/getTestDescriptors', (req,res)=>{
+app.get('/api/getTestDescriptors', (req, res) => {
   let message = {
     message: 'List of all Test Descriptors:'
   }
@@ -94,42 +96,42 @@ app.get('/api/getTestDescriptors', (req,res)=>{
 });
 
 //add Test Descriptor
-app.post('/api/addTestDescriptor', (req,res)=>{
+app.post('/api/addTestDescriptor', (req, res) => {
   let message = {
     message: 'Insert test descriptor:'
   }
   return res.status(200).json(message);
 });
 
-app.put('/api/testDescriptor/:id', (req,res)=>{
+app.put('/api/testDescriptor/:id', (req, res) => {
   let message = {
     message: ''
   }
   return res.status(200).json(message);
 });
 
-app.delete('/api/testDescriptor/:id', (req,res)=>{
+app.delete('/api/testDescriptor/:id', (req, res) => {
   let message = {
     message: `Delete Test Descriptor ${req.body.id} : Succeeded.`
   }
   return res.status(200).json(message);
 });
 
-app.get('/api/users', (req,res)=>{
+app.get('/api/users', (req, res) => {
   let message = {
     message: ''
   }
   return users;
 });
 
-app.get('/api/suppliers', (req,res)=>{
+app.get('/api/suppliers', (req, res) => {
   let message = {
     message: ''
   }
   return suppliers;
 });
 
-app.post('/api/newUser', (req,res)=>{
+app.post('/api/newUser', (req, res) => {
   // let newUser = new User(req.body.id...);
   let message = {
     message: `${newUser} added`
@@ -137,7 +139,7 @@ app.post('/api/newUser', (req,res)=>{
   return res.status(200).json(message);
 });
 
-app.put('/api/users/:username', (req,res)=>{
+app.put('/api/users/:username', (req, res) => {
   let username = body.req.username;
   let message = {
     message: `${username} added`
@@ -145,28 +147,28 @@ app.put('/api/users/:username', (req,res)=>{
   return users.filter(u => u.username == username);
 });
 
-app.delete('/api/users/', (req,res)=>{
+app.delete('/api/users/', (req, res) => {
   let message = {
     message: 'Please enter your username and password'
   }
   return users;
 });
 
-app.get('/api/internalOrdersIssued', (req,res)=>{
+app.get('/api/internalOrdersIssued', (req, res) => {
   let message = {
     message: 'Please enter your username and password'
   }
   return internalOrders.filter(io => io.state == "ISSUED");
 });
 
-app.get('/api/internalOrdersAccepted', (req,res)=>{
+app.get('/api/internalOrdersAccepted', (req, res) => {
   let message = {
     message: 'Please enter your username and password'
   }
   return internalOrders.filter(io => io.state == "ACCEPTED");
 });
 
-app.get('/api/internalOrders/:id', (req,res)=>{
+app.get('/api/internalOrders/:id', (req, res) => {
   let id = req.body.id;
   let message = {
     message: `Internal Order ${id} fetched.`
@@ -174,7 +176,7 @@ app.get('/api/internalOrders/:id', (req,res)=>{
   return res.status(200).json(message);
 });
 
-app.get('/api/restockOrdersIssued', (req,res)=>{
+app.get('/api/restockOrdersIssued', (req, res) => {
   let newIO = req.body.newIO;
   let message = {
     message: `Internal Order ${newIO} posted.`
@@ -182,7 +184,7 @@ app.get('/api/restockOrdersIssued', (req,res)=>{
   return res.status(200).json(message);
 });
 
-app.put('/api/internalOrders/:id', (req,res)=>{
+app.put('/api/internalOrders/:id', (req, res) => {
   let id = req.body.id;
   let message = {
     message: `Internal Order ${id} updated.`
@@ -190,7 +192,7 @@ app.put('/api/internalOrders/:id', (req,res)=>{
   return res.status(200).json(message);
 });
 
-app.get('/api/restockOrdersIssued', (req,res)=>{
+app.get('/api/restockOrdersIssued', (req, res) => {
   let id = req.body.id;
   let message = {
     message: `Restock Order ${id} updated.`
@@ -198,7 +200,7 @@ app.get('/api/restockOrdersIssued', (req,res)=>{
   return restockOrders.filter(ro => ro.state === "ISSUED");
 });
 
-app.get('/api/restockOrders', (req,res)=>{
+app.get('/api/restockOrders', (req, res) => {
   let id = req.body.id;
   let message = {
     message: `Restock Order ${id} updated.`
@@ -206,7 +208,7 @@ app.get('/api/restockOrders', (req,res)=>{
   return restockOrders;
 });
 
-app.post('/api/restockOrder', (req,res)=>{
+app.post('/api/restockOrder', (req, res) => {
   let id = req.body.id;
   let message = {
     message: `Restock Order ${id} added.`
@@ -214,120 +216,120 @@ app.post('/api/restockOrder', (req,res)=>{
   return res.status(200).json(message);
 });
 
-//getSingleRO
-app.get('/api/restockOrders/:id', (req,res)=>{
-  let message = {
-    message : 'Get restock Order with id:' + req.params.id + 'received',
-  }
-  return res.status(200).json(message);
-});
+// //getSingleRO
+// app.get('/api/restockOrders/:id', (req,res)=>{
+//   let message = {
+//     message : 'Get restock Order with id:' + req.params.id + 'received',
+//   }
+//   return res.status(200).json(message);
+// });
 
 //editRO
-app.put('/api/restockOrder/:id', (req,res)=>{
+app.put('/api/restockOrder/:id', (req, res) => {
   let message = {
-    message : 'PUT restock order with id ' + req.params.id + " received",
-    body : req.body.newRO
+    message: 'PUT restock order with id ' + req.params.id + " received",
+    body: req.body.newRO
   }
   return res.status(200).json(message);
 });
 
 //addTrasnportNoteRO
-app.put('/api/restockOrder/:id/transportNote', (req,res)=>{
+app.put('/api/restockOrder/:id/transportNote', (req, res) => {
   let message = {
-    message : 'PUT TransportNote with id ' + req.params.id + " to Restock Order received",
-    body : req.body.newRO
+    message: 'PUT TransportNote with id ' + req.params.id + " to Restock Order received",
+    body: req.body.newRO
   }
   return res.status(200).json(message);
 });
 
 //addSKUItem
-app.post('/api/skuitem', (req,res)=>{
+app.post('/api/skuitem', (req, res) => {
   let message = {
-    message : 'Post SKU Item received',
-    body : req.body.newSkuItem
+    message: 'Post SKU Item received',
+    body: req.body.newSkuItem
   }
   return res.status(200).json(message);
 });
 
-app.put('/api/restockOrder/:id/skuItems', (req,res)=>{
+app.put('/api/restockOrder/:id/skuItems', (req, res) => {
   let message = {
-    message : 'PUT Skuitem with id to RestockOrder' + req.params.id + " received",
-    body : req.body.newRO
+    message: 'PUT Skuitem with id to RestockOrder' + req.params.id + " received",
+    body: req.body.newRO
   }
   return res.status(200).json(message);
 });
 
-app.post('/api/skuitems/testResult', (req,res)=>{
+app.post('/api/skuitems/testResult', (req, res) => {
   let message = {
-    message : 'Post test Result received',
-    body : req.body.newTestResult
+    message: 'Post test Result received',
+    body: req.body.newTestResult
   }
   return res.status(200).json(message);
 });
 
-app.get('/api/skuitems/:rfid/testResults', (req,res)=>{
+app.get('/api/skuitems/:rfid/testResults', (req, res) => {
   let message = {
-    message : 'Get  test results from skuitem with rfid:' + req.params.rfid + 'received',
+    message: 'Get  test results from skuitem with rfid:' + req.params.rfid + 'received',
   }
   return res.status(200).json(message);
 });
 
-app.get('/api/skuitems/:rfid', (req,res)=>{
+app.get('/api/skuitems/:rfid', (req, res) => {
   let message = {
-    message : 'Get skuitem with rfid:' + req.params.rfid + 'received',
+    message: 'Get skuitem with rfid:' + req.params.rfid + 'received',
   }
   return res.status(200).json(message);
 });
 
-app.put('/api/skuitems/:rfid', (req,res)=>{
+app.put('/api/skuitems/:rfid', (req, res) => {
   let message = {
-    message : 'Edit Skuitem with id ' + req.params.rfid + " received",
-    body : req.body.newSKUItem
+    message: 'Edit Skuitem with id ' + req.params.rfid + " received",
+    body: req.body.newSKUItem
   }
   return res.status(200).json(message);
 });
 
-app.get('/api/restockOrders/:id/returnItems', (req,res)=>{
+app.get('/api/restockOrders/:id/returnItems', (req, res) => {
   let message = {
-    message : 'Get items from Order id:' + req.params.id + 'received',
+    message: 'Get items from Order id:' + req.params.id + 'received',
   }
   return res.status(200).json(message);
 });
 
-app.post('/api/returnOrder', (req,res)=>{
+app.post('/api/returnOrder', (req, res) => {
   let message = {
-    message : 'Post Return Order received',
-    body : req.body.newReo
+    message: 'Post Return Order received',
+    body: req.body.newReo
   }
   return res.status(200).json(message);
 });
 
-app.get('/api/items', (req,res)=>{
+app.get('/api/items', (req, res) => {
   let message = {
-    message : 'Get items received'
+    message: 'Get items received'
   }
   return res.status(200).json(message);
 });
 
-app.post('/api/items', (req,res)=>{
+app.post('/api/items', (req, res) => {
   let message = {
-    message : 'Post item received',
-    body : req.body.newItem
+    message: 'Post item received',
+    body: req.body.newItem
   }
   return res.status(200).json(message);
 });
 
-app.put('/api/items/:id', (req,res)=>{
+app.put('/api/items/:id', (req, res) => {
   let message = {
-    message : 'Edit item with id ' + req.params.id + " received",
-    body : req.body.newItem
+    message: 'Edit item with id ' + req.params.id + " received",
+    body: req.body.newItem
   }
   return res.status(200).json(message);
 });
 
-app.delete('/api/items/:id', (req,res)=>{
+app.delete('/api/items/:id', (req, res) => {
   let message = {
-    message : 'Delete item with id ' + req.params.id + " received"
+    message: 'Delete item with id ' + req.params.id + " received"
   }
   return res.status(200).json(message);
 });
