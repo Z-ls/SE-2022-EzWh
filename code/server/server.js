@@ -2,6 +2,7 @@
 const express = require('express');
 const skus = require('./routes/sku');
 const skuItems = require('./routes/skuItems');
+const item = require('./routes/item');
 const restockOrder = require('./routes/restockOrder');
 
 // init express
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use('/api', skus);
 app.use('/api', skuItems);
+app.use('/api', item);
 app.use('/api', restockOrder);
 
 //GET /api/test
@@ -277,36 +279,6 @@ app.post('/api/returnOrder', (req, res) => {
   let message = {
     message: 'Post Return Order received',
     body: req.body.newReo
-  }
-  return res.status(200).json(message);
-});
-
-app.get('/api/items', (req, res) => {
-  let message = {
-    message: 'Get items received'
-  }
-  return res.status(200).json(message);
-});
-
-app.post('/api/items', (req, res) => {
-  let message = {
-    message: 'Post item received',
-    body: req.body.newItem
-  }
-  return res.status(200).json(message);
-});
-
-app.put('/api/items/:id', (req, res) => {
-  let message = {
-    message: 'Edit item with id ' + req.params.id + " received",
-    body: req.body.newItem
-  }
-  return res.status(200).json(message);
-});
-
-app.delete('/api/items/:id', (req, res) => {
-  let message = {
-    message: 'Delete item with id ' + req.params.id + " received"
   }
   return res.status(200).json(message);
 });
