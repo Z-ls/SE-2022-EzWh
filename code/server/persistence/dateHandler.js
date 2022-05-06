@@ -1,19 +1,19 @@
-import dayjs, { Dayjs } from 'dayjs';
+const dayjs = require('dayjs');
 
 class dateHandler {
   /**
-   * Used to convert the dayjs object to the timestamp.
-   * @param {Dayjs} date 
-   * @returns the Unix timestamp (the number of seconds since the Unix Epoch) of the Day.js object
-   */
-  dateToTimestamp = (date) => date.unix();
+     * 
+     * @param {dayjs.Dayjs} date
+     * @returns {string} the string with format YYYY/MM/DD
+     */
+  DayjsToDate = (date) => dayjs.unix(date).format('YYYY/MM/DD');
 
   /**
    * 
-   * @param {number} timestamp
-   * @returns 
+   * @param {dayjs.Dayjs} date
+   * @returns {string} the string with format YYYY/MM/DD HH:mm
    */
-  timestampToDayjs = (timestamp) => dayjs.unix(timestamp);
+  DayjsToDateAndTime = (date) => date.format('YYYY/MM/DD HH:mm');
 }
 
-export { dateHandler }
+module.exports = dateHandler;

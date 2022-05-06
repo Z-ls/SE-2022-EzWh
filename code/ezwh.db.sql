@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS "SKUITEM" (
 	"SKUId"	INTEGER,
 	"Available"	INTEGER,
 	"DateOfStock"	DATE,
-	PRIMARY KEY("RFID"),
-	FOREIGN KEY("SKUId") REFERENCES "SKU"("id")
+	FOREIGN KEY("SKUId") REFERENCES "SKU"("id"),
+	PRIMARY KEY("RFID")
 );
 DROP TABLE IF EXISTS "SKU";
 CREATE TABLE IF NOT EXISTS "SKU" (
@@ -20,32 +20,31 @@ CREATE TABLE IF NOT EXISTS "SKU" (
 	"price"	REAL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
-
 DROP TABLE IF EXISTS "restockTransactionItem";
 CREATE TABLE IF NOT EXISTS "restockTransactionItem" (
 	"id"	INTEGER,
 	"quantity"	INTEGER NOT NULL DEFAULT 1,
 	"idRestockOrder"	INTEGER NOT NULL,
 	"idItem"	INTEGER NOT NULL,
-	PRIMARY KEY("id" AUTOINCREMENT),
-	FOREIGN KEY("idRestockOrder") REFERENCES "restockOrder"("id")
+	FOREIGN KEY("idRestockOrder") REFERENCES "restockOrder"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "restockTransactionSKU";
 CREATE TABLE IF NOT EXISTS "restockTransactionSKU" (
 	"id"	INTEGER,
 	"idRestockOrder"	INTEGER NOT NULL,
 	"RFID"	INTEGER NOT NULL,
-	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("idRestockOrder") REFERENCES "restockOrder"("id"),
 	FOREIGN KEY("RFID") REFERENCES "SKUITEM"("RFID"),
-	FOREIGN KEY("idRestockOrder") REFERENCES "restockOrder"("id")
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "transportNote";
 CREATE TABLE IF NOT EXISTS "transportNote" (
 	"idTransportNote"	INTEGER,
 	"note"	TEXT NOT NULL,
 	"ROid"	INTEGER NOT NULL,
-	PRIMARY KEY("idTransportNote" AUTOINCREMENT),
-	FOREIGN KEY("ROid") REFERENCES "restockOrder"("id")
+	FOREIGN KEY("ROid") REFERENCES "restockOrder"("id"),
+	PRIMARY KEY("idTransportNote" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "restockOrder";
 CREATE TABLE IF NOT EXISTS "restockOrder" (
@@ -55,6 +54,7 @@ CREATE TABLE IF NOT EXISTS "restockOrder" (
 	"supplierId"	INTEGER NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
-INSERT INTO "restockOrder" VALUES (0,"2021/11/29 09:33",'issued',0);
 INSERT INTO "SKU" VALUES (2,'Edited sku',100.0,50.0,'first SKU','800234523412',50,10.99);
+INSERT INTO "SKUITEM" VALUES ('4567',2,1,'2022/05/04 18:49');
+INSERT INTO "restockOrder" VALUES (0,'2021/11/29 09:33','issued',0);
 COMMIT;
