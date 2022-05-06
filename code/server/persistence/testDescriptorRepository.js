@@ -5,7 +5,8 @@ class TestDescriptorRepository {
     constructor() {
         this.db = new this.sqlite.Database("EzWh.db", (err) => {
             if (err) throw err;
-        })
+        });
+        this.db.run("PRAGMA foreign_keys = ON");
     }
 
     dropTable() {
@@ -96,8 +97,8 @@ class TestDescriptorRepository {
     getTestDescriptor(id) {
         return new Promise((resolve, reject) => {
             const sql = 'SELECT * FROM TestDescriptor WHERE id = ?';
-            this.db.all(sql, [id], (err, rows) => {
-                if (err) {
+            this.db.run(sql, [id], (err, rows) => {
+                if (err || !rows) {
                     reject(err);
                     return;
                 }
@@ -117,15 +118,29 @@ class TestDescriptorRepository {
     deleteTestDescriptor(id) {
         return new Promise((resolve, reject) => {
             const sql = 'DELETE FROM TestDescriptor WHERE id = ?';
-            this.db.all(sql, [id], (err, rows) => {
+            this.db.run(sql, [id], (err) => {
                 if (err) {
                     reject(err);
                     return;
                 }
-                resolve(true);
+                resolve(id);
             });
         });
     }
+
+//     fake getSKU for debugging
+//     getSKUById(id) {
+//         return new Promise((resolve, reject) => {
+//             const sql = 'SELECT * FROM SKU WHERE id = ?';
+//             this.db.all(sql, [id], (err, rows) => {
+//                 if (err) {
+//                     reject(err);
+//                     return;
+//                 }
+//                 resolve(rows.pop());
+//             });
+//         })
+//     }
 }
 
 module.exports = TestDescriptorRepository;

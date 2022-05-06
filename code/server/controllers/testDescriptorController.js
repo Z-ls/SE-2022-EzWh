@@ -18,9 +18,10 @@ const getTestDescriptorById = async (req, res, err) => {
 
 //POST: New Test Descriptor
 const addTestDescriptor =  async (req, res, err) => {
-    if (isNaN(req.params.idSKU)) return res.status(422).send("validation of request body failed");
-    // let skuID = await db.getSKU(req.body.idSKU).catch(err);
-    // if (!skuID) return res.status(404).send("no sku associated idSKU");
+    if (isNaN(req.body.idSKU))
+        return res.status(422).send("validation of request body failed");
+    // if (!await db.getSKUById(req.body.idSKU).catch(err))
+    //     return res.status(404).send("no sku associated idSKU");
     await db.newTestDescriptorTable().catch(err);
     let nTD = new TestDescriptor(
         req.body.name,
@@ -36,14 +37,15 @@ const addTestDescriptor =  async (req, res, err) => {
 const updateTestDescriptor = async (req, res, err) => {
     if (isNaN(req.body.newIdSKU) || isNaN(req.params.id))
         return res.status(422).send("validation of request body or of id failed");
-    // let skuID = await db.getSKU(req.body.idSKU).catch(err);
-    // if (!skuID) return res.status(404).send("no sku associated idSKU");
+    // if (!await db.getSKUById(req.body.newIdSKU).catch(err))
+    //     return res.status(404).send("no sku associated idSKU");
     let nTD = new TestDescriptor(
         req.body.newName,
         req.body.newProcedureDescription,
-        req.body.newIdSKU);
+        req.body.newIdSKU
+    );
     let ret = await db.updateTestDescriptor(nTD, req.params.id).catch(err);
-    return (ret ? res.status(201).json(req.body) :
+    return (ret ? res.status(201).json(ret) :
         res.status(503).send("Generic Error."));
 }
 
@@ -52,8 +54,8 @@ const deleteTestDescriptor = async(req, res, err) => {
     if (isNaN(req.params.id))
         return res.status(422).send("validation of request body or of id failed");
     let ret = await db.deleteTestDescriptor(req.params.id).catch(err);
-    return ( ret ? res.status(204).send("Deleted Successfully.") :
-        res.status(404).send("no test descriptor associated id or no sku associated to IDSku"));
+    return ( ret ? res.status(204).json(ret) :
+        res.status(503).send("generic error"));
 }
 
 module.exports = {
