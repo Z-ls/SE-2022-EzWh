@@ -5,6 +5,7 @@ const skuItems = require('./routes/skuItems');
 const item = require('./routes/item');
 const restockOrder = require('./routes/restockOrder');
 const pos = require('./routes/position');
+const returnOrder = require ('./routes/returnOrder')
 
 // init express
 const app = new express();
@@ -12,6 +13,7 @@ const port = 3001;
 
 app.use(express.json());
 
+app.use('/api',returnOrder);
 app.use('/api',pos);
 app.use('/api', skus);
 app.use('/api', skuItems);

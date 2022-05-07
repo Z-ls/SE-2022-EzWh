@@ -3,7 +3,7 @@ const posRepository = require("../persistence/positionRepository");
 
 const getPositions = async(req, res) => {
     const posRep = new posRepository();
-  /*  await posRep.dropTable();
+ /*   await posRep.dropTable();
     await posRep.newTablePOS();
     await posRep.addPOS(new POS("302110112022", "3021", "1011", "2022", 100, 100, 0, 0)); */
     const poslist = await posRep.getPOS();
