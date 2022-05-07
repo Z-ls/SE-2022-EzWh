@@ -11,6 +11,7 @@ const port = 3001;
 
 app.use(express.json());
 
+app.use('/api',pos);
 app.use('/api', skus);
 app.use('/api', skuItems);
 app.use('/api', item);
