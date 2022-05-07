@@ -198,21 +198,6 @@ app.put('/api/internalOrders/:id', (req, res) => {
   return res.status(200).json(message);
 });
 
-app.get('/api/restockOrdersIssued', (req, res) => {
-  let id = req.body.id;
-  let message = {
-    message: `Restock Order ${id} updated.`
-  }
-  return restockOrders.filter(ro => ro.state === "ISSUED");
-});
-
-app.get('/api/restockOrders', (req, res) => {
-  let id = req.body.id;
-  let message = {
-    message: `Restock Order ${id} updated.`
-  }
-  return restockOrders;
-});
 
 app.post('/api/restockOrder', (req, res) => {
   let id = req.body.id;

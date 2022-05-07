@@ -4,6 +4,8 @@ const skuItemRepository = require("../persistence/skuItemRepository");
 
 const getSKUItems = async(req, res) => {
     const skuItemRep= new skuItemRepository();
+  /*   await skuItemRep.dropTable();
+    await skuItemRep.newTableSKUItem(); */
     let message = await skuItemRep.getSKUItems();
     return res.status(200).json(message);
 }

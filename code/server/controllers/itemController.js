@@ -3,6 +3,8 @@ const itemRepository = require("../persistence/itemRepository");
 
 const getItems = async(req, res) => {
     const itemRep= new itemRepository();
+    /* await itemRep.dropTable();
+    await itemRep.newTableItem(); */
     let message = await itemRep.getItems();
     return res.status(200).json(message);
 }

@@ -99,3 +99,5 @@ this.addReturnOrder = (r)=>
         });
     });
 }
+
+module.exports = posRepository;
