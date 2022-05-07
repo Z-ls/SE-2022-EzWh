@@ -4,6 +4,7 @@ const skus = require('./routes/sku');
 const skuItems = require('./routes/skuItems');
 const item = require('./routes/item');
 const restockOrder = require('./routes/restockOrder');
+const pos = require('./routes/position');
 
 // init express
 const app = new express();
