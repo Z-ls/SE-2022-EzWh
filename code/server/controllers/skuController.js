@@ -18,21 +18,23 @@ const getSKUS = async(req, res) => {
 
 const getSingleSKU = async (req, res) => {
     const skuRep = new skuRepository();
-    try{
-        const skuFound = await skuRep.getSkuById(req.params.id);
-        let message;
-        if(skuFound.length !== 0)
-        {
-            message = skuFound[0];
-            return res.status(200).json(message);
-        }else{
-            message = "no SKU associated to id " + req.params.id;
-            return res.status(404).json(message);
+    if(req.params.id.match(/^\d+$/) !== null){
+        try{
+            const skuFound = await skuRep.getSkuById(req.params.id);
+            let message;
+            if(skuFound.length !== 0)
+            {
+                message = skuFound[0];
+                return res.status(200).json(message);
+            }else{
+                message = "no SKU associated to id " + req.params.id;
+                return res.status(404).json(message);
+            }
+        } catch(error){
+            return res.status(500).send(error);
         }
-    } catch(error){
-        return res.status(500).send(error);
     }
-    
+    return res.status(422).send("Unprocessable entity");
 }
 
 const addSKU = async (req, res) => {

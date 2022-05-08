@@ -32,12 +32,15 @@ const getSKUsBySKUId = async(req, res) =>{
 
 const getSingleSKUItem = async(req, res) =>{
     const skuItemRep = new skuItemRepository();
-    try{
-        let message = await skuItemRep.getSingleSKUItem(req.params.rfid);
-        return message.length !== 0 ? res.status(200).json(message[0]) : res.status(404).send();
-    }catch{
-        return res.status(500).send(error);
+    if(req.params.rfid.match(/^\d+$/) !== null){
+        try{
+            let message = await skuItemRep.getSingleSKUItem(req.params.rfid);
+            return message.length !== 0 ? res.status(200).json(message[0]) : res.status(404).send();
+        }catch{
+            return res.status(500).send(error);
+        }
     }
+    return res.status(422).send("Unprocessable entity");
 }
 
 const addSKUItem = async(req, res) =>{
