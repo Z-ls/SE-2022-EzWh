@@ -5,8 +5,10 @@ const app = new express();
 const port = 3001;
 app.use(express.json());
 
-const router = require('./routes/testDescriptorsRoutes');
-app.use(router);
+const tdRouter = require('./routes/testDescriptorRoutes');
+const trRouter = require('./routes/testResultRoutes');
+app.use(tdRouter);
+app.use(trRouter);
 
 // activate the server
 app.listen(port, () => {

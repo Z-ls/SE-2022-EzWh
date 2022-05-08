@@ -34,7 +34,7 @@ class TestDescriptorRepository {
                     reject(err);
                     return false;
                 }
-                resolve(true);
+                resolve();
             });
         });
     }
@@ -129,18 +129,44 @@ class TestDescriptorRepository {
     }
 
 //     fake getSKU for debugging
-//     getSKUById(id) {
-//         return new Promise((resolve, reject) => {
-//             const sql = 'SELECT * FROM SKU WHERE id = ?';
-//             this.db.all(sql, [id], (err, rows) => {
-//                 if (err) {
-//                     reject(err);
-//                     return;
-//                 }
-//                 resolve(rows.pop());
-//             });
-//         })
-//     }
+    getSKUById(id) {
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * FROM SKU WHERE id = ?';
+            this.db.all(sql, [id], (err, rows) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(rows.pop());
+            });
+        })
+    }
+
+    getSKUItemByRfId(id) {
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * FROM SKUItem WHERE rfid = ?';
+            this.db.all(sql, [id], (err, rows) => {
+                if (err || rows.length === 0) {
+                    reject(err);
+                    return;
+                }
+                resolve(rows);
+            });
+        })
+    }
+
+    getTestDescriptorIdBySKUId(skuId) {
+        return new Promise((resolve, reject) => {
+            const sql = "SELECT id FROM TestDescriptor WHERE idSKU = ?";
+            this.db.all(sql, [skuId], (err, rows) => {
+               if (err || rows.length === 0) {
+                   reject(err);
+                   return;
+               }
+               resolve(rows);
+            });
+        });
+    }
 }
 
 module.exports = TestDescriptorRepository;
