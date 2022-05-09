@@ -3,7 +3,7 @@ class TestDescriptorRepository {
     sqlite = require('sqlite3');
 
     constructor() {
-        this.db = new this.sqlite.Database("EzWh.db", (err) => {
+        this.db = new this.sqlite.Database("TestDescriptor.db", (err) => {
             if (err) throw err;
         });
         this.db.run("PRAGMA foreign_keys = ON");
@@ -28,13 +28,14 @@ class TestDescriptorRepository {
                 'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
                 'name VARCHAR, ' +
                 'procedureDescription VARCHAR, ' +
-                'idSKU INTEGER);';
+                'idSKU INTEGER, ' +
+                'FOREIGN KEY(idSKU) REFERENCES SKU(id));';
             this.db.run(sql, (err) => {
                 if (err) {
                     reject(err);
-                    return false;
+                    return;
                 }
-                resolve();
+                resolve(true);
             });
         });
     }
@@ -46,12 +47,16 @@ class TestDescriptorRepository {
                 'procedureDescription, ' +
                 'idSKU) ' +
                 'VALUES(?, ?, ?);';
-            this.db.run(sql, [td.name, td.procedureDescription, td.idSKU], (err) => {
+            this.db.run(sql, [
+                td.name,
+                td.procedureDescription,
+                td.idSKU
+            ], function (err) {
                 if (err) {
                     reject(err);
                     return;
                 }
-                resolve(td.name);
+                resolve(this.lastID);
             });
         });
     }
@@ -63,11 +68,19 @@ class TestDescriptorRepository {
                 `procedureDescription = ?, ` +
                 `idSKU = ? ` +
                 `WHERE id = ?;`;
-            this.db.run(sql, [td.name, td.procedureDescription, td.idSKU, id], (err) => {
+            this.db.run(sql, [
+                td.newName,
+                td.newProcedureDescription,
+                td.newIdSKU,
+                id
+            ], function (err) {
                 if (err) {
                     reject(err);
                     return;
                 }
+                // if (this.changes === 0) {
+                //     return "404";
+                // }
                 resolve(id);
             });
         });
@@ -81,15 +94,7 @@ class TestDescriptorRepository {
                     reject(err);
                     return;
                 }
-                const tds = rows.map((td) => (
-                    {
-                        id: td.id,
-                        name: td.name,
-                        procedureDescription: td.procedureDescription,
-                        idSKU: td.idSKU
-                    }
-                ));
-                resolve(tds);
+                resolve(rows);
             });
         });
     }
@@ -97,20 +102,15 @@ class TestDescriptorRepository {
     getTestDescriptor(id) {
         return new Promise((resolve, reject) => {
             const sql = 'SELECT * FROM TestDescriptor WHERE id = ?';
-            this.db.run(sql, [id], (err, rows) => {
-                if (err || !rows) {
+            this.db.get(sql, [id], (err, row) => {
+                if (err) {
                     reject(err);
-                    return;
+                    return "500";
                 }
-                const tds = rows.map((td) => (
-                    {
-                        id: td.id,
-                        name: td.name,
-                        procedureDescription: td.procedureDescription,
-                        idSKU: td.idSKU
-                    }
-                ));
-                resolve(tds);
+                // if (!row) {
+                //     return "404";
+                // }
+                resolve(row);
             });
         });
     }
@@ -118,12 +118,14 @@ class TestDescriptorRepository {
     deleteTestDescriptor(id) {
         return new Promise((resolve, reject) => {
             const sql = 'DELETE FROM TestDescriptor WHERE id = ?';
-            this.db.run(sql, [id], (err) => {
+            this.db.run(sql, [id], function (err) {
                 if (err) {
                     reject(err);
                     return;
                 }
-                resolve(id);
+                // if(this.changes === 0)
+                //     return "404";
+                resolve(true);
             });
         });
     }
@@ -132,12 +134,15 @@ class TestDescriptorRepository {
     getSKUById(id) {
         return new Promise((resolve, reject) => {
             const sql = 'SELECT * FROM SKU WHERE id = ?';
-            this.db.all(sql, [id], (err, rows) => {
+            this.db.run(sql, [id], (err, row) => {
                 if (err) {
                     reject(err);
-                    return;
+                    return "503";
                 }
-                resolve(rows.pop());
+                if (row === null) {
+                    return "404";
+                }
+                resolve(row);
             });
         })
     }
