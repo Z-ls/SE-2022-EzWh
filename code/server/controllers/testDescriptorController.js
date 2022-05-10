@@ -1,4 +1,3 @@
-const TestDescriptor = require('../model/TestDescriptor');
 const testDescriptorRepository = require('../persistence/testDescriptorRepository');
 const db = new testDescriptorRepository();
 
@@ -96,7 +95,7 @@ const deleteTestDescriptor = async(req, res, err) => {
         return res.status(404).send("no id associated test descriptor");
     let ret = await db.deleteTestDescriptor(req.params.id).catch(err);
     return ret ?
-        res.status(204).json(ret) :
+        res.status(204).sendStatus() :
         res.status(503).send("generic error");
 }
 

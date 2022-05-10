@@ -3,7 +3,7 @@ class TestDescriptorRepository {
     sqlite = require('sqlite3');
 
     constructor() {
-        this.db = new this.sqlite.Database("TestDescriptor.db", (err) => {
+        this.db = new this.sqlite.Database("EzWh.db", (err) => {
             if (err) throw err;
         });
         this.db.run("PRAGMA foreign_keys = ON");
@@ -78,9 +78,10 @@ class TestDescriptorRepository {
                     reject(err);
                     return;
                 }
-                // if (this.changes === 0) {
-                //     return "404";
-                // }
+                if (this.changes === 0) {
+                    reject(err);
+                    return "404";
+                }
                 resolve(id);
             });
         });
@@ -107,9 +108,10 @@ class TestDescriptorRepository {
                     reject(err);
                     return "500";
                 }
-                // if (!row) {
-                //     return "404";
-                // }
+                if (!row) {
+                    reject(err);
+                    return "404";
+                }
                 resolve(row);
             });
         });
@@ -123,8 +125,10 @@ class TestDescriptorRepository {
                     reject(err);
                     return;
                 }
-                // if(this.changes === 0)
-                //     return "404";
+                if(this.changes === 0) {
+                    reject(err);
+                    return "404";
+                }
                 resolve(true);
             });
         });
@@ -134,12 +138,13 @@ class TestDescriptorRepository {
     getSKUById(id) {
         return new Promise((resolve, reject) => {
             const sql = 'SELECT * FROM SKU WHERE id = ?';
-            this.db.run(sql, [id], (err, row) => {
+            this.db.get(sql, [id], (err, row) => {
                 if (err) {
                     reject(err);
                     return "503";
                 }
-                if (row === null) {
+                if (!row) {
+                    reject(err);
                     return "404";
                 }
                 resolve(row);
@@ -150,24 +155,32 @@ class TestDescriptorRepository {
     getSKUItemByRfId(id) {
         return new Promise((resolve, reject) => {
             const sql = 'SELECT * FROM SKUItem WHERE rfid = ?';
-            this.db.all(sql, [id], (err, rows) => {
-                if (err || rows.length === 0) {
+            this.db.get(sql, [id], (err, row) => {
+                if (err) {
                     reject(err);
-                    return;
+                    return "500";
                 }
-                resolve(rows);
+                if (!row) {
+                    reject(err);
+                    return "404";
+                }
+                resolve(row);
             });
         })
     }
 
-    getTestDescriptorIdBySKUId(skuId) {
+    getTestDescriptorIdsBySKUId(skuId) {
         return new Promise((resolve, reject) => {
             const sql = "SELECT id FROM TestDescriptor WHERE idSKU = ?";
             this.db.all(sql, [skuId], (err, rows) => {
-               if (err || rows.length === 0) {
-                   reject(err);
-                   return;
-               }
+                if (err) {
+                    reject(err);
+                    return "500";
+                }
+                if (!rows) {
+                    reject(err);
+                    return "404";
+                }
                resolve(rows);
             });
         });
