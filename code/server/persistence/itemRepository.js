@@ -71,8 +71,8 @@ function itemRepository(){
 
     this.getItemsBySupplierAndSKUId = (item) =>{
         return new Promise((resolve,reject)=>{
-            const sql = 'SELECT * FROM ITEM WHERE supplierId = ? AND SKUId = ?';
-            db.all(sql, [item.supplierId,item.SKUId], (err, rows) =>{
+            const sql = 'SELECT * FROM ITEM WHERE (supplierId = ? AND SKUId = ?) OR (supplierId = ? AND id = ?)';
+            db.all(sql, [item.supplierId,item.SKUId, item.supplierId, item.id], (err, rows) =>{
                 if(err){
                     reject(err);
                 }else{
