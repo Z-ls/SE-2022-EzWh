@@ -1,18 +1,16 @@
 const dayjs = require('dayjs');
 const dateHandler = require('../persistence/dateHandler');
 
-// TODO: verify that 'Product' really exists
-
 class RestockOrder {
   /**
    * 
    * @param {number} id 
    * @param {dayjs} issueDate 
    * @param {string} state 
-   * @param {Product[]} products 
+   * @param {{SKUid:number, description:string, price:number, qty:number}[]} products 
    * @param {number} supplierId 
-   * @param {transportNote[]} transportNote 
-   * @param {SKUItems[]} skuItems 
+   * @param {{deliveryDate:string}[]} transportNote 
+   * @param {{SKUId:number, rfid:string}[]} skuItems 
    */
   constructor(id, issueDate, state, products, supplierId, transportNote, skuItems) {
     this.id = id;
@@ -22,19 +20,23 @@ class RestockOrder {
     this.supplierId = supplierId;
     this.transportNote = transportNote;
     this.skuItems = skuItems;
+
+    this.dateHandler = new dateHandler();
   }
 
   toString = () => {
     return {
       id: this.id,
-      issueDate: new dateHandler().DayjsToDateAndTime(this.issueDate),
+      issueDate: this.dateHandler.DayjsToDateAndTime(this.issueDate),
       state: this.state,
       products: this.products,
       supplierId: this.supplierId,
-      transportNote: this.transportNote,
+      transportNote: this.transportNote.deliveryDate ? { deliveryDate: this.dateHandler.DayjsToDate(this.transportNote.deliveryDate) } : {},
       skuItems: this.skuItems
     }
   };
 }
 
-module.exports = RestockOrder
+const possibleStates = ["ISSUED", "DELIVERY", "DELIVERED", "TESTED", "RETURN", "COMPLETED"];
+
+module.exports = { RestockOrder, possibleStates };

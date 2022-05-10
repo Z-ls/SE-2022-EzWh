@@ -6,7 +6,7 @@ class dateHandler {
      * @param {dayjs.Dayjs} date
      * @returns {string} the string with format YYYY/MM/DD
      */
-  DayjsToDate = (date) => dayjs.unix(date).format('YYYY/MM/DD');
+  DayjsToDate = (date) => date.format('YYYY/MM/DD');
 
   /**
    * 
