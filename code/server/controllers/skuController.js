@@ -12,7 +12,7 @@ const getSKUS = async(req, res) => {
         let skus = await skuRep.getSKUS();
         for (let index = 0; index < skus.length; index++) {
             let s = skus[index];
-            s.testDescriptors = await testDesRep.getTestDescriptorIdBySKUId(s.id);
+            s.testDescriptors = await testDesRep.getTestDescriptorIdsBySKUId(s.id);
         }
         let message = skus
         return res.status(200).json(message);
@@ -30,7 +30,7 @@ const getSingleSKU = async (req, res) => {
             let message;
             if(skuFound.length !== 0)
             {
-                skuFound[0].testDescriptors = await testDesRep.getTestDescriptorIdBySKUId(skuFound[0].id);
+                skuFound[0].testDescriptors = await testDesRep.getTestDescriptorIdsBySKUId(skuFound[0].id);
                 message = skuFound[0];
                 return res.status(200).json(message);
             }else{
