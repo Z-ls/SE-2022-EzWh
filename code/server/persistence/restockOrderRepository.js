@@ -11,6 +11,7 @@ class restockOrderRepository {
         throw err;
       }
     });
+    this.db.run("PRAGMA foreign_keys = ON");
     this.dateHandler = new dateHandler();
   }
 

@@ -3,7 +3,7 @@ class TestResultRepository {
     sqlite = require('sqlite3');
 
     constructor() {
-        this.db = new this.sqlite.Database("EzWh.db", (err) => {
+        this.db = new this.sqlite.Database("../ezwh.db", (err) => {
             if (err) throw err;
         });
         this.db.run("PRAGMA foreign_keys = ON");

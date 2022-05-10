@@ -3,7 +3,7 @@ class TestDescriptorRepository {
     sqlite = require('sqlite3');
 
     constructor() {
-        this.db = new this.sqlite.Database("EzWh.db", (err) => {
+        this.db = new this.sqlite.Database("../ezwh.db", (err) => {
             if (err) throw err;
         });
         this.db.run("PRAGMA foreign_keys = ON");
@@ -28,7 +28,8 @@ class TestDescriptorRepository {
                 'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
                 'name VARCHAR, ' +
                 'procedureDescription VARCHAR, ' +
-                'idSKU INTEGER);';
+                'idSKU INTEGER,'+
+                'FOREIGN KEY(idSKU) REFERENCES SKU(id));';
             this.db.run(sql, (err) => {
                 if (err) {
                     reject(err);
@@ -159,11 +160,11 @@ class TestDescriptorRepository {
         return new Promise((resolve, reject) => {
             const sql = "SELECT id FROM TestDescriptor WHERE idSKU = ?";
             this.db.all(sql, [skuId], (err, rows) => {
-               if (err || rows.length === 0) {
-                   reject(err);
-                   return;
+               if (err) {
+                reject(err);
+                return;
                }
-               resolve(rows);
+               resolve(rows.map(r => r.id));
             });
         });
     }

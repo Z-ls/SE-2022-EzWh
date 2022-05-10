@@ -56,12 +56,17 @@ function skuRepository()
     {
         return new Promise((resolve, reject) =>{
             const sql = 'UPDATE SKU SET description = ? ,weight= ?,volume= ?,notes= ?,availablequantity= ?,price= ? WHERE id = ?';
-            db.run(sql,[sku.newDescription, sku.newWeight, sku.newVolume, sku.newNotes, sku.newAvailableQuantity, sku.newPrice, id],(err)=>{
+            db.run(sql,[sku.newDescription, sku.newWeight, sku.newVolume, sku.newNotes, sku.newAvailableQuantity, sku.newPrice, id],function(err){
                 if(err)
                 {
                     reject(err);
                 }else{
-                    resolve(true);
+                    if(this.changes === 0)
+                    {
+                        resolve(false);
+                    }else{
+                        resolve(true);
+                    }
                 }
             });
         });
@@ -71,12 +76,17 @@ function skuRepository()
     {
         return new Promise((resolve, reject) =>{
             const sql = 'UPDATE SKU SET position = ? WHERE id = ?';
-            db.run(sql,[position,id],(err)=>{
+            db.run(sql,[position,id],function(err){
                 if(err)
                 {
                     reject(err);
                 }else{
-                    resolve(true);
+                    if(this.changes === 0)
+                    {
+                    resolve(false);
+                    }else{
+                        resolve(true);
+                    }
                 }
             });
         });
@@ -117,12 +127,18 @@ function skuRepository()
     {
         return new Promise((resolve, reject) =>{
             const sql = 'DELETE FROM SKU WHERE id = ?';
-            db.run(sql,id,(err)=>{
+            db.run(sql,id,function (err){
                 if(err)
-                {
+                {      
                     reject(err);
                 }else{
-                    resolve(true);
+                    if(this.changes === 0)
+                    {
+                        resolve(false);
+                    }else{
+                        resolve(true);
+                    }
+                    
                 }
             });
         });

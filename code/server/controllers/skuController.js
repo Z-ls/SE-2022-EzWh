@@ -1,14 +1,19 @@
 const SKU = require("../model/sku");
+const TestDescriptorRepository = require('../persistence/testDescriptorRepository');
 const skuRepository = require("../persistence/skuRepository");
 const positionRepository = require("../persistence/positionRepository");
 
 const getSKUS = async(req, res) => {
     const skuRep = new skuRepository();
+    const testDesRep = new TestDescriptorRepository()
     try{
         /* await skuRep.dropTable();
         await skuRep.newTableSKU(); */
-        const skus = await skuRep.getSKUS();
-        //TODO get test descriptors associated to SKU
+        let skus = await skuRep.getSKUS();
+        for (let index = 0; index < skus.length; index++) {
+            let s = skus[index];
+            s.testDescriptors = await testDesRep.getTestDescriptorIdBySKUId(s.id);
+        }
         let message = skus
         return res.status(200).json(message);
     }catch(error){
@@ -18,12 +23,14 @@ const getSKUS = async(req, res) => {
 
 const getSingleSKU = async (req, res) => {
     const skuRep = new skuRepository();
+    const testDesRep = new TestDescriptorRepository()
     if(req.params.id.match(/^\d+$/) !== null){
         try{
             const skuFound = await skuRep.getSkuById(req.params.id);
             let message;
             if(skuFound.length !== 0)
             {
+                skuFound[0].testDescriptors = await testDesRep.getTestDescriptorIdBySKUId(skuFound[0].id);
                 message = skuFound[0];
                 return res.status(200).json(message);
             }else{
@@ -59,12 +66,15 @@ const editSKU = async (req, res) => {
             if(skuFound.length !== 0)
             {
                 const position = await posRep.getPOSbyID(skuFound[0].position);
-                if(req.body.newWeight <= position[0].maxWeight && req.body.newVolume <= position[0].maxVolume)
-                {
-                    const modified = await skuRep.editSKU(req.body, req.params.id);
-                    return modified ? res.status(200).send('Success') : res.status(404).send();
+                if(position.length !== 0){
+                    if(req.body.newWeight <= position[0].maxWeight && req.body.newVolume <= position[0].maxVolume)
+                    {
+                        const modified = await skuRep.editSKU(req.body, req.params.id);
+                        return modified ? res.status(200).send('Success') : res.status(404).send();
+                    }
+                    return res.status(422).send("Unprocessable entity");
                 }
-                return res.status(422).send("Unprocessable entity");
+                return res.status(404).send("No position found");
             }
             return res.status(404).send();
         }catch(error){
@@ -112,12 +122,8 @@ const editSKUPosition = async (req, res) => {
 const deleteSKU = async (req, res) => {
     const skuRep = new skuRepository();
     try{
-        const skuFound = await skuRep.getSkuById(req.params.id);
-        if(skuFound.length !== 0){
-            const deleted = await skuRep.deleteSKU(req.params.id);
-            return deleted ? res.status(204).send('Deleted') : res.status(422).send('Unprocessable Entity');
-        }
-        return res.status(422).send("Unprocessable entity");
+        const deleted = await skuRep.deleteSKU(req.params.id);
+        return deleted ? res.status(204).send('Deleted') : res.status(422).send('Unprocessable Entity');
     }catch(error){
         return res.status(503).send(error);
     }

@@ -26,7 +26,7 @@ db.run("PRAGMA foreign_keys = ON");
 
 this.newTableRETURN = () =>{
     return new Promise((resolve, reject) => {
-        const sql = 'CREATE TABLE IF NOT EXISTS returnOrder(id INTEGER PRIMARY KEY AUTOINCREMENT, returnDate DATE, restockOrderId INT FOREIGN KEY(restockOrderId) REFERENCES restockOrder(id))';
+        const sql = 'CREATE TABLE IF NOT EXISTS returnOrder(id INTEGER PRIMARY KEY AUTOINCREMENT, returnDate DATE, restockOrderId INT, FOREIGN KEY(restockOrderId) REFERENCES restockOrder(id) ON DELETE CASCADE)';
         db.run(sql, (err) => {
             if(err)
             {
