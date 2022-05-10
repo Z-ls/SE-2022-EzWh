@@ -14,6 +14,7 @@
   },
   "scripts": {
     "apiTest": "./node_modules/.bin/mocha test --exit",
-    "test": "node_modules/.bin/jest"
+    "test": "node_modules/.bin/jest",
+    "start": "nodemon server.js"
   }
 }
