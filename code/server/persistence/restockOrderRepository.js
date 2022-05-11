@@ -190,7 +190,7 @@ class restockOrderRepository {
 
     return new Promise(async (resolve) => {
       // validation stuff
-      if (ro.products.length === 0 || !ro.products.every(p => typeof p.qty === 'number' && typeof p.price === 'number' && typeof p.description === 'string')) {
+      if (!this.dateHandler.isDateAndTimeValid(ro.issueDate) || ro.products.length === 0 || !ro.products.every(p => typeof p.qty === 'number' && typeof p.price === 'number' && typeof p.description === 'string')) {
         resolve({ code: 422, data: "Validation of request body failed" });
         return;
       }

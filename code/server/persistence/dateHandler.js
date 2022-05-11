@@ -1,4 +1,6 @@
 const dayjs = require('dayjs');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+dayjs.extend(customParseFormat);
 
 class dateHandler {
   /**
@@ -14,6 +16,13 @@ class dateHandler {
    * @returns {string} the string with format YYYY/MM/DD HH:mm
    */
   DayjsToDateAndTime = (date) => date.format('YYYY/MM/DD HH:mm');
+
+  /**
+   * 
+   * @param {string} date with format `YYYY/MM/DD HH:mm`
+   * @returns {boolean}
+   */
+  isDateAndTimeValid = (date) => dayjs(date, 'YYYY/MM/DD HH:mm', true).isValid();
 }
 
 module.exports = dateHandler;
