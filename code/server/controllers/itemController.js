@@ -45,7 +45,7 @@ const addItem = async(req, res) =>{
 
 const editItem = async(req, res) =>{
     const itemRep = new itemRepository();
-    if(req.params.id.match(/^\d+$/) !== null && req.params.newDescription !== undefined && req.params.newPrice !== undefined){
+    if(req.params.id.match(/^\d+$/) !== null && req.body.newDescription !== undefined && req.body.newPrice !== undefined){
         try{
             let item = await itemRep.getSingleItem(req.params.id);
             if(item.length !==0)
@@ -64,12 +64,8 @@ const editItem = async(req, res) =>{
 const deleteItem = async(req, res) =>{
     const itemRep = new itemRepository();
     try{
-        const itemFound = await itemRep.getSingleItem(req.params.id);
-        if(itemFound.length !== 0){
-            let message = await itemRep.deleteItem(req.params.id);
-            return message ? res.status(204).send() : res.status(422).send();
-        }
-        return res.status(422).send("Unprocessable entity");
+        let message = await itemRep.deleteItem(req.params.id);
+        return message ? res.status(204).send() : res.status(422).send();
     }catch(error){
         return res.status(503).send(error);
     }

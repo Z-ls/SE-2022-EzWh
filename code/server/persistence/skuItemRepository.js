@@ -26,7 +26,7 @@ function skuItemRepository(){
 
     this.newTableSKUItem = () =>{
         return new Promise((resolve, reject) => {
-            const sql = 'CREATE TABLE IF NOT EXISTS SKUITEM(RFID VARCHAR PRIMARY KEY, SKUId INTEGER, Available INTEGER, DateOfStock DATE, FOREIGN KEY(SKUId) REFERENCES SKU(id));';
+            const sql = 'CREATE TABLE IF NOT EXISTS SKUITEM(RFID VARCHAR PRIMARY KEY, SKUId INTEGER, Available INTEGER, DateOfStock DATE, FOREIGN KEY(SKUId) REFERENCES SKU(id) ON DELETE CASCADE);';
             db.run(sql, (err) => {
                 if(err)
                 {
@@ -63,7 +63,10 @@ function skuItemRepository(){
                     reject(err);
                 }else{
                     resolve(rows.map((s)=>{
+                        if(s.DateOfStock !== null)
                         return new SKUItem(s.RFID,s.SKUId, s.Available, dayjs(s.DateOfStock).format("YYYY/MM/DD HH:mm"));
+                        else
+                        return new SKUItem(s.RFID,s.SKUId, s.Available, s.DateOfStock);
                     }));
                 }
             });
@@ -79,7 +82,10 @@ function skuItemRepository(){
                     reject(err);
                 }else{
                     resolve(rows.map((s)=>{
+                        if(s.DateOfStock !== null)
                         return new SKUItem(s.RFID,s.SKUId, s.Available, dayjs(s.DateOfStock).format("YYYY/MM/DD HH:mm"));
+                        else
+                        return new SKUItem(s.RFID,s.SKUId, s.Available, s.DateOfStock);
                     }));
                 }
             });
@@ -120,11 +126,14 @@ function skuItemRepository(){
     {
         return new Promise((resolve, reject) =>{
             const sql = 'DELETE FROM SKUITEM WHERE RFID = ?';
-            db.run(sql,rfid,(err)=>{
+            db.run(sql,rfid,function(err){
                 if(err)
                 {
                     reject(err);
                 }else{
+                    if(this.changes ===0)
+                    resolve(false);
+                    else
                     resolve(true);
                 }
             });

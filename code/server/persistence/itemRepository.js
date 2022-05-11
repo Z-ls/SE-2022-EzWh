@@ -25,7 +25,7 @@ function itemRepository(){
 
     this.newTableItem = () =>{
         return new Promise((resolve, reject) => {
-            const sql = 'CREATE TABLE IF NOT EXISTS ITEM(id INTEGER PRIMARY KEY, description VARCHAR, price REAL, SKUId INTEGER, supplierId INTEGER, FOREIGN KEY(SKUId) REFERENCES SKU(id));';
+            const sql = 'CREATE TABLE IF NOT EXISTS ITEM(id INTEGER, description VARCHAR, price REAL, SKUId INTEGER, supplierId INTEGER, PRIMARY KEY(id,supplierId), FOREIGN KEY(supplierId) REFERENCES user(id) ON DELETE CASCADE, FOREIGN KEY(SKUId) REFERENCES SKU(id));';
             db.run(sql, (err) => {
                 if(err)
                 {
@@ -91,6 +91,7 @@ function itemRepository(){
             db.run(sql,[item.id,item.description,item.price,item.SKUId,item.supplierId],(err)=>{
                 if(err)
                 {
+                    console.log(err)
                     resolve(false);
                 }else{
                     resolve(true);
@@ -116,11 +117,14 @@ function itemRepository(){
     this.deleteItem = (id) => {
         return new Promise((resolve, reject) =>{
             const sql = 'DELETE FROM ITEM WHERE id = ?';
-            db.run(sql,id,(err)=>{
+            db.run(sql,id,function(err){
                 if(err)
                 {
                     reject(err);
                 }else{
+                    if(this.changes === 0)
+                    resolve(false);
+                    else
                     resolve(true);
                 }
             });

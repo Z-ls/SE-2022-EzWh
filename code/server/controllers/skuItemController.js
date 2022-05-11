@@ -25,7 +25,7 @@ const getSKUsBySKUId = async(req, res) =>{
             return message.length !== 0 ? res.status(200).json(message) : res.status(404).send();
         }
         return res.status(422).send("Unprocessable entity");
-    }catch{
+    }catch(error){
         return res.status(500).send(error);
     }
 }
@@ -36,7 +36,7 @@ const getSingleSKUItem = async(req, res) =>{
         try{
             let message = await skuItemRep.getSingleSKUItem(req.params.rfid);
             return message.length !== 0 ? res.status(200).json(message[0]) : res.status(404).send();
-        }catch{
+        }catch(error){
             return res.status(500).send(error);
         }
     }
@@ -49,7 +49,7 @@ const addSKUItem = async(req, res) =>{
         try{
             let message = await skuItemRep.addSKUItem(req.body);
             return message ? res.status(201).send() : res.status(404).send();
-        }catch{
+        }catch(error){
             return res.status(503).send(error);
         }
     }
@@ -67,7 +67,7 @@ const editSKUItem = async(req, res) =>{
                 return message ? res.status(200).send() : res.status(422).send();
             }  
             return res.status(404).send();
-        }catch{
+        }catch(error){
             return res.status(503).send(error);
         }
     }
@@ -77,13 +77,9 @@ const editSKUItem = async(req, res) =>{
 const deleteSKUItem = async(req, res) =>{
     const skuItemRep = new skuItemRepository();
     try{
-        let sku = await skuItemRep.getSingleSKUItem(req.params.rfid);
-        if(sku.length !==0){
-            let message = await skuItemRep.deleteSKUItem(req.params.rfid);
-            return message ? res.status(204).send() : res.status(422).send();
-        }
-        return res.status(422).send("Unprocessable entity");
-    }catch{
+        let message = await skuItemRep.deleteSKUItem(req.params.rfid);
+        return message ? res.status(204).send() : res.status(422).send();
+    }catch(error){
         return res.status(503).send(error);
     }
 }
