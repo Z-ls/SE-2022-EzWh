@@ -45,8 +45,13 @@ class RestockOrderController {
   }
 
   addSKUItems = async (req, res) => {
-    const result = await this.RORepo.addSKUItems(req.params.id, req.body.skuItems);
-    return res.status(result.code).end();
+    try {
+      const result = await this.RORepo.addSKUItems(req.params.id, req.body.skuItems);
+      return res.status(result.code).end();
+    }
+    catch (e) {
+      return res.status(e.code).end();
+    }
   }
 
   addTransportNote = async (req, res) => {

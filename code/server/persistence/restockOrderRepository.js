@@ -3,6 +3,7 @@ const { RestockOrder, possibleStates } = require('../model/restockOrder');
 const dayjs = require('dayjs');
 const dateHandler = require('./dateHandler');
 const itemRepository = require('./itemRepository');
+const skuItemRepository = require('./skuItemRepository');
 
 // TODO : validate json structure for each API.
 
@@ -16,6 +17,7 @@ class restockOrderRepository {
     this.db.run("PRAGMA foreign_keys = ON"); // necessary to make sql lite to comply with the foreign key constraints
     this.dateHandler = new dateHandler();
     this.itemRepo = new itemRepository();
+    this.skuitemRepository = new skuItemRepository();
   }
 
   /**
@@ -61,7 +63,7 @@ class restockOrderRepository {
             reject(err);
           else
             resolve(
-              rows.map(row => ({ SKUId: row.SKUId, description: row.description, price: row.price, quantity: row.quantity }))
+              rows.map(row => ({ SKUId: row.SKUId, description: row.description, price: row.price, qty: row.quantity }))
             );
         })
     })
@@ -75,7 +77,7 @@ class restockOrderRepository {
   getOrderRFIDs(id) {
     return new Promise((resolve) => {
       const query = "SELECT SKUITEM.RFID, SKUId FROM restockTransactionSKU join SKUITEM on restockTransactionSKU.RFID=SKUITEM.RFID WHERE restockTransactionSKU.idRestockOrder=?";
-      this.db.all(query, [id],
+      this.db.all(query, id,
         (_err, rows) => {
           resolve(
             rows.map(row => ({ SKUId: row.SKUId, rfid: row.RFID }))
@@ -176,7 +178,12 @@ class restockOrderRepository {
 
     function addProducts(idRO, skuid, quantity, itemRepo, db) {
       return new Promise(async (resolve, reject) => {
-        const item = await itemRepo.getItemsBySupplierAndSKUId({ supplierId: ro.supplierId, SKUId: skuid });
+        const item = await itemRepo.getItemsBySupplierAndSKUId({ supplierId: ro.supplierId, SKUId: skuid, id: '' });
+        if (!item[0]) {
+          // capisci perche questo rompe il cazzo
+          reject("Error while getting item");
+          return;
+        }
         const query = "INSERT INTO restockTransactionItem (idRestockOrder, quantity, idItem) VALUES(?,?,?)";
         db.run(query, [idRO, quantity, item[0].id], (err) => {
           if (err)
@@ -265,11 +272,54 @@ class restockOrderRepository {
   /**
    * Given an array of objects {SKUId, RFID}, it associates the skuItems to the restock order.
    * @param {number} id 
-   * @param {{SKUId, RFID}[]} skuItems 
+   * @param {{SKUId:number, rfid:string}[]} skuItems 
    * @returns 
    */
   addSKUItems(id, skuItems) {
-    return new Promise(async (resolve) => {
+
+    /**
+     * It adds the skuitem object to SKUITEM table.
+     * @param {} addSKUItem
+     * @param {} dayjsToDateAndTime 
+     * @returns 
+     */
+    function addToSKUITEMTable(skuItem, addSKUItem, dayjsToDateAndTime) {
+      return new Promise(async (resolve, reject) => {
+        skuItem.DateOfStock = dayjsToDateAndTime(dayjs());
+        Object.defineProperty(skuItem, "RFID", Object.getOwnPropertyDescriptor(skuItem, "rfid"));   // It renames the 'rfid' propery into 'RFID', as requested by addSKUItem method.
+        try {
+          const res = await addSKUItem(skuItem);
+          if (res === false) {
+            throw { code: 422 };
+          }
+          resolve(true);
+        }
+        catch (e) {
+          reject({ code: e.code });
+        }
+      });
+    };
+
+    /**
+     * This function adds the skuitems (rfid) to restockTransactionSKU
+     */
+    const addToTransactionSKUTable = () => {
+      return new Promise((resolve, reject) => {
+        const query = ("INSERT INTO restockTransactionSKU (idRestockOrder, RFID) values " + "(?,?),".repeat(skuItems.length)).slice(0, -1);
+        this.db.run(
+          query,
+          skuItems.flatMap(s => [id, s.rfid]),
+          (err) => {
+            if (err)
+              return reject({ code: 503 });
+            else
+              return resolve({ code: 200 });
+          }
+        );
+      })
+    }
+
+    return new Promise(async (resolve, reject) => {
       // VALIDATION
       if (typeof parseInt(id) !== 'number' || !skuItems.every(s => typeof s.SKUId === 'number' && typeof s.rfid === 'string')) {
         resolve({ code: 422 });
@@ -288,18 +338,16 @@ class restockOrderRepository {
         return;
       }
       // END VALIDATION
-      const query = ("INSERT INTO restockTransactionSKU (idRestockOrder, RFID) values " + "(?,?),".repeat(skuItems.length)).slice(0, -1);
-      this.db.run(
-        query,
-        skuItems.flatMap(s => [id, s.rfid]),
-        (err) => {
-          if (err)
-            resolve({ code: 503 });
-          else
-            resolve({ code: 200 });
+      try {
+        const resAddingSKUItems = await Promise.all(skuItems.map(skuItem => addToSKUITEMTable(skuItem, this.skuitemRepository.addSKUItem, this.dateHandler.DayjsToDateAndTime)));
+        const result = await addToTransactionSKUTable();
+        resolve({ code: result.code });
+      }
+      catch (e) {
+        reject({ code: e.code });
+      }
 
-        }
-      )
+
     })
   }
 
