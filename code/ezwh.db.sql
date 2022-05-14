@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS "employee";
 CREATE TABLE IF NOT EXISTS "employee" (
 	"idUser"	INTEGER,
 	"salary"	REAL NOT NULL,
-	FOREIGN KEY("idUser") REFERENCES "user"("idUser")
+	FOREIGN KEY("idUser") REFERENCES "user" ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS "restockTransaction";
 CREATE TABLE IF NOT EXISTS "restockTransaction" (

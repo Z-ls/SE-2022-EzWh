@@ -5,7 +5,8 @@ const skuItems = require('./routes/skuItems');
 const item = require('./routes/item');
 const restockOrder = require('./routes/restockOrder');
 const pos = require('./routes/position');
-const returnOrder = require ('./routes/returnOrder')
+const returnOrder = require('./routes/returnOrder');
+const user = require('./routes/user');
 
 // init express
 const app = new express();
@@ -16,12 +17,13 @@ const tdRouter = require('./routes/testDescriptorRoutes');
 const trRouter = require('./routes/testResultRoutes');
 app.use(tdRouter);
 app.use(trRouter);
-app.use('/api',returnOrder);
-app.use('/api',pos);
+app.use('/api', returnOrder);
+app.use('/api', pos);
 app.use('/api', skus);
 app.use('/api', skuItems);
 app.use('/api', item);
 app.use('/api', restockOrder);
+app.use('/api', user);
 
 // activate the server
 app.listen(port, () => {
