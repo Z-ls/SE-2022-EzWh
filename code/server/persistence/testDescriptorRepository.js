@@ -3,7 +3,7 @@ class TestDescriptorRepository {
     sqlite = require('sqlite3');
 
     constructor() {
-        this.db = new this.sqlite.Database("EzWh.db", (err) => {
+        this.db = new this.sqlite.Database("EzWh_Test.db", (err) => {
             if (err) throw err;
         });
         this.db.run("PRAGMA foreign_keys = ON");
@@ -29,7 +29,8 @@ class TestDescriptorRepository {
                 'name VARCHAR, ' +
                 'procedureDescription VARCHAR, ' +
                 'idSKU INTEGER, ' +
-                'FOREIGN KEY(idSKU) REFERENCES SKU(id));';
+                'FOREIGN KEY(idSKU) REFERENCES SKU(id)' +
+                ');';
             this.db.run(sql, (err) => {
                 if (err) {
                     reject(err);
@@ -79,8 +80,8 @@ class TestDescriptorRepository {
                     return;
                 }
                 if (this.changes === 0) {
-                    reject(err);
-                    return "404";
+                    reject(404);
+                    return;
                 }
                 resolve(id);
             });
@@ -105,12 +106,12 @@ class TestDescriptorRepository {
             const sql = 'SELECT * FROM TestDescriptor WHERE id = ?';
             this.db.get(sql, [id], (err, row) => {
                 if (err) {
-                    reject(err);
-                    return "500";
+                    reject(503);
+                    return;
                 }
                 if (!row) {
-                    reject(err);
-                    return "404";
+                    reject(404);
+                    return;
                 }
                 resolve(row);
             });
@@ -123,13 +124,13 @@ class TestDescriptorRepository {
             this.db.run(sql, [id], function (err) {
                 if (err) {
                     reject(err);
-                    return;
+                    return "503";
                 }
                 if(this.changes === 0) {
                     reject(err);
                     return "404";
                 }
-                resolve(true);
+                resolve(id);
             });
         });
     }
@@ -145,7 +146,7 @@ class TestDescriptorRepository {
                 }
                 if (!row) {
                     reject(err);
-                    return "404";
+                    return;
                 }
                 resolve(row);
             });
