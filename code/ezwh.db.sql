@@ -34,16 +34,15 @@ CREATE TABLE IF NOT EXISTS "position" (
 	"occupiedVolume"	REAL
 );
 DROP TABLE IF EXISTS "SKU";
-CREATE TABLE IF NOT EXISTS "SKU" (
-	"id"	INTEGER,
-	"description"	VARCHAR,
-	"weight"	REAL,
-	"volume"	REAL,
-	"notes"	VARCHAR,
-	"position"	VARCHAR,
-	"availablequantity"	INTEGER,
-	"price"	REAL,
-	PRIMARY KEY("id" AUTOINCREMENT)
+CREATE TABLE IF NOT EXISTS SKU(
+	id INTEGER PRIMARY KEY AUTOINCREMENT, 
+	description VARCHAR, 
+	weight REAL, 
+	volume REAL, 
+	notes VARCHAR, 
+	position VARCHAR, 
+	availablequantity INTEGER, 
+	price REAL
 );
 DROP TABLE IF EXISTS "internalTransaction";
 CREATE TABLE IF NOT EXISTS "internalTransaction" (
@@ -80,16 +79,16 @@ CREATE TABLE IF NOT EXISTS "SKUITEM" (
 	PRIMARY KEY("RFID"),
 	FOREIGN KEY("SKUId") REFERENCES "SKU"("id") ON DELETE CASCADE
 );
-DROP TABLE IF EXISTS "testResult";
-CREATE TABLE IF NOT EXISTS "testResult" (
-	"idTestDescriptor"	integer,
-	"RFID"	VARCHAR,
-	"Date"	date,
-	"Result"	varchar,
-	FOREIGN KEY("RFID") REFERENCES "SKUITEM"("RFID") ON DELETE CASCADE,
-	FOREIGN KEY("idTestDescriptor") REFERENCES "TestDescriptor"("id") ON DELETE CASCADE,
-	PRIMARY KEY("idTestDescriptor","RFID")
-);
+DROP TABLE IF EXISTS "TestResult";
+CREATE TABLE IF NOT EXISTS "TestResult"( 
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,  
+  "idTestDescriptor" INTEGER NOT NULL,  
+  "rfid" VARCHAR NOT NULL,  
+  "Date" DATE NOT NULL,  
+  "Result" VARCHAR NOT NULL, 
+  FOREIGN KEY(idTestDescriptor) REFERENCES TestDescriptor(id), 
+  FOREIGN KEY(rfid) REFERENCES SkuItem(RFID)
+  );
 DROP TABLE IF EXISTS "user";
 CREATE TABLE IF NOT EXISTS "user" (
 	"id"	integer,
@@ -101,15 +100,15 @@ CREATE TABLE IF NOT EXISTS "user" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "ITEM";
-CREATE TABLE IF NOT EXISTS "ITEM" (
-	"id"	INTEGER primary key AUTOINCREMENT,
-	"description"	VARCHAR,
-	"price"	REAL,
-	"SKUId"	INTEGER,
-	"supplierId"	INTEGER not null,
-	FOREIGN KEY("SKUId") REFERENCES "SKU"("id") ON DELETE CASCADE,
-	unique("id","supplierId"),
-	FOREIGN KEY("supplierId") REFERENCES "user"("id") ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS "ITEM"(
+	"id" INTEGER, 
+	"description" VARCHAR, 
+	"price" REAL,
+	"SKUId" INTEGER,
+	"supplierId" INTEGER,
+	PRIMARY KEY("id","supplierId"),
+	FOREIGN KEY("supplierId") REFERENCES "user"("id") ON DELETE CASCADE, 
+	FOREIGN KEY("SKUId") REFERENCES "SKU"("id")
 );
 DROP TABLE IF EXISTS "returnOrderTransaction";
 CREATE TABLE IF NOT EXISTS "returnOrderTransaction" (
@@ -124,6 +123,7 @@ CREATE TABLE IF NOT EXISTS "restockTransactionItem" (
 	"quantity"	INTEGER NOT NULL DEFAULT 1,
 	"idRestockOrder"	INTEGER NOT NULL,
 	"idItem"	INTEGER NOT NULL,
+	FOREIGN KEY("idItem") REFERENCES "ITEM"("id") ON DELETE CASCADE,
 	FOREIGN KEY("idRestockOrder") REFERENCES "restockOrder"("id") ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS "restockTransactionSKU";
@@ -155,7 +155,7 @@ INSERT INTO "SKU" VALUES (2,'Edited sku',100.0,50.0,'first SKU','800234523412',5
 INSERT INTO "SKU" VALUES (12,'a new sku',100.0,50.0,'1333',NULL,50,10.99);
 INSERT INTO "TestDescriptor" VALUES (1,'test1','qfqowij',2);
 INSERT INTO "SKUITEM" VALUES ('4567',2,1,'2022/05/04 18:49');
-INSERT INTO "testResult" VALUES (1,'4567','2021/12/20','false');
+INSERT INTO "TestResult" VALUES (1,'4567','2021/12/20','false');
 INSERT INTO "user" VALUES (1,'francesco@gmai.com','Francesco','Virgolini','fiiium','supplier');
 INSERT INTO "ITEM" VALUES (12,'a new sku',10.99,12,1);
 INSERT INTO "ITEM" VALUES (13,'another new item',11.99,2,1);
