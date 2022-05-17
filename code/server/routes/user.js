@@ -9,5 +9,6 @@ router.get('/users', uController.getAllUser);
 router.post('/newUser', uController.addUser);
 router.put('/users/:username', uController.changeRights);
 router.delete('/users/:username/:type', uController.delete);
+router.get('/userinfo', uController.return200);
 
 module.exports = router;

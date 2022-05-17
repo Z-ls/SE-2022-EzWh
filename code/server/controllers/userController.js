@@ -75,6 +75,10 @@ class userController {
       return res.status(e.code).end();
     }
   }
+
+  return200 = async (_req, res) => {
+    return res.status(200).end();
+  }
 }
 
 module.exports = userController;
