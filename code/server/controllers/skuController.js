@@ -67,7 +67,7 @@ const editSKU = async (req, res) => {
             {
                 const position = await posRep.getPOSbyID(skuFound[0].position);
                 if(position.length !== 0){
-                    if(req.body.newWeight <= position[0].maxWeight && req.body.newVolume <= position[0].maxVolume)
+                    if(parseFloat(req.body.newWeight) * parseFloat(req.body.newAvailableQuantity) <= position[0].maxWeight && parseFloat(req.body.newVolume) * parseFloat(req.body.newAvailableQuantity) <= position[0].maxVolume)
                     {
                         const modified = await skuRep.editSKU(req.body, req.params.id);
                         return modified ? res.status(200).send('Success') : res.status(404).send();
@@ -102,7 +102,7 @@ const editSKUPosition = async (req, res) => {
                         message = "Position already assigned to SKU";
                         return res.status(422).send(message);
                     }else{
-                        if(skuFound[0].weight <= position[0].maxWeight && skuFound[0].volume <= position[0].maxVolume)
+                        if(skuFound[0].weight * skuFound[0].availableQuantity <= position[0].maxWeight && skuFound[0].volume * skuFound[0].availableQuantity <= position[0].maxVolume)
                         {
                             const modified = await skuRep.editSKUPosition(req.body.position, req.params.id);
                             return modified ? res.status(200).send('Success') : res.status(404).send();
