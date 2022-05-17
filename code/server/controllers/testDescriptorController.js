@@ -16,7 +16,7 @@ const getTestDescriptors = async (req, res, err) => {
 // 422 on IDs failing validations
 // 404 on empty result
 const getTestDescriptorById = async (req, res, err) => {
-    if (isNaN(req.params.id))
+    if (isNaN(req.params.id) || req.params.id <= 0)
         return res.status(422).send("validation of id failed");
     let ret = await db.getTestDescriptor(req.params.id).catch(err);
     if(!ret)
@@ -31,27 +31,28 @@ const getTestDescriptorById = async (req, res, err) => {
     }
 }
 
-//POST: New Test Descriptor
+// POST: New Test Descriptor
 // ID of added descriptor on success
 // 422 on failed ID validation
 // 404 on non-existent SKU
 // 503 on generic error
 const addTestDescriptor =  async (req, res, err) => {
     if (typeof (req.body.idSKU) !== "number" ||
+        req.body.idSKU <= 0 ||
         !req.body.name ||
         !req.body.procedureDescription)
         return res.status(422).send("validation of request body failed");
     let SKU = await db.getSKUById(req.body.idSKU).catch(err);
     if (SKU === "503")
-        return res.status(503).send("generic error");
-    if (SKU === "404")
+        return res.status(503).sendStatus();
+    if (!SKU) 
         return res.status(404).send("no sku associated idSKU");
     if (!await db.newTestDescriptorTable().catch(err))
-        return res.status(503).send("generic error");
+        return res.status(503).sendStatus();
     let ret = await db.addTestDescriptor(req.body).catch(err);
     return ret ?
-        res.status(201).json(ret) :
-        res.status(503).send("generic error");
+        res.status(201).sendStatus() :
+        res.status(503).sendStatus();
 }
 
 // PUT: Update Test Descriptor
@@ -61,25 +62,31 @@ const addTestDescriptor =  async (req, res, err) => {
 // 503 on generic error
 const updateTestDescriptor = async (req, res, err) => {
     if (isNaN(req.body.newIdSKU) ||
+        req.body.idSKU <= 0 ||
         !req.body.newName ||
         !req.body.newProcedureDescription
     )
         return res.status(422).send("validation of request body");
-    if (isNaN(req.params.id))
+    if (isNaN(req.params.id) || req.params.id <= 0)
         return res.status(422).send("validation of id failed");
-    let SKU = await db.getSKUById(req.body.idSKU).catch(err);
-    if (SKU === "503")
-        return res.status(503).send("generic error");
-    if (SKU === "404")
+    let SKU = await db.getSKUById(req.body.newIdSKU).catch(
+        err => err === 404 ? 
+            res.status(404).send("no sku associated idSKU").end() :
+            res.status(503).send("generic error").end()
+    );
+    // if (SKU === "503")
+    //     return res.status(503).send("generic error");
+    if (!SKU)
         return res.status(404).send("no sku associated idSKU");
-    if (!await db.getTestDescriptor(req.params.id).catch(err))
+    let idIsValid = await db.getTestDescriptor(req.params.id).catch(err);
+    if (idIsValid === "503")
+        return res.status(503).send("generic error");
+    if (!idIsValid)
         return res.status(404).send("no id associated test descriptor");
     let ret = await db.updateTestDescriptor(req.body, req.params.id).catch(err);
     if (!ret)
         return res.status(503).send("generic error");
-    // if (ret === "404")
-    //     return res.status(404).send("no test descriptor found");
-    return res.status(503).json(req.body);
+    return res.json(req.body);
 }
 
 // DELETE: Delete Test Descriptor
@@ -88,14 +95,16 @@ const updateTestDescriptor = async (req, res, err) => {
 // 404 on non-existent descriptor
 // 503 on generic error
 const deleteTestDescriptor = async(req, res, err) => {
-    if (isNaN(req.params.id))
+    if (isNaN(req.params.id) || req.params.id <= 0)
         return res.status(422).send("validation of id failed");
     let idIsValid = await db.getTestDescriptor(req.params.id).catch(err);
+    if (idIsValid === "503")
+        return res.status(503).send("generic error");
     if (!idIsValid)
         return res.status(404).send("no id associated test descriptor");
     let ret = await db.deleteTestDescriptor(req.params.id).catch(err);
     return ret ?
-        res.status(204).sendStatus() :
+        res.status(204).json(ret) :
         res.status(503).send("generic error");
 }
 

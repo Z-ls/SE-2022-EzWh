@@ -7,7 +7,7 @@ const db = new testResultRepository();
 // rfId ==SkuItem==> idSKU ==TestDescriptor==> idTestDescriptor ==TestResult==> Object.TestResult
 const getTestResults = async (req, res, err) => {
     // Validation for RFID.
-    if (isNaN(req.params.rfid))
+    if (isNaN(req.params.rfid) || req.params.rfid <= 0)
         return res.status(422).send("validation of request body or of rfid failed");
     let skuItem = await dbTd.getSKUItemByRfId(req.params.rfid).catch(err);
     if (skuItem === "500")
@@ -43,10 +43,10 @@ const getTestResults = async (req, res, err) => {
 // GET: Test Result By ID
 const getTestResultById = async (req, res, err) => {
     // Validation for RFID and Test Result ID.
-    if (isNaN(req.params.id))
+    if (isNaN(req.params.id) || req.params.id <= 0)
         return res.status(422).send("validation of id failed");
     // Validation for RFID.
-    if (isNaN(req.params.rfid))
+    if (isNaN(req.params.rfid) || req.params.rfid <= 0)
         return res.status(422).send("validation of rfid failed");
     // // Get list of SKU Items attached with verified RFID
     // let skuItem = await dbTd.getSKUItemByRfId(req.params.rfid).catch(err);
@@ -95,6 +95,7 @@ const getTestResultById = async (req, res, err) => {
 const addTestResult = async (req, res, err) => {
     // Validation for RFID and Request body.
     if (isNaN(req.body.rfid) ||
+        req.body.rfid <= 0 ||
         !req.body.idTestDescriptor ||
         !req.body.Date ||
         req.body.Result === undefined)
@@ -117,6 +118,7 @@ const addTestResult = async (req, res, err) => {
 const updateTestResult = async (req, res, err) => {
     // Validation for RFID and Request body.
     if (isNaN(req.params.rfid) ||
+        req.params.rfid <= 0 ||
         !req.body.newIdTestDescriptor ||
         !req.body.newDate ||
         req.body.newResult === undefined)
@@ -142,10 +144,10 @@ const updateTestResult = async (req, res, err) => {
 // DELETE: Delete Test Result
 const deleteTestResult = async (req, res, err) => {
     // Validation for ID
-    if (isNaN(req.params.id))
+    if (isNaN(req.params.id) || req.params.id <= 0)
         return res.status(422).send("validation of id failed");
     // Validation for RFID
-    if (isNaN(req.params.rfid))
+    if (isNaN(req.params.rfid) || req.params.rfid <= 0)
         return res.status(422).send("validation of rfid failed");
     // Check the authenticity of ID
     let tr = await db.getTestResultById(req.params.id).catch(err);
