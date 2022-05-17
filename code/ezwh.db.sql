@@ -2,9 +2,10 @@ BEGIN TRANSACTION;
 DROP TABLE IF EXISTS "internalOrder";
 CREATE TABLE IF NOT EXISTS "internalOrder" (
 	"idInternalOrder"	INTEGER,
-	"date"	TEXT NOT NULL,
-	"from"	TEXT NOT NULL,
+	"issueDate"	DATE NOT NULL,
+	"customerId"	INTEGER NOT NULL,
 	"state"	TEXT NOT NULL,
+	FOREIGN KEY("customerId") REFERENCES "user"("id") on delete cascade,
 	PRIMARY KEY("idInternalOrder" AUTOINCREMENT)
 );
 DROP TABLE IF EXISTS "employee";
@@ -48,10 +49,26 @@ DROP TABLE IF EXISTS "internalTransaction";
 CREATE TABLE IF NOT EXISTS "internalTransaction" (
 	"idInternalOrder"	INTEGER,
 	"idSKU"	InTEGER,
-	"quantity"	integer,
+	"qty"	integer,
 	FOREIGN KEY("idInternalOrder") REFERENCES "internalOrder"("idInternalOrder") ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY("idSKU") REFERENCES "SKU"("id") ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY("idInternalOrder","idSKU")
+);
+DROP TABLE IF EXISTS "SKUITEM";
+CREATE TABLE IF NOT EXISTS "SKUITEM" (
+	"RFID"	VARCHAR,
+	"SKUId"	INTEGER,
+	"Available"	INTEGER,
+	"DateOfStock"	DATE,
+	PRIMARY KEY("RFID"),
+	FOREIGN KEY("SKUId") REFERENCES "SKU"("id") ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS "internalOrderTransactionRFID";
+CREATE TABLE IF NOT EXISTS "internalOrderTransactionRFID" (
+	"IOid"	INTEGER NOT NULL,
+	"RFID"	VARCHAR,
+	FOREIGN KEY("IOid") REFERENCES "internalOrder"("idInternalOrder") on delete cascade,
+	FOREIGN KEY("RFID") REFERENCES "SKUITEM"("RFID") ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS "TestDescriptor";
 CREATE TABLE IF NOT EXISTS "TestDescriptor" (
@@ -69,15 +86,6 @@ CREATE TABLE IF NOT EXISTS "returnOrder" (
 	"restockOrderId"	INT,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("restockOrderId") REFERENCES "restockOrder"("id") ON DELETE CASCADE
-);
-DROP TABLE IF EXISTS "SKUITEM";
-CREATE TABLE IF NOT EXISTS "SKUITEM" (
-	"RFID"	VARCHAR,
-	"SKUId"	INTEGER,
-	"Available"	INTEGER,
-	"DateOfStock"	DATE,
-	PRIMARY KEY("RFID"),
-	FOREIGN KEY("SKUId") REFERENCES "SKU"("id") ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS "TestResult";
 CREATE TABLE IF NOT EXISTS "TestResult"( 
