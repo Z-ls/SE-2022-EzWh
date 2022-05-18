@@ -68,7 +68,6 @@ body('newAvailable').exists().matches(/^\d$/).toInt().isInt({min : 0, max : 1}),
 body('newDateOfStock').exists(), 
 async(req, res) =>{
     const errors = validationResult(req);
-    console.log(errors)
     if (errors.isEmpty() && (req.body.newDateOfStock === null|| new dateHandler().isDateValid(req.body.newDateOfStock) ||  new dateHandler().isDateAndTimeValid(req.body.newDateOfStock))) {
         try{
             let message = await skuItemController.editSKUItem(req.body, req.params.rfid);
