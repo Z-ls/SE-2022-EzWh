@@ -19,6 +19,14 @@ class dateHandler {
 
   /**
    * 
+   * @param {string} date with format `YYYY/MM/DD`
+   * @returns {boolean}
+   */
+   isDateValid = (date) => dayjs(date, 'YYYY/MM/DD', true).isValid();
+  
+
+  /**
+   * 
    * @param {string} date with format `YYYY/MM/DD HH:mm`
    * @returns {boolean}
    */

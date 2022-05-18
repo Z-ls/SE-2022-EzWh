@@ -57,7 +57,7 @@ function skuItemRepository(){
     this.getSKUsBySKUId = (id)=>
     {
         return new Promise((resolve,reject)=>{
-            const sql = 'SELECT * FROM SKUITEM WHERE SKUId = ?';
+            const sql = 'SELECT * FROM SKUITEM WHERE SKUId = ? AND Available = 1';
             db.all(sql, [id], (err, rows) =>{
                 if(err){
                     reject(err);
@@ -95,7 +95,7 @@ function skuItemRepository(){
     this.addSKUItem = (skuItem)=>
     {
         return new Promise((resolve, reject) =>{
-            const sql = 'INSERT INTO SKUITEM (RFID,SKUId,DateOfStock) VALUES(?,?,?)';
+            const sql = 'INSERT INTO SKUITEM (RFID,SKUId,DateOfStock,Available) VALUES(?,?,?,0)';
             db.run(sql,[skuItem.RFID, skuItem.SKUId,skuItem.DateOfStock],(err)=>{
                 if(err)
                 {
