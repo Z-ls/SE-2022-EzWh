@@ -91,7 +91,6 @@ function itemRepository(){
             db.run(sql,[item.id,item.description,item.price,item.SKUId,item.supplierId],(err)=>{
                 if(err)
                 {
-                    console.log(err)
                     resolve(false);
                 }else{
                     resolve(true);
