@@ -49,7 +49,8 @@ const editSKU = async (newSKU, id) => {
             }
             return 422;
         }
-        return 404;
+        const modified = await skuRep.editSKU(newSKU, id);
+        return modified ? 200 : 404;
     }
     return 404;
 }
