@@ -130,8 +130,9 @@ DROP TABLE IF EXISTS "restockTransactionItem";
 CREATE TABLE IF NOT EXISTS "restockTransactionItem" (
 	"quantity"	INTEGER NOT NULL DEFAULT 1,
 	"idRestockOrder"	INTEGER NOT NULL,
-	"idItem"	INTEGER NOT NULL,
-	FOREIGN KEY("idItem") REFERENCES "ITEM"("id") ON DELETE CASCADE,
+	"idItem"	INTEGER,
+	"supplierId" integer,
+	FOREIGN KEY("idItem", "supplierId") REFERENCES "ITEM"("id", "supplierId") ON DELETE CASCADE,
 	FOREIGN KEY("idRestockOrder") REFERENCES "restockOrder"("id") ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS "restockTransactionSKU";
