@@ -7,6 +7,7 @@ const restockOrder = require('./routes/restockOrder');
 const pos = require('./routes/position');
 const returnOrder = require('./routes/returnOrder');
 const user = require('./routes/user');
+const internalOrder = require('./routes/internalOrder');
 
 // init express
 const app = new express();
@@ -24,6 +25,7 @@ app.use('/api', skuItems);
 app.use('/api', item);
 app.use('/api', restockOrder);
 app.use('/api', user);
+app.use('/api', internalOrder);
 
 // activate the server
 app.listen(port, () => {

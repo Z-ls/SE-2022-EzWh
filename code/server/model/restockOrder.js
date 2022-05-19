@@ -5,7 +5,7 @@ class RestockOrder {
   /**
    * 
    * @param {number} id 
-   * @param {dayjs} issueDate 
+   * @param {dayjs} issueDate with format YYYY/MM/DD HH:mm
    * @param {string} state 
    * @param {{SKUid:number, description:string, price:number, qty:number}[]} products 
    * @param {number} supplierId 

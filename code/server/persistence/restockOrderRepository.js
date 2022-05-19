@@ -180,7 +180,6 @@ class restockOrderRepository {
       return new Promise(async (resolve, reject) => {
         const item = await itemRepo.getItemsBySupplierAndSKUId({ supplierId: ro.supplierId, SKUId: skuid, id: '' });
         if (!item[0]) {
-          // capisci perche questo rompe il cazzo
           reject("Error while getting item");
           return;
         }
