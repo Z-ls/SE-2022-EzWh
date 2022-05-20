@@ -23,7 +23,7 @@ async(req, res) =>{
     }
     try{
             let skuItems = await skuItemController.getSKUsBySKUId(req.params.id);
-            return skuItems.length !== 0 ? res.status(200).json(message) : res.status(404).send();  
+            return skuItems.length !== 0 ? res.status(200).json(skuItems) : res.status(404).send();  
     }catch(error){
         return res.status(500).send(error);
     }
