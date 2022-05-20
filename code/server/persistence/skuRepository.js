@@ -23,6 +23,19 @@ function skuRepository()
         });
     }
 
+    this.deleteSKUdata = () =>{
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM SKU';
+            db.run(sql, (err) => {
+                if(err){
+                    reject(err);
+                    return;
+                }
+                resolve(true);
+            });
+        });
+    }
+
     this.newTableSKU = () =>{
         return new Promise((resolve, reject) => {
             const sql = 'CREATE TABLE IF NOT EXISTS SKU(id INTEGER PRIMARY KEY AUTOINCREMENT, description VARCHAR, weight REAL, volume REAL, notes VARCHAR, position VARCHAR, availablequantity INTEGER, price REAL)';
@@ -112,6 +125,21 @@ function skuRepository()
         return new Promise((resolve,reject)=>{
             const sql = 'SELECT * FROM SKU WHERE id = ?';
             db.all(sql, id, (err, rows) =>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(rows.map((s)=>{
+                        return new SKU(s.id,s.description,s.weight,s.volume,s.notes,s.position, s.availablequantity, s.price);
+                    }));
+                }
+            });
+        });
+    }
+
+    this.getSKUByPosition = (position) =>{
+        return new Promise((resolve,reject)=>{
+            const sql = 'SELECT * FROM SKU WHERE position = ?';
+            db.all(sql, position, (err, rows) =>{
                 if(err){
                     reject(err);
                 }else{

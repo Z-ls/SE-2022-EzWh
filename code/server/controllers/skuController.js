@@ -65,7 +65,8 @@ const editSKUPosition = async (position, id) => {
     }else{
         const positionFound = await posRep.getPOSbyID(position);
         if(positionFound.length !==0){
-            if(skuFound[0].position === position){
+            const skuWithPosition = await skuRep.getSKUByPosition(position);
+            if(skuWithPosition.length !== 0){
                 //"Position already assigned to SKU
                 return 422;
             }else{
