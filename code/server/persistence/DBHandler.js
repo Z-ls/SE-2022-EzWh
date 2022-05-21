@@ -22,30 +22,17 @@ const userRepo = new userRepository();
 
 function DBHandler(){
 
-    this.dropAllTables = ()=>{
-        restockRepo.dropTable();
-        interRepo
-        returnRepo.dropTable();
-        testResRepo.dropTable();
-        testDesRepo.dropTable();
-        itemRepo.dropTable();
-        userRepo.dropTable();
-        skuItemRepo.dropTable();
-        skuRepo.dropTable();
-        posRepo.dropTable();
-    }
-
-    this.createAllTables = () =>{
-        posRepo.newTablePOS();
-        skuRepo.newTableSKU();
-        skuItemRepo.newTableSKUItem();
-        itemRepo.newTableItem();
-        userRepo.newTableUser();
-        testDesRepo.newTestDescriptorTable();
-        testResRepo.newTestResultTable();
-        returnRepo.newTableRETURN();
-        interRepo.
-        restockRepo.newTable();
+    this.deleteAllTablesData = async ()=>{
+        await restockRepo.deleteRestockOrderdata();
+        await interRepo.deleteInternalOrderdata();
+        await returnRepo.deleteReturnOrderdata();
+        await testResRepo.deleteTestResultdata();
+        await testDesRepo.deleteTestDescriptordata();
+        await itemRepo.deleteItemdata();
+        await userRepo.deleteUserdata();
+        await skuItemRepo.deleteSKUItemdata();
+        await skuRepo.deleteSKUdata();
+        await posRepo.deletePositiondata();
     }
 }
 

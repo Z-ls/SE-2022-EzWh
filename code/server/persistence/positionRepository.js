@@ -23,6 +23,19 @@ db.run("PRAGMA foreign_keys = ON");
         });
     }
 
+    this.deletePositiondata = () =>{
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM position; DELETE FROM sqlite_sequence WHERE name = "position";';
+            db.run(sql, (err) => {
+                if(err){
+                    reject(err);
+                    return;
+                }
+                resolve(true);
+            });
+        });
+    }
+
     this.newTablePOS = () =>{
         return new Promise((resolve, reject) => {
             const sql = 'CREATE TABLE IF NOT EXISTS position(positionID TEXT, aisleID TEXT, row TEXT, col TEXT, maxWeight REAL, maxVolume REAL, occupiedWeight REAL, occupiedVolume REAL)';

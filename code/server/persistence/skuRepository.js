@@ -25,7 +25,7 @@ function skuRepository()
 
     this.deleteSKUdata = () =>{
         return new Promise((resolve, reject) =>{
-            const sql = 'DELETE FROM SKU';
+            const sql = 'DELETE FROM SKU; DELETE FROM sqlite_sequence WHERE name = "SKU";';
             db.run(sql, (err) => {
                 if(err){
                     reject(err);

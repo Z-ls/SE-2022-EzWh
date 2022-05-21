@@ -2,15 +2,14 @@ const skuItem = require("../model/skuItem");
 const skuRepository = require("../persistence/skuRepository");
 const skuItemRepository = require("../persistence/skuItemRepository");
 const skuItemController = require("../controllers/skuItemController");
+const DBHandler = require("../persistence/DBHandler");
+const dbHAndler = new DBHandler();
 const skuRep = new skuRepository();
 const skuItemRep = new skuItemRepository();
 
 describe('edit SKUItem Controller',() =>{
     beforeEach(async () => {
-        await skuItemRep.dropTable();
-        await skuItemRep.newTableSKUItem();
-        await skuRep.dropTable();
-        await skuRep.newTableSKU();
+        await dbHAndler.deleteAllTablesData();
         await skuRep.addSKU({
             description : "a new sku",
             weight : 100,
@@ -26,11 +25,6 @@ describe('edit SKUItem Controller',() =>{
             DateOfStock:"2021/11/29 12:30"
                 }
             );
-    });
-
-    afterAll(async () => {
-        await skuItemRep.dropTable();
-        await skuRep.dropTable();
     });
 
     testEditSKUItem({newRFID:"22455678901234567890123456789024",newAvailable:1,newDateOfStock:"2021/11/29 12:30"},"22455678901234567890123456789024",undefined);

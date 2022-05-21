@@ -427,7 +427,18 @@ class restockOrderRepository {
     });
   }
 
-
+  deleteRestockOrderdata(){
+    return new Promise((resolve, reject) =>{
+        const sql = 'DELETE FROM restockOrder; DELETE FROM sqlite_sequence WHERE name = "restockOrder";';
+        this.db.run(sql, (err) => {
+            if(err){
+                reject(err);
+                return;
+            }
+            resolve(true);
+        });
+    });
+  }
 }
 
 module.exports = restockOrderRepository;

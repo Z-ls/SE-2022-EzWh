@@ -1,11 +1,12 @@
 const SKU = require("../model/sku");
-const skuRepository = require("../persistence/skuRepository")
+const skuRepository = require("../persistence/skuRepository");
+const DBHandler = require("../persistence/DBHandler");
 const skuRep = new skuRepository();
+const dbHAndler = new DBHandler();
 
 describe('edit SKU',() =>{
     beforeEach(async () => {
-        await skuRep.dropTable();
-        await skuRep.newTableSKU();
+        await dbHAndler.deleteAllTablesData();
         await skuRep.addSKU({
             description : "a new sku",
             weight : 100,
@@ -15,10 +16,6 @@ describe('edit SKU',() =>{
             availableQuantity : 50
                 }
             );
-    });
-
-    afterAll(async () => {
-        await skuRep.dropTable();
     });
 
     testEditSKU({
@@ -32,8 +29,7 @@ describe('edit SKU',() =>{
 
 describe('edit SKU Position',() =>{
     beforeEach(async () => {
-        await skuRep.dropTable();
-        await skuRep.newTableSKU();
+        await dbHAndler.deleteAllTablesData();
         await skuRep.addSKU({
             description : "a new sku",
             weight : 100,
@@ -43,10 +39,6 @@ describe('edit SKU Position',() =>{
             availableQuantity : 50
                 }
             );
-    });
-
-    afterAll(async () => {
-        await skuRep.dropTable();
     });
 
     testEditSKUPosition("800234523412",1000,[]);

@@ -24,6 +24,19 @@ function skuItemRepository(){
         });
     }
 
+    this.deleteSKUItemdata = () =>{
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM SKUITEM; DELETE FROM sqlite_sequence WHERE name = "SKUITEM";';
+            db.run(sql, (err) => {
+                if(err){
+                    reject(err);
+                    return;
+                }
+                resolve(true);
+            });
+        });
+    }
+
     this.newTableSKUItem = () =>{
         return new Promise((resolve, reject) => {
             const sql = 'CREATE TABLE IF NOT EXISTS SKUITEM(RFID VARCHAR PRIMARY KEY, SKUId INTEGER, Available INTEGER, DateOfStock DATE, FOREIGN KEY(SKUId) REFERENCES SKU(id) ON DELETE CASCADE);';

@@ -2,18 +2,15 @@ const Item = require("../model/Item");
 const skuRepository = require("../persistence/skuRepository");
 const itemRepository = require("../persistence/itemRepository");
 const userRepository = require("../persistence/userRepository");
+const DBHandler = require("../persistence/DBHandler");
+const dbHAndler = new DBHandler();
 const skuRep = new skuRepository();
 const itemRep = new itemRepository();
 const userRep = new userRepository();
 
 describe('add item',() =>{
     beforeEach(async () => {
-        await userRep.dropTable();
-        await userRep.newTableUser();
-        await itemRep.dropTable();
-        await itemRep.newTableItem();
-        await skuRep.dropTable();
-        await skuRep.newTableSKU();
+        await dbHAndler.deleteAllTablesData();
 
         await userRep.add({
             username:"user1@ezwh.com",
@@ -51,12 +48,6 @@ describe('add item',() =>{
         }
             );
     });
-
-    afterAll(async () => {
-        await userRep.dropTable();
-        await itemRep.dropTable();
-        await skuRep.dropTable();
-      });
 
     testAddItem({id : 12,description : "a new item 2",price : 11.99,SKUId : 1, supplierId : 1}, [new Item(12,"a new item",10.99,1,1)]);
     testAddItem({id : 12,description : "a new item 2",price : 11.99,SKUId : 1, supplierId : 3}, [new Item(12,"a new item",10.99,1,1)]);

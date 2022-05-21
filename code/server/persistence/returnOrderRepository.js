@@ -23,6 +23,19 @@ db.run("PRAGMA foreign_keys = ON");
         });
     }
 
+    this.deleteReturnOrderdata = () =>{
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM returnOrder; DELETE FROM sqlite_sequence WHERE name = "returnOrder";';
+            db.run(sql, (err) => {
+                if(err){
+                    reject(err);
+                    return;
+                }
+                resolve(true);
+            });
+        });
+    }
+
 this.newTableRETURN = () =>{
     return new Promise((resolve, reject) => {
         const sql = 'CREATE TABLE IF NOT EXISTS returnOrder(id INTEGER PRIMARY KEY AUTOINCREMENT, returnDate DATE, restockOrderId INT FOREIGN KEY(restockOrderId) REFERENCES restockOrder(id))';

@@ -214,9 +214,9 @@ class InternalOrderRepository {
     });
   }
 
-  dropTable = () =>{
+  deleteInternalOrderdata(){
     return new Promise((resolve, reject) =>{
-        const sql = 'DROP TABLE IF EXISTS internalOrder';
+        const sql = 'DELETE FROM internalOrder; DELETE FROM sqlite_sequence WHERE name = "internalOrder";';
         this.db.run(sql, (err) => {
             if(err){
                 reject(err);
@@ -225,29 +225,7 @@ class InternalOrderRepository {
             resolve(true);
         });
     });
-}
-
-newTableInternal = () =>{
-    return new Promise((resolve, reject) => {
-        const sql = 'CREATE TABLE IF NOT EXISTS internalOrder(
-          idInternalOrder	INTEGER,
-          issueDate	DATE NOT NULL,
-          customerId"	INTEGER NOT NULL,
-          "state"	TEXT NOT NULL,
-          FOREIGN KEY("customerId") REFERENCES "user"("id") on delete cascade,
-          PRIMARY KEY("idInternalOrder" AUTOINCREMENT)
-        );
-        ';
-        this.db.run(sql, (err) => {
-            if(err)
-            {
-                reject(err);
-                return;
-            }
-            resolve(this.lastID);
-        });
-    });
-}
+  } 
 }
 
 module.exports = InternalOrderRepository;

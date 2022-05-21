@@ -22,6 +22,19 @@ class TestDescriptorRepository {
         });
     }
 
+    deleteTestDescriptordata = () =>{
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM TestDescriptor; DELETE FROM sqlite_sequence WHERE name = "TestDescriptor";';
+            this.db.run(sql, (err) => {
+                if(err){
+                    reject(err);
+                    return;
+                }
+                resolve(true);
+            });
+        });
+    }
+
     newTestDescriptorTable() {
         return new Promise((resolve, reject) => {
             const sql = 'CREATE TABLE IF NOT EXISTS TestDescriptor(' +
