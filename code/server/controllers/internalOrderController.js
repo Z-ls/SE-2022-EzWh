@@ -2,6 +2,7 @@
 const { possibleStates } = require("../model/internalOrder");
 const dateHandler = require("../persistence/dateHandler");
 const InternalOrderRepository = require("../persistence/internalOrderRepository");
+const { isInt } = require("../persistence/validate");
 
 class InternalOrderController {
   constructor() {
@@ -61,11 +62,11 @@ class InternalOrderController {
     if (
       typeof req.body.issueDate !== 'string' ||
       !this.dateHandler.isDateAndTimeValid(req.body.issueDate) ||
-      typeof req.body.customerId !== 'number' ||
+      !isInt(req.body.customerId) ||
       isNaN(parseInt(req.body.customerId)) ||
       !req.body.products ||
       !Array.isArray(req.body.products) ||
-      !req.body.products.every(p => typeof p.SKUId === 'number' && typeof p.description === 'string' && typeof p.price === 'number' && typeof p.qty === 'number')
+      !req.body.products.every(p => isInt(p.SKUId) && typeof p.description === 'string' && typeof p.price === 'number' && isInt(p.qty))
     ) {
       return res.status(422).end();
     }
@@ -87,7 +88,7 @@ class InternalOrderController {
     if (req.body.newState === 'COMPLETED') {
       // validation
       console.log("estoy aqui");
-      if (!req.body.products || !Array.isArray(req.body.products) || !req.body.products.every(p => typeof p.SkuID === 'number' && typeof p.RFID === 'string')) {
+      if (!req.body.products || !Array.isArray(req.body.products) || !req.body.products.every(p => isInt(p.SkuID) && typeof p.RFID === 'string')) {
         return res.status(422).end();
       }
       else {
