@@ -181,6 +181,33 @@ class userRepository {
       );
     });
   }
+
+  dropTable = () =>{
+    return new Promise((resolve, reject) =>{
+        const sql = 'DROP TABLE IF EXISTS user';
+        this.db.run(sql, (err) => {
+            if(err){
+                reject(err);
+                return;
+            }
+            resolve(true);
+        });
+    });
+}
+
+newTableUser = () =>{
+    return new Promise((resolve, reject) => {
+        const sql = 'CREATE TABLE IF NOT EXISTS user(id	integer, username	varchar, name	varchar, surname	varchar, password	varchar, type	varchar, PRIMARY KEY("id" AUTOINCREMENT));';
+        this.db.run(sql, (err) => {
+            if(err)
+            {
+                reject(err);
+                return;
+            }
+            resolve(this.lastID);
+        });
+    });
+}
 }
 
 module.exports = userRepository;

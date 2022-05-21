@@ -16,6 +16,11 @@ describe('edit SKU',() =>{
                 }
             );
     });
+
+    afterAll(async () => {
+        await skuRep.dropTable();
+    });
+
     testEditSKU({
         newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50
     },1000,[]);
@@ -39,6 +44,11 @@ describe('edit SKU Position',() =>{
                 }
             );
     });
+
+    afterAll(async () => {
+        await skuRep.dropTable();
+    });
+
     testEditSKUPosition("800234523412",1000,[]);
     testEditSKUPosition("800234523412",1,[new SKU(1,"a new sku",100, 50,"first SKU", "800234523412",50, 10.99)]
 	);

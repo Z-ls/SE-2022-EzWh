@@ -9,7 +9,7 @@ describe('edit SKU Controller',() =>{
     beforeEach(async () => {
         await skuRep.dropTable();
         await skuRep.newTableSKU();
-        await posRep.dropTable()
+        await posRep.dropTable();
         await posRep.newTablePOS();
         await posRep.addPOS({
             positionID:"800234543412",
@@ -40,6 +40,12 @@ describe('edit SKU Controller',() =>{
             );
             await skuRep.editSKUPosition("800234543412", 2);
     });
+
+    afterAll(async () => {
+        await skuRep.dropTable();
+        await posRep.dropTable()
+      });
+
     testEditSKUController({
         newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50
     },1000,undefined);
@@ -110,6 +116,12 @@ describe('edit SKU Position Controller',() =>{
             );
         await skuRep.editSKUPosition("800234543412", 2);
     });
+
+    afterAll(async () => {
+        await skuRep.dropTable();
+        await posRep.dropTable()
+    });
+
     testEditSKUPositionController("800234543412",1000,undefined);
     testEditSKUPositionController("900234523415",1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[]));
     testEditSKUPositionController("800234543412",2,new SKU(2,"a new sku 2",2, 3,"second SKU", "800234543412",50, 11.99,[]));
