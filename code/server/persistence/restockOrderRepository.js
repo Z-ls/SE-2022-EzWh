@@ -4,6 +4,7 @@ const dayjs = require('dayjs');
 const dateHandler = require('./dateHandler');
 const itemRepository = require('./itemRepository');
 const skuItemRepository = require('./skuItemRepository');
+const { isInt } = require('./validate');
 
 // TODO : validate json structure for each API.
 
@@ -103,7 +104,7 @@ class restockOrderRepository {
         query,
         (err, row) => {
           if (err)
-            resolve({ code: 500, data: { error: err } });
+            reject({ code: 500, data: { error: err } });
           else {
             ROs.push(new RestockOrder(row.id, dayjs(row.issueDate), row.state, [], row.supplierId, row.deliveryDate && row.state != 'ISSUED' ? { deliveryDate: dayjs(row.deliveryDate) } : {}, []));
           }
@@ -131,10 +132,6 @@ class restockOrderRepository {
     return new Promise((resolve, reject) => {
       const query = "SELECT restockOrder.id as id, issueDate, restockOrder.state as state, supplierId, transportNote.deliveryDate as deliveryDate " +
         "FROM restockOrder LEFT JOIN transportNote ON restockOrder.id=transportNote.ROid WHERE restockOrder.id=?";
-      if (isNaN(parseInt(id))) {
-        reject({ code: 422 });
-        return;
-      }
       this.db.get(
         query,
         [id],
@@ -176,15 +173,15 @@ class restockOrderRepository {
       });
     }
 
-    function addProducts(idRO, skuid, quantity, itemRepo, db) {
+    function addProduct(idRO, skuid, quantity, itemRepo, db) {
       return new Promise(async (resolve, reject) => {
         const item = await itemRepo.getItemsBySupplierAndSKUId({ supplierId: ro.supplierId, SKUId: skuid, id: '' });
         if (!item[0]) {
           reject("Error while getting item");
           return;
         }
-        const query = "INSERT INTO restockTransactionItem (idRestockOrder, quantity, idItem) VALUES(?,?,?)";
-        db.run(query, [idRO, quantity, item[0].id], (err) => {
+        const query = "INSERT INTO restockTransactionItem (idRestockOrder, quantity, idItem, supplierId) VALUES(?,?,?,?)";
+        db.run(query, [idRO, quantity, item[0].id, item[0].supplierId], (err) => {
           if (err)
             reject(err);
           else
@@ -194,18 +191,12 @@ class restockOrderRepository {
     }
 
 
-    return new Promise(async (resolve) => {
-      // validation stuff
-      if (!this.dateHandler.isDateAndTimeValid(ro.issueDate) || ro.products.length === 0 || !ro.products.every(p => typeof p.qty === 'number' && typeof p.price === 'number' && typeof p.description === 'string')) {
-        resolve({ code: 422, data: "Validation of request body failed" });
-        return;
-      }
-
+    return new Promise(async (resolve, reject) => {
       const roID = await addRO();
 
-      Promise.all(ro.products.map(p => addProducts(roID, p.SKUId, p.qty, this.itemRepo, this.db)))
+      Promise.all(ro.products.map(p => addProduct(roID, p.SKUId, p.qty, this.itemRepo, this.db)))
         .then(() => resolve({ code: 201, data: "Restock order successfully created" }))
-        .catch((e) => resolve({ code: 503, data: "Generic error: " + e }));
+        .catch((e) => reject({ code: 422, data: "Generic error: " + e }));
     })
   }
 
@@ -215,21 +206,18 @@ class restockOrderRepository {
    * @returns {Promise}
    */
   remove(id) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       // VALIDATION
-      if (isNaN(parseInt(id))) {
-        resolve({ code: 422 });
-        return;
-      }
+
       const query = "DELETE FROM restockOrder WHERE id=?";
       this.db.run(
         query,
         parseInt(id), function (err) {
           if (err)
-            resolve({ code: 503 });
+            reject({ code: 503 });
           else {
             if (this.changes === 0)
-              resolve({ code: 422 });
+              reject({ code: 422 });
             else
               resolve({ code: 204 });
           }
@@ -320,7 +308,7 @@ class restockOrderRepository {
 
     return new Promise(async (resolve, reject) => {
       // VALIDATION
-      if (typeof parseInt(id) !== 'number' || !skuItems.every(s => typeof s.SKUId === 'number' && typeof s.rfid === 'string')) {
+      if (!isInt(id) || !skuItems.every(s => isInt(s.SKUId) && typeof s.rfid === 'string')) {
         resolve({ code: 422 });
         return;
       }
@@ -359,7 +347,7 @@ class restockOrderRepository {
   addTransportNote(id, json) {
     return new Promise(async (resolve) => {
       // VALIDATION
-      if (typeof parseInt(id) !== 'number' || typeof json.transportNote === 'undefined' || typeof json.transportNote.deliveryDate !== 'string' || !dayjs(json.transportNote.deliveryDate).isValid()) {
+      if (!isInt(parseInt(id)) || typeof json.transportNote === 'undefined' || typeof json.transportNote.deliveryDate !== 'string' || !dayjs(json.transportNote.deliveryDate).isValid()) {
         resolve({ code: 422 });
         return;
       }
@@ -400,7 +388,7 @@ class restockOrderRepository {
       // VALIDATION
       let ro;
       try {
-        ro = await this.get(parseInt(id));
+        ro = await this.get(id);
       }
       catch (e) {
         reject(e);
