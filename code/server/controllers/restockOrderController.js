@@ -62,7 +62,6 @@ class RestockOrderController {
       return res.status(result.code).end();
     }
     catch (e) {
-      console.log(e);
       return res.status(e.code).end();
     }
   }
@@ -73,8 +72,15 @@ class RestockOrderController {
   }
 
   addSKUItems = async (req, res) => {
+    // VALIDATION
+    const id = parseInt(req.params.id);
+    if (!isInt(id) || !req.body.skuItems.every(s => isInt(s.SKUId) && typeof s.rfid === 'string')) {
+      return res.status(422).end();
+    }
+
+
     try {
-      const result = await this.RORepo.addSKUItems(req.params.id, req.body.skuItems);
+      const result = await this.RORepo.addSKUItems(id, req.body.skuItems);
       return res.status(result.code).end();
     }
     catch (e) {

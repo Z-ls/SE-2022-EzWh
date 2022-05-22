@@ -194,6 +194,8 @@ class restockOrderRepository {
     return new Promise(async (resolve, reject) => {
       const roID = await addRO();
 
+
+
       Promise.all(ro.products.map(p => addProduct(roID, p.SKUId, p.qty, this.itemRepo, this.db)))
         .then(() => resolve({ code: 201, data: "Restock order successfully created" }))
         .catch((e) => reject({ code: 422, data: "Generic error: " + e }));
@@ -277,7 +279,7 @@ class restockOrderRepository {
         try {
           const res = await addSKUItem(skuItem);
           if (res === false) {
-            throw { code: 422 };
+            reject({ code: 422 });
           }
           resolve(true);
         }
@@ -307,21 +309,16 @@ class restockOrderRepository {
     }
 
     return new Promise(async (resolve, reject) => {
-      // VALIDATION
-      if (!isInt(id) || !skuItems.every(s => isInt(s.SKUId) && typeof s.rfid === 'string')) {
-        resolve({ code: 422 });
-        return;
-      }
       let ro;
       try {
         ro = await this.get(id);
       }
       catch (e) {
-        resolve(e.code);
+        reject({ code: e.code });
         return;
       }
       if (ro.data.state !== 'DELIVERED') {
-        resolve({ code: 422 });
+        reject({ code: 422 });
         return;
       }
       // END VALIDATION
@@ -415,6 +412,18 @@ class restockOrderRepository {
     });
   }
 
+  deleteData() {
+    return new Promise((resolve, reject) => {
+      const sql = 'DELETE FROM restockOrder';
+      db.run(sql, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      });
+    });
+  }
 
 }
 
