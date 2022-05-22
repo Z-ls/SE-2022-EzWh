@@ -83,7 +83,7 @@ const editSKUPosition = async (position, id) => {
                     };
                     const modified = await skuRep.editSKUPosition(position, id);
                     const posModified = await posRep.editPOS(newPostion,position);
-                    return modified && posModified ? 200 : 400;
+                    return modified && posModified ? 200 : 404;
                 }
                 return 422;
             } 
