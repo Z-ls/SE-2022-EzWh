@@ -8,12 +8,6 @@ CREATE TABLE IF NOT EXISTS "internalOrder" (
 	FOREIGN KEY("customerId") REFERENCES "user"("id") on delete cascade,
 	PRIMARY KEY("idInternalOrder" AUTOINCREMENT)
 );
-DROP TABLE IF EXISTS "employee";
-CREATE TABLE IF NOT EXISTS "employee" (
-	"idUser"	INTEGER,
-	"salary"	REAL NOT NULL,
-	FOREIGN KEY("idUser") REFERENCES "user" ON DELETE CASCADE
-);
 DROP TABLE IF EXISTS "restockTransaction";
 CREATE TABLE IF NOT EXISTS "restockTransaction" (
 	"idRestockTransaction"	INTEGER,
