@@ -314,11 +314,11 @@ class restockOrderRepository {
         ro = await this.get(id);
       }
       catch (e) {
-        reject({ code: e.code });
+        reject({ code: e.code, data: "Error while getting restock order with id=" + id });
         return;
       }
       if (ro.data.state !== 'DELIVERED') {
-        reject({ code: 422 });
+        reject({ code: 422, data: "The state is not 'DELIVERED'" });
         return;
       }
       // END VALIDATION
@@ -396,7 +396,7 @@ class restockOrderRepository {
         return;
       }
 
-      const query = 'SELECT SKUId, SKUITEM.RFID FROM ' +
+      const query = 'SELECT SKUId, SKUITEM.RFID as rfid FROM ' +
         'restockTransactionSKU join TestResult on restockTransactionSKU.RFID = TestResult.rfid ' +
         'JOIN SKUITEM on TestResult.rfid = SKUITEM.RFID ' +
         'WHERE  restockTransactionSKU.idRestockOrder=? AND result="false"';
@@ -412,16 +412,16 @@ class restockOrderRepository {
     });
   }
 
-  deleteRestockOrderdata(){
-    return new Promise((resolve, reject) =>{
-        const sql = 'DELETE FROM restockOrder; DELETE FROM sqlite_sequence WHERE name = "restockOrder";';
-        this.db.run(sql, (err) => {
-            if(err){
-                reject(err);
-                return;
-            }
-            resolve(true);
-        });
+  deleteRestockOrderdata() {
+    return new Promise((resolve, reject) => {
+      const sql = 'DELETE FROM restockOrder; DELETE FROM sqlite_sequence WHERE name = "restockOrder";';
+      this.db.run(sql, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      });
     });
   }
 }
