@@ -55,12 +55,19 @@ describe('add item',() =>{
     testAddItem({id : 13,description : "a new item 2",price : 11.99,SKUId : 2, supplierId : 1}, [new Item(13,"a new item 2",11.99,2,1)]);
 });
 
-/* describe('delete item',() =>{
+describe('delete item',() =>{
     beforeEach(async () => {
-        await itemRep.dropTable();
-        await itemRep.newTableitem();
-        await skuRep.dropTable();
-        await skuRep.newTableSKU();
+        await dbHAndler.deleteAllTablesData();
+
+        await userRep.add({
+            username:"user1@ezwh.com",
+            name:"John",
+            surname : "Smith",
+            password : "testpassword",
+            type : "supplier"
+    
+        }
+            );
         await skuRep.addSKU({
             description : "a new sku",
             weight : 100,
@@ -70,17 +77,19 @@ describe('add item',() =>{
             availableQuantity : 50
                 }
             );
-        await itemRep.additem({
-            RFID:"12345678901234567890123456789015",
-            SKUId:1,
-            DateOfStock:"2021/11/29 12:30"
-                }
+        await itemRep.addItem({
+            id : 12,
+            description : "a new item",
+            price : 10.99,
+            SKUId : 1,
+            supplierId : 1
+        }
             );
     });
 
-    testDeleteitem("22455678901234567890123456789024",[false,[]]);
-    testDeleteitem("12345678901234567890123456789015", [true,[]]);
-}); */
+    testDeleteitem(13,[false,[]]);
+    testDeleteitem(12, [true,[]]);
+});
 
 async function testAddItem(newitem,expected) {
     test('add item', async () => {
@@ -90,10 +99,10 @@ async function testAddItem(newitem,expected) {
     });
 }
 
-async function testDeleteitem(rfid,expected) {
+async function testDeleteitem(id,expected) {
     test('delete item', async () => {
-        let res2 = await itemRep.deleteitem(rfid);
-        let res = await itemRep.getSingleitem(rfid);
+        let res2 = await itemRep.deleteItem(id);
+        let res = await itemRep.getSingleItem(id);
         expect([res2,res]).toEqual(expected);
     });
 }

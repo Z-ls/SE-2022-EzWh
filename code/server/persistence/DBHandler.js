@@ -33,6 +33,7 @@ function DBHandler(){
         await skuItemRepo.deleteSKUItemdata();
         await skuRepo.deleteSKUdata();
         await posRepo.deletePositiondata();
+        await skuRepo.deleteSequence();
     }
 }
 
