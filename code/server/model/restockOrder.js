@@ -37,6 +37,6 @@ class RestockOrder {
   };
 }
 
-const possibleStates = ["ISSUED", "DELIVERY", "DELIVERED", "TESTED", "RETURN", "COMPLETED"];
+const possibleStates = ["ISSUED", "DELIVERY", "DELIVERED", "TESTED", "RETURN", "COMPLETED", "COMPLETEDRETURN"];
 
 module.exports = { RestockOrder, possibleStates };
