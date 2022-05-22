@@ -2,15 +2,14 @@ const SKU = require("../model/sku");
 const posRepository = require("../persistence/positionRepository");
 const skuRepository = require("../persistence/skuRepository");
 const skuController = require("../controllers/skuController");
+const DBHandler = require("../persistence/DBHandler");
+const dbHAndler = new DBHandler();
 const posRep = new posRepository();
 const skuRep = new skuRepository();
 
 describe('edit SKU Controller',() =>{
     beforeEach(async () => {
-        await skuRep.dropTable();
-        await skuRep.newTableSKU();
-        await posRep.dropTable()
-        await posRep.newTablePOS();
+        await dbHAndler.deleteAllTablesData();
         await posRep.addPOS({
             positionID:"800234543412",
             aisleID: "8002",
@@ -40,6 +39,7 @@ describe('edit SKU Controller',() =>{
             );
             await skuRep.editSKUPosition("800234543412", 2);
     });
+
     testEditSKUController({
         newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50
     },1000,undefined);
@@ -59,10 +59,7 @@ describe('edit SKU Controller',() =>{
 
 describe('edit SKU Position Controller',() =>{
     beforeEach(async () => {
-        await skuRep.dropTable();
-        await skuRep.newTableSKU();
-        await posRep.dropTable()
-        await posRep.newTablePOS();
+        await dbHAndler.deleteAllTablesData();
         await posRep.addPOS({
             positionID:"800234543412",
             aisleID: "8002",
@@ -110,6 +107,7 @@ describe('edit SKU Position Controller',() =>{
             );
         await skuRep.editSKUPosition("800234543412", 2);
     });
+
     testEditSKUPositionController("800234543412",1000,undefined);
     testEditSKUPositionController("900234523415",1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[]));
     testEditSKUPositionController("800234543412",2,new SKU(2,"a new sku 2",2, 3,"second SKU", "800234543412",50, 11.99,[]));

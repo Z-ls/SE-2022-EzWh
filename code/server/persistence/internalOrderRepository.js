@@ -213,6 +213,19 @@ class InternalOrderRepository {
       );
     });
   }
+
+  deleteInternalOrderdata(){
+    return new Promise((resolve, reject) =>{
+        const sql = 'DELETE FROM internalOrder; DELETE FROM sqlite_sequence WHERE name = "internalOrder";';
+        this.db.run(sql, (err) => {
+            if(err){
+                reject(err);
+                return;
+            }
+            resolve(true);
+        });
+    });
+  } 
 }
 
 module.exports = InternalOrderRepository;

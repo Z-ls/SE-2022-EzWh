@@ -181,6 +181,19 @@ class userRepository {
       );
     });
   }
+
+  deleteUserdata(){
+    return new Promise((resolve, reject) =>{
+        const sql = 'DELETE FROM user; DELETE FROM sqlite_sequence WHERE name = "user";';
+        this.db.run(sql, (err) => {
+            if(err){
+                reject(err);
+                return;
+            }
+            resolve(true);
+        });
+    });
+}
 }
 
 module.exports = userRepository;

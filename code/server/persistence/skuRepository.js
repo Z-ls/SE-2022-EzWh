@@ -29,7 +29,18 @@ function skuRepository()
             db.run(sql, (err) => {
                 if(err){
                     reject(err);
-                    return;
+                }
+                resolve(true);
+            });
+        });
+    }
+
+    this.deleteSequence = () =>{
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM sqlite_sequence';
+            db.run(sql, (err) => {
+                if(err){
+                    reject(err);
                 }
                 resolve(true);
             });

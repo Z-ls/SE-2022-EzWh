@@ -23,7 +23,20 @@ function itemRepository() {
         });
     }
 
-    this.newTableItem = () => {
+    this.deleteItemdata = () =>{
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM ITEM; DELETE FROM sqlite_sequence WHERE name = "ITEM";';
+            db.run(sql, (err) => {
+                if(err){
+                    reject(err);
+                    return;
+                }
+                resolve(true);
+            });
+        });
+    }
+
+    this.newTableItem = () =>{
         return new Promise((resolve, reject) => {
             const sql = 'CREATE TABLE IF NOT EXISTS ITEM(id INTEGER, description VARCHAR, price REAL, SKUId INTEGER, supplierId INTEGER, PRIMARY KEY(id,supplierId), FOREIGN KEY(supplierId) REFERENCES user(id) ON DELETE CASCADE, FOREIGN KEY(SKUId) REFERENCES SKU(id));';
             db.run(sql, (err) => {
