@@ -192,10 +192,12 @@ class restockOrderRepository {
 
 
     return new Promise(async (resolve, reject) => {
-      const roID = await addRO();
-
-
-
+      let roID
+      try { roID = await addRO(); }
+      catch (e) {
+        reject({ code: 503 });
+        return;
+      }
       Promise.all(ro.products.map(p => addProduct(roID, p.SKUId, p.qty, this.itemRepo, this.db)))
         .then(() => resolve({ code: 201, data: "Restock order successfully created" }))
         .catch((e) => reject({ code: 422, data: "Generic error: " + e }));
@@ -341,33 +343,29 @@ class restockOrderRepository {
    * @param {{transportNote:{deliveryDate:string}}} json 
    * @returns 
    */
-  addTransportNote(id, json) {
-    return new Promise(async (resolve) => {
-      // VALIDATION
-      if (!isInt(parseInt(id)) || typeof json.transportNote === 'undefined' || typeof json.transportNote.deliveryDate !== 'string' || !dayjs(json.transportNote.deliveryDate).isValid()) {
-        resolve({ code: 422 });
-        return;
-      }
+  addTransportNote(id, deliveryDate) {
+    return new Promise(async (resolve, reject) => {
       let ro;
       try {
         ro = await this.get(id);
       }
       catch (e) {
-        resolve({ code: 404 });
+        reject({ code: 404 });
         return;
       }
-      if (ro.data.state !== 'DELIVERY' || dayjs(json.transportNote.deliveryDate).isBefore(dayjs(ro.data.issueDate))) {
-        resolve({ code: 422 });
+      if (ro.data.state !== 'DELIVERY' || dayjs(deliveryDate).isBefore(dayjs(ro.data.issueDate))) {
+        reject({ code: 422 });
         return;
       }
       // END VALIDATION
       const query = "INSERT INTO transportNote (deliveryDate, ROid) values (?,?)";
       this.db.run(
         query,
-        [json.transportNote.deliveryDate, id],
+        [deliveryDate, id],
         (err) => {
+          console.log([deliveryDate, id]);
           if (err)
-            resolve({ code: 503 });
+            reject({ code: 503 });
           else
             resolve({ code: 200 });
         }
