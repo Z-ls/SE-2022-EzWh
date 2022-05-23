@@ -70,7 +70,7 @@ async(req, res) =>{
         return res.status(422).send("Unprocessable entity");
     }
     try{
-        let deleted = await itemRep.deleteItem(req.params.id);
+        let deleted = await itemController.deleteItem(req.params.id);
         return deleted ? res.status(204).send() : res.status(422).send();
     }catch(error){
         return res.status(503).send(error);
