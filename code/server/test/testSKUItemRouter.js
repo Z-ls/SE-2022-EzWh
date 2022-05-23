@@ -120,9 +120,9 @@ describe('DELETE SKUItem', () => {
             );
     })
 
-    deleteSKU(422, "12345678456789015");
-    deleteSKU(422, "12345678901234567890123456789016");
-    deleteSKU(204, "12345678901234567890123456789015");
+    deleteSKUItem(422, "12345678456789015");
+    deleteSKUItem(422, "12345678901234567890123456789016");
+    deleteSKUItem(204, "12345678901234567890123456789015");
 });
 
 function addSKUItem(expectedHTTPStatus, newSKUItem) {
@@ -180,7 +180,7 @@ function editSKUItem(expectedHTTPStatus, rfid, newSKUItem) {
     });
 }
 
-function deleteSKU(expectedHTTPStatus, rfid) {
+function deleteSKUItem(expectedHTTPStatus, rfid) {
     it('DELETE SKUItem', function (done) {
         agent.delete('/api/skuitems/' + rfid)
             .then(function (res) {
