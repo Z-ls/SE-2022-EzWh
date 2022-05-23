@@ -22,8 +22,8 @@ class InternalOrderRepository {
    */
   get(id, state) {
     return new Promise((resolve, reject) => {
-      const completedOrderQuery = "SELECT io.idInternalOrder as id, io.issueDate as issueDate, io.state as state, SKUITEM.SKUId as SKUId, SKU.description as description, SKU.price as price, itr.RFID as RFID, io.customerId as customerId FROM internalOrder io join internalOrderTransactionRFID itr on io.idInternalOrder=itr.IOid JOIN SKUITEM on itr.RFID = SKUITEM.RFID join SKU on SKU.id = SKUITEM.SKUId WHERE itr.IOid = ?";
-      const notCompletedOrderQuery = "SELECT io.idInternalOrder as id, io.issueDate as issueDate, io.state as state, SKU.id, SKU.description as description, SKU.price as price, it.qty as qty FROM internalOrder io, internalTransaction it, SKU WHERE io.idInternalOrder=it.idInternalOrder and it.idSKU=SKU.id and io.idInternalOrder=?";
+      const completedOrderQuery = "SELECT io.idInternalOrder as id, io.issueDate as issueDate, io.state as state, SKUITEM.SKUId as SKUId, SKU.description as description, SKU.price as price, itr.RFID as RFID, io.customerId as customerId  FROM internalOrder io, internalOrderTransactionRFID itr, SKUITEM, SKU WHERE io.idInternalOrder=itr.IOid and itr.RFID=SKUITEM.RFID and SKU.id=SKUITEM.SKUId and itr.IOid=?";
+      const notCompletedOrderQuery = "SELECT io.idInternalOrder as id, io.issueDate as issueDate, io.state as state, SKU.id as SKUId, SKU.description as description, SKU.price as price, it.qty as qty, io.customerId as customerId FROM internalOrder io, internalTransaction it, SKU WHERE io.idInternalOrder=it.idInternalOrder and it.idSKU=SKU.id and io.idInternalOrder=?";
       this.db.all((state === 'COMPLETED' ? completedOrderQuery : notCompletedOrderQuery), id,
         (err, rows) => {
           if (err)
@@ -33,7 +33,8 @@ class InternalOrderRepository {
             try {
               initialValue = new InternalOrder(rows[0].id, dayjs(rows[0].issueDate), rows[0].state, [], rows[0].customerId);
             } catch (e) {
-              return reject("Internal order not found");
+              reject({ code: 404, data: "Internal order not found" });
+              return;
             }
             let internalOrder;
             if (state === 'COMPLETED') {
@@ -64,7 +65,6 @@ class InternalOrderRepository {
     return new Promise((resolve, reject) => {
       const whereCondition = "WHERE state='" + filter.toUpperCase() + "'";
       const query = "SELECT internalOrder.idInternalOrder as id, internalOrder.state as state from internalOrder " + (filter === 'all' ? '' : whereCondition);
-      console.log(query);
       this.db.all(query,
         async (err, rows) => {
           if (err)
@@ -91,7 +91,7 @@ class InternalOrderRepository {
         products.flatMap(p => [id, p.SKUId, p.qty]),
         (err) => {
           if (err)
-            return reject({ addToInternalTransaction: true, code: 503 });
+            return reject({ addToInternalTransaction: true, code: 503, data: err });
           else
             return resolve({ code: 200 });
         }
@@ -164,14 +164,11 @@ class InternalOrderRepository {
   addToTransactionRFIDs(id, products) {
     return new Promise((resolve, reject) => {
       const query = ("INSERT INTO internalOrderTransactionRFID (IOid, RFID) values " + "(?,?),".repeat(products.length)).slice(0, -1);
-      this.db.run(query, products.flatMap(p => [id, p.RFID],
+      this.db.run(query, products.flatMap(p => [id, p.RFID]),
         (err) => {
-          if (err)
-            reject({ code: 503 });
-          else
-            resolve(true);
+          if (err) reject({ code: 503, data: "error while adding to internalOrderTransactionRFID. " + err });
+          else resolve(true);
         })
-      );
     });
   }
 
@@ -183,7 +180,7 @@ class InternalOrderRepository {
       this.db.run(query, id,
         function (err) {
           if (err)
-            reject({ code: 503 });
+            reject({ code: 503, data: "error while deleting from internalTransaction" });
           else
             resolve(true);
         })
@@ -214,18 +211,18 @@ class InternalOrderRepository {
     });
   }
 
-  deleteInternalOrderdata(){
-    return new Promise((resolve, reject) =>{
-        const sql = 'DELETE FROM internalOrder; DELETE FROM sqlite_sequence WHERE name = "internalOrder";';
-        this.db.run(sql, (err) => {
-            if(err){
-                reject(err);
-                return;
-            }
-            resolve(true);
-        });
+  deleteInternalOrderdata() {
+    return new Promise((resolve, reject) => {
+      const sql = 'DELETE FROM internalOrder; DELETE FROM sqlite_sequence WHERE name = "internalOrder";';
+      this.db.run(sql, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      });
     });
-  } 
+  }
 }
 
 module.exports = InternalOrderRepository;

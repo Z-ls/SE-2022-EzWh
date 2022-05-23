@@ -120,15 +120,6 @@ CREATE TABLE IF NOT EXISTS "returnOrderTransaction" (
 	FOREIGN KEY("RFID") REFERENCES "SKUITEM"("RFID") ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY("idReturnOrder","RFID")
 );
-DROP TABLE IF EXISTS "restockTransactionItem";
-CREATE TABLE IF NOT EXISTS "restockTransactionItem" (
-	"quantity"	INTEGER NOT NULL DEFAULT 1,
-	"idRestockOrder"	INTEGER NOT NULL,
-	"idItem"	INTEGER,
-	"supplierId" integer,
-	FOREIGN KEY("idItem", "supplierId") REFERENCES "ITEM"("id", "supplierId") ON DELETE CASCADE,
-	FOREIGN KEY("idRestockOrder") REFERENCES "restockOrder"("id") ON DELETE CASCADE
-);
 DROP TABLE IF EXISTS "restockTransactionSKU";
 CREATE TABLE IF NOT EXISTS "restockTransactionSKU" (
 	"idRestockOrder"	INTEGER NOT NULL,
@@ -147,11 +138,10 @@ CREATE TABLE IF NOT EXISTS "restockOrder" (
 );
 DROP TABLE IF EXISTS "transportNote";
 CREATE TABLE IF NOT EXISTS "transportNote" (
-	"idTransportNote"	INTEGER,
 	"deliveryDate"	DATE NOT NULL,
 	"ROid"	INTEGER NOT NULL,
 	FOREIGN KEY("ROid") REFERENCES "restockOrder"("id") ON UPDATE CASCADE ON DELETE CASCADE,
-	PRIMARY KEY("idTransportNote" AUTOINCREMENT)
+	PRIMARY KEY("ROid")
 );
 INSERT INTO "position" VALUES ('800234543412','8002','3454','3412',1000.0,1000.0,0.0,0.0);
 INSERT INTO "SKU" VALUES (2,'Edited sku',100.0,50.0,'first SKU','800234523412',50,10.99);
