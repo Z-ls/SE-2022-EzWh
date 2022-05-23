@@ -84,17 +84,14 @@ class InternalOrderController {
     // validation
     if (!req.body.newState || !possibleStates.includes(req.body.newState) || !req.params.id || isNaN(parseInt(req.params.id)))
       return res.status(422).end();
-
     if (req.body.newState === 'COMPLETED') {
       // validation
-      console.log("estoy aqui");
       if (!req.body.products || !Array.isArray(req.body.products) || !req.body.products.every(p => isInt(p.SkuID) && typeof p.RFID === 'string')) {
         return res.status(422).end();
       }
       else {
         try {
           await Promise.all([this.IOrepo.addToTransactionRFIDs(req.params.id, req.body.products), this.IOrepo.removeInternalTransactions(req.params.id)]);
-          return res.status(200).end();
         }
         catch (e) {
           return res.status(e.code).end();

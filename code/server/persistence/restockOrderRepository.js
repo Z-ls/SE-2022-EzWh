@@ -363,7 +363,6 @@ class restockOrderRepository {
         query,
         [deliveryDate, id],
         (err) => {
-          console.log([deliveryDate, id]);
           if (err)
             reject({ code: 503 });
           else
