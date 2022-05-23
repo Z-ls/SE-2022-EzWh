@@ -103,10 +103,6 @@ class TestDescriptorRepository {
                     reject(err);
                     return;
                 }
-                if (rows.length === 0) {
-                    reject(404);
-                    return;
-                }
                 resolve(rows);
             });
         });
