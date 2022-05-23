@@ -23,7 +23,110 @@ Version: 1.0
 
 ```plantuml
 @startuml
-entity internalOrder 
+entity internalOrder
+entity item
+entity position
+entity restockOrder
+entity returnOrder
+entity sku
+entity skuItem
+entity TestDescriptor
+entity TestResult
+entity User
+
+class internalOrderController
+class itemController
+class positionController
+class restockOrderController
+class returnOrderController
+class skuController
+class skuItemController
+class testDescriptorController
+class testResultController
+class userController
+
+class internalOrderRepository
+class itemRepository
+class positionRepository
+class restockOrderRepository
+class returnOrderRepository
+class skuRepository
+class skuItemRepository
+class testDescriptorRepository
+class testResultRepository
+class userRepository
+
+class internalOrderRouter
+class itemRouter
+class positionRouter
+class restockOrderRouter
+class returnOrderRouter
+class skuRouter
+class skuItemRouter
+class testDescriptorRouter
+class testResultRouter
+class userRouter
+
+class dateHandler
+class DBHandler
+
+internalOrderRepository -- internalOrder
+internalOrderRepository -- dateHandler
+itemRepository -- item
+positionRepository -- position
+restockOrderRepository -- restockOrder
+restockOrderRepository -- dateHandler
+restockOrderRepository -- itemRepository
+restockOrderRepository -- skuItemRepository
+returnOrderRepository -- returnOrder
+skuItemRepository -- skuItem
+skuRepository -- sku
+userRepository -- User
+DBHandler -- internalOrderRepository
+DBHandler -- itemRepository
+DBHandler -- positionRepository
+DBHandler -- restockOrderRepository
+DBHandler -- returnOrderRepository
+DBHandler -- skuItemRepository
+DBHandler -- skuRepository
+DBHandler -- userRepository
+DBHandler -- testDescriptorRepository
+DBHandler -- testResultRepository
+
+internalOrderController -- internalOrder
+internalOrderController -- dateHandler
+internalOrderController -- internalOrderRepository
+itemController -- item
+itemController -- itemRepository
+positionController -- position
+positionController -- positionRepository
+restockOrderController -- dateHandler
+restockOrderController -- restockOrderRepository
+returnOrderController -- returnOrder
+returnOrderController -- returnOrderRepository
+skuController -- SKU
+skuController -- SKURepository
+skuController -- testDescriptorRepository
+skuController -- positionRepository
+skuItemController -- skuItemRepository
+skuItemController -- skuRepository
+testDescriptorController -- testDescriptorRepository
+testResultController -- testResultRepository
+testResultController -- testDescriptorRepository
+userController -- user
+userController -- userRepository
+
+internalOrderRouter -- internalOrderController
+itemRouter -- itemController
+positionRouter -- positionController
+restockOrderRouter -- restockOrderController
+returnOrderRouter -- returnOrderController
+skuRouter -- skuController
+skuItemRouter -- skuItemController
+testDescriptorRouter -- testDescriptorController
+testResultRouter -- testResultController
+userRouter -- userController
+
 @enduml 
 ```
 
