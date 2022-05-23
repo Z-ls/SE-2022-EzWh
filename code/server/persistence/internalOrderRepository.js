@@ -33,7 +33,8 @@ class InternalOrderRepository {
             try {
               initialValue = new InternalOrder(rows[0].id, dayjs(rows[0].issueDate), rows[0].state, [], rows[0].customerId);
             } catch (e) {
-              return reject({ code: 404, data: "Internal order not found" });
+              reject({ code: 404, data: "Internal order not found" });
+              return;
             }
             let internalOrder;
             if (state === 'COMPLETED') {
@@ -90,7 +91,7 @@ class InternalOrderRepository {
         products.flatMap(p => [id, p.SKUId, p.qty]),
         (err) => {
           if (err)
-            return reject({ addToInternalTransaction: true, code: 503 });
+            return reject({ addToInternalTransaction: true, code: 503, data: err });
           else
             return resolve({ code: 200 });
         }
@@ -165,7 +166,7 @@ class InternalOrderRepository {
       const query = ("INSERT INTO internalOrderTransactionRFID (IOid, RFID) values " + "(?,?),".repeat(products.length)).slice(0, -1);
       this.db.run(query, products.flatMap(p => [id, p.RFID]),
         (err) => {
-          if (err) reject({ code: 503, data: "error while adding to internalOrderTransactionRFID" });
+          if (err) reject({ code: 503, data: "error while adding to internalOrderTransactionRFID. " + err });
           else resolve(true);
         })
     });
