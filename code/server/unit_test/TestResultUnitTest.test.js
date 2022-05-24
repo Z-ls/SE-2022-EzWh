@@ -75,7 +75,7 @@ describe('Test Result Unit Test', () => {
                 });
             expect(await trController.getTestResultById(
                 mockReq(1, "12345678901234567890123456789016",undefined),
-                mockRes)).toEqual({"Date": "2022/05/20", "Result": true, "id": 1, "idTestDescriptor": 1});
+                mockRes)).toBe(200);
             expect(await db.getTestResults())
                 .toEqual([{
                     "id": 1, "Date": "2022/05/20", "idTestDescriptor": 1, "Result": true
