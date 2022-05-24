@@ -65,6 +65,15 @@ class InternalOrderController {
   }
 
   updateState = async (id, body) => {
+
+    try {
+      await await Promise.any([this.IOrepo.get(id, "other"), this.IOrepo.get(id, "COMPLETED")]
+      );
+    }
+    catch (e) {
+      return ({ code: 404 });
+    }
+
     if (body.newState === 'COMPLETED') {
       try {
         await Promise.all([this.IOrepo.addToTransactionRFIDs(id, body.products), this.IOrepo.removeInternalTransactions(id)]);

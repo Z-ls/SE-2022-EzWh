@@ -30,6 +30,7 @@ router.get('/internalOrders/:id',
 router.post('/internalOrders',
   body('issueDate').exists().isString(),
   body('customerId').exists().isInt(),
+  body('state').exists().isIn(possibleStates),
   body('products').exists().isArray(),
   body('products.*.SKUId').exists().isInt({ min: 1 }),
   body('products.*.description').exists().isString(),
@@ -52,12 +53,16 @@ router.post('/internalOrders',
 router.put('/internalOrders/:id',
   param('id').matches(/^\d+$/).toInt().isInt({ min: 1 }),
   body('newState').exists().isIn(possibleStates),
+  body('products').optional().isArray(),
+  body('products.*.SkuID').isInt(),
+  body('products.*.RFID').isLength({ min: 32, max: 32 }).matches(/^\d+$/),
 
   async (req, res) => {
     const errors = validationResult(req);
     // Validation
-    if (!errors.isEmpty())
+    if (!errors.isEmpty() || (req.body.newState === 'COMPLETED' && !Array.isArray(req.body.products))) {
       return res.status(422).end();
+    }
     let result;
     try {
       result = await ioc.updateState(req.params.id, req.body);
