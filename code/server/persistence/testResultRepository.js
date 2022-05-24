@@ -1,5 +1,6 @@
 const dayjs = require("dayjs");
 const sqlite = require('sqlite3');
+const TestResult = require("../model/TestResult");
 
 class TestResultRepository {
 
@@ -52,14 +53,14 @@ class TestResultRepository {
                     reject(err);
                     return;
                 }
-                const trs = rows.map((tr) => (
-                    {
-                        "id": tr.id,
-                        "idTestDescriptor": tr.idTestDescriptor,
-                        "Date": dayjs(tr.Date).format("YYYY/MM/DD"),
-                        "Result": tr.Result === "true"
-                    }
-                ));
+                const trs = rows.map(tr => {
+                    return new TestResult(
+                        tr.id,
+                        tr.idTestDescriptor,
+                        dayjs(tr.Date).format("YYYY/MM/DD"),
+                        tr.Result === "true"
+                        )
+                });
                 resolve(trs);
             });
         });
@@ -77,13 +78,11 @@ class TestResultRepository {
                     reject(404);
                     return;
                 }
-                const tr = (
-                    {
-                        "id": row.id,
-                        "idTestDescriptor": row.idTestDescriptor,
-                        "Date": dayjs(row.Date).format("YYYY/MM/DD"),
-                        "Result": row.Result === "true"
-                    }
+                const tr = new TestResult(
+                    row.id,
+                    row.idTestDescriptor,
+                    dayjs(row.Date).format("YYYY/MM/DD"),
+                    row.Result === "true"
                 )
                 resolve(tr);
             });
@@ -98,14 +97,13 @@ class TestResultRepository {
                     reject(500);
                     return;
                 }
-                const tr = rows.map(r => (
-                    {
-                        "id": r.id,
-                        "idTestDescriptor": r.idTestDescriptor,
-                        "Date": dayjs(r.Date).format("YYYY/MM/DD"),
-                        "Result": r.Result === "true"
-                    }
-                ));
+                const tr = rows.map(r => {
+                    return new TestResult(
+                        r.id,
+                        r.idTestDescriptor,
+                        dayjs(r.Date).format("YYYY/MM/DD"),
+                        r.Result === "true")
+                });
                 resolve(tr);
             });
         })
@@ -123,7 +121,14 @@ class TestResultRepository {
                     reject(404);
                     return;
                 }
-                resolve(rows);
+                const tr = rows.map(r => {
+                    return new TestResult(
+                        r.id,
+                        r.idTestDescriptor,
+                        dayjs(r.Date).format("YYYY/MM/DD"),
+                        r.Result === "true")
+                });
+                resolve(tr);
             });
         });
     }
