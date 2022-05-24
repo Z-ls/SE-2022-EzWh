@@ -54,7 +54,7 @@ const init_test = () => {
 }
 
 describe('Test Result API Test', () => {
-    
+
     describe("TEST GET /api/skuitems/:rfid/testResults", () => {
 
         init_test();
@@ -107,7 +107,7 @@ describe('Test Result API Test', () => {
                     res.body.should.have.property("Date").equal("2021/11/28");
                     res.body.should.have.property("Result").equal(true);
                     done();
-                })
+                }).catch(done);
         });
 
         it("get test result by rfid non-existent", done => {
@@ -150,6 +150,7 @@ describe('Test Result API Test', () => {
                     done();
                 })
         });
+
     });
 
     describe("TEST POST /api/skuitems/testResult", () => {

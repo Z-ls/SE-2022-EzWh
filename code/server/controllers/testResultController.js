@@ -66,10 +66,11 @@ exports.getTestResultById = async (req, res) => {
     try {
         if ((await siRepo.getSingleSKUItem(req.params.rfid).catch(err => { throw err })).length === 0)
             return res.status(404).send("no sku item associated to rfid");
-        return await trRepo.getTestResultById(parseInt(req.params.id)).catch(err => {
+        return await trRepo.getTestResultById(req.params.id).then(ret => { return res.status(200).json(ret) })
+            .catch(err => {
             if (err === 404)
                 return res.status(404).send("no test result associated to id");
-            else { throw err }
+            else { throw new Error(err) }
         });
     } catch (err) {
         return res.status(500).send("generic error");
