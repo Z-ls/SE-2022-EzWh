@@ -25,8 +25,7 @@ const nTr = (n) => ({
     "newIdTestDescriptor": n, "newDate": "2020/11/28", "newResult": false
 })
 
-describe('Test Result API Test', () => {
-
+const init_test = () => {
     before(async () => {
         await dbTd.newTestDescriptorTable();
         await db.newTestResultTable();
@@ -52,8 +51,13 @@ describe('Test Result API Test', () => {
         await dbHandler.deleteAllTablesData();
         await dbTd.repopulateDataBase();
     });
+}
 
+describe('Test Result API Test', () => {
+    
     describe("TEST GET /api/skuitems/:rfid/testResults", () => {
+
+        init_test();
 
         it("get test results", done => {
             agent.get('/api/skuitems/12345678901234567890123456789016/testResults')
@@ -91,6 +95,8 @@ describe('Test Result API Test', () => {
     });
 
     describe("TEST GET /api/skuitems/:rfid/testResult/:id", () => {
+
+        init_test();
 
         it("get test result by rfid and id", done => {
             agent.get('/api/skuitems/12345678901234567890123456789016/testResults/1')
@@ -147,6 +153,8 @@ describe('Test Result API Test', () => {
     });
 
     describe("TEST POST /api/skuitems/testResult", () => {
+
+        init_test();
 
         it("post new test result", done => {
             agent.post('/api/skuitems/testResult/')
@@ -240,6 +248,8 @@ describe('Test Result API Test', () => {
     });
 
     describe("TEST PUT /api/skuitems/:rfid/testResult/:id", () => {
+
+        init_test();
 
         it("update test result", done => {
             agent.put('/api/skuitems/12345678901234567890123456789016/testResult/1')
@@ -342,6 +352,8 @@ describe('Test Result API Test', () => {
     });
 
     describe("TEST DELETE /api/skuitems/:rfid/testResult/:id", () => {
+
+        init_test();
 
         it("delete test result by rfid and id", done => {
             agent.delete('/api/skuitems/12345678901234567890123456789016/testResult/1')

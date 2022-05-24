@@ -19,8 +19,7 @@ const nTd = (n) => ({
     "newName": `New Test Descriptor ${n}`, "newIdSKU": n, "newProcedureDescription": "New This test is described by ..."
 });
 
-describe('Test Descriptor API Test', () => {
-
+const init_test = () => {
     before(async () => {
         await db.newTestDescriptorTable();
         await dbHandler.deleteAllTablesData();
@@ -39,8 +38,14 @@ describe('Test Descriptor API Test', () => {
         await dbHandler.deleteAllTablesData();
         await db.repopulateDataBase();
     });
+}
+
+describe('Test Descriptor API Test', () => {
+
 
     describe("TEST GET /api/testDescriptors", () => {
+
+        init_test();
 
         it("get descriptors", done => {
             agent.get('/api/testDescriptors')
@@ -48,7 +53,7 @@ describe('Test Descriptor API Test', () => {
                     res.should.have.status(200);
                     res.body.should.have.length(2);
                     done();
-                })
+                }).catch(done)
         });
 
         it("get descriptors after table dropped", done => {
@@ -62,6 +67,8 @@ describe('Test Descriptor API Test', () => {
     });
 
     describe("TEST GET /api/testDescriptor/:id", () => {
+
+        init_test();
 
         it("get descriptor", done => {
             agent.get('/api/testDescriptor/1')
@@ -95,6 +102,8 @@ describe('Test Descriptor API Test', () => {
 
     describe("TEST POST /api/testDescriptor", () => {
 
+        init_test();
+
         it("add a descriptor", done => {
             agent.post('/api/testDescriptor')
                 .send(td(1))
@@ -124,6 +133,8 @@ describe('Test Descriptor API Test', () => {
     });
 
     describe("TEST PUT /api/testDescriptor/:id", () => {
+
+        init_test();
 
         it("update a descriptor", done => {
             agent.put('/api/testDescriptor/1')
@@ -164,6 +175,8 @@ describe('Test Descriptor API Test', () => {
     });
 
     describe("TEST DELETE /api/testDescriptor/:id", () => {
+
+        init_test();
 
         it("delete a descriptor", done => {
             agent.delete('/api/testDescriptor/1')

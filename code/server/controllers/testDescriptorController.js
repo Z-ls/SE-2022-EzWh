@@ -9,12 +9,11 @@ const skuRepo = new skuRepository();
 // 500 on generic error
 exports.getTestDescriptors = async (req, res) => {
     try {
-        await tdRepo.getTestDescriptors().then(ret => {
-            res.status(200).json(ret);
+        return await tdRepo.getTestDescriptors().then(ret => {
+            return res.status(200).json(ret);
         });
     } catch (err) {
-        if (!res.headersSent)
-            res.status(500).send("generic error");
+        return res.status(500).send("generic error");
     }
 }
 
@@ -23,12 +22,11 @@ exports.getTestDescriptors = async (req, res) => {
 // 422 on IDs failing validations
 // 404 on empty result
 exports.getTestDescriptorById = async (req, res) => {
-    if (!validationResult(req).isEmpty()) 
-        res.status(422).send("validation of id failed");
-    await tdRepo.getTestDescriptorById(req.params.id).then(ret => {
-            res.status(200).json(ret);
+    if (!validationResult(req).isEmpty())
+        return res.status(422).send("validation of id failed");
+    return await tdRepo.getTestDescriptorById(req.params.id).then(ret => {
+            return res.status(200).json(ret);
             }, err => {
-        if (!res.headersSent)
             return err === 404 ?
                 res.status(404).send("no test descriptor associated id") :
                 res.status(500).send("generic error");
@@ -42,19 +40,17 @@ exports.getTestDescriptorById = async (req, res) => {
 // 503 on generic error
 exports.addTestDescriptor =  async (req, res) => {
     if (!validationResult(req).isEmpty())
-        res.status(422).send("validation of request body failed");
+        return res.status(422).send("validation of request body failed");
     try {
-        await skuRepo.getSkuById(req.body.idSKU).then(ret => {
-            if (ret.length === 0 && !res.headersSent)
-                res.status(404).send("no sku associated idSKU");
-        }, err => { throw err });
+        if ((await skuRepo.getSkuById(req.body.idSKU)).length === 0)
+            return res.status(404).send("no sku associated idSKU");
         await tdRepo.newTestDescriptorTable();
-        await tdRepo.addTestDescriptor(req.body).then(() => {
-            res.status(201).end();
+        return await tdRepo.addTestDescriptor(req.body).then(() => {
+            return res.status(201).end();
         });
     } catch (err) {
         if (!res.headersSent)
-            res.status(503).send("generic error");
+            return res.status(503).send("generic error");
     }
 }
 
@@ -66,23 +62,20 @@ exports.addTestDescriptor =  async (req, res) => {
 exports.updateTestDescriptor = async (req, res) => {
     try {
         if (!validationResult(req).isEmpty())
-            res.status(422).send("validation of request body or id failed");
-        await skuRepo.getSkuById(req.body.newIdSKU).then(ret => {
-            if (ret.length === 0 && !res.headersSent)
-                res.status(404).send("no sku associated idSKU");
-        }, err => { throw err });
-        await tdRepo.updateTestDescriptor(req.body, req.params.id)
+            return res.status(422).send("validation of request body or id failed");
+        if ((await skuRepo.getSkuById(req.body.newIdSKU)).length === 0)
+                return res.status(404).send("no sku associated idSKU");
+        return await tdRepo.updateTestDescriptor(req.body, req.params.id)
             .then(() => {
-                res.status(200).end();
+                return res.status(200).end();
             }, err => {
-                if (err === 404 && !res.headersSent)
-                    res.status(404).send("no id associated test descriptor");
+                if (err === 404)
+                    return res.status(404).send("no id associated test descriptor");
                 else
                 { throw err; }
             });
     } catch (err) {
-        if (!res.headersSent)
-            res.status(503).send("generic error");
+        return res.status(503).send("generic error");
     }
 }
 
@@ -94,17 +87,16 @@ exports.updateTestDescriptor = async (req, res) => {
 exports.deleteTestDescriptor = async (req, res) => {
     try {
         if (!validationResult(req).isEmpty())
-            res.status(422).send("validation of id failed");
-        await tdRepo.deleteTestDescriptor(req.params.id).then(() => {
-            res.status(204).end();
+            return res.status(422).send("validation of id failed");
+        return await tdRepo.deleteTestDescriptor(req.params.id).then(() => {
+            return res.status(204).end();
         }, err => {
             if (err === 404)
-                res.status(404).send("no id associated test descriptor")
+                return res.status(404).send("no id associated test descriptor")
             else
             { throw err; }
         });
     } catch (err) {
-        if (!res.headersSent)
-            res.status(503).send("generic error");
+        return res.status(503).send("generic error");
     }
 }
