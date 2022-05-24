@@ -78,13 +78,12 @@ class TestResultRepository {
                     reject(404);
                     return;
                 }
-                const tr = new TestResult(
+                resolve(new TestResult(
                     row.id,
                     row.idTestDescriptor,
                     dayjs(row.Date).format("YYYY/MM/DD"),
                     row.Result === "true"
-                )
-                resolve(tr);
+                ));
             });
         });
     }

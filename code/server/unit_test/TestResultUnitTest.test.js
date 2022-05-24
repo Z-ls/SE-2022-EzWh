@@ -1,12 +1,27 @@
 const trDAO = require('../persistence/testResultRepository')
 const tdDAO = require('../persistence/testDescriptorRepository')
 const dbDAO = require('../persistence/DBHandler')
+const trController = require('../controllers/testResultController')
 const db = new trDAO();
 const dbTd = new tdDAO();
 const dbHandler = new dbDAO();
 
-describe('Test Result Unit Test', () => {
+const mockReq = (id, rfid, tr) => { return ({
+    params: { id: id, rfid: rfid },
+    body: tr
+});}
 
+const mockRes = {
+    status: (n) => { return ({
+        json: () => { return n; },
+        end: () => { return n; },
+        send: (c) => { return c; },
+        sendStatus: () => { return n; }
+    })}
+}
+
+const init_test = () => {
+    
     beforeAll(async () => {
         await dbTd.newTestDescriptorTable();
         await db.newTestResultTable();
@@ -28,9 +43,9 @@ describe('Test Result Unit Test', () => {
         await db.addTestResult({
             "rfid": "12345678901234567890123456789016", "idTestDescriptor": 1, "Date": "2021/11/28", "Result": true
         });
-        await db.addTestResult({
+        await trController.addTestResult(mockReq(undefined, undefined, {
             "rfid": "12345678901234567890123456789017", "idTestDescriptor": 2, "Date": "2020/11/28", "Result": false
-        });
+        }), mockRes);
     });
 
     afterAll(async () => {
@@ -39,9 +54,13 @@ describe('Test Result Unit Test', () => {
         await dbHandler.deleteAllTablesData();
         await dbTd.repopulateDataBase();
     });
+}
+
+describe('Test Result Unit Test', () => {
 
     describe("updateTestResult Black Box", () => {
 
+        init_test();
 
         test("updateTestResult reqWithCorrectData", async () => {
             expect(await db.updateTestResult(1, {
@@ -54,18 +73,26 @@ describe('Test Result Unit Test', () => {
                 .toEqual({
                     "id": 1, "Date": "2022/05/20", "idTestDescriptor": 1, "Result": true
                 });
+            expect(await trController.getTestResultById(
+                mockReq(1, "12345678901234567890123456789016",undefined),
+                mockRes)).toEqual({"Date": "2022/05/20", "Result": true, "id": 1, "idTestDescriptor": 1});
             expect(await db.getTestResults())
                 .toEqual([{
                     "id": 1, "Date": "2022/05/20", "idTestDescriptor": 1, "Result": true
                 }, {
                     "id": 2, "Date": "2020/11/28", "idTestDescriptor": 2, "Result": false
                 }])
+            expect(await trController.getTestResults(mockReq(undefined, "12345678901234567890123456789016",undefined), mockRes))
+                .toBe(200);
         });
 
         test("updateTestResult reqWithNonIntegerID", async () => {
             expect(await db.updateTestResult("Not Integer", {
                 newDate: "2022/05/20", newIdTestDescriptor: 1, newResult: true
             }).catch(err => err.toString())).toBe("404");
+            expect(await db.updateTestResult(mockReq(1, "12345678901234567890123456789016", {
+                newDate: "2022/05/20", newIdTestDescriptor: 1, newResult: true
+            }), mockRes).catch(err => err.toString())).toBe("404");
         });
 
         test("updateTestResult reqWithZeroID", async () => {
@@ -78,6 +105,9 @@ describe('Test Result Unit Test', () => {
             await expect(await db.updateTestResult(1, {
                 newDate: "2022/05/20", newIdTestDescriptor: "Non Integer", newResult: true
             }).catch(err => err.toString())).toBe("Error: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed");
+            expect(await db.updateTestResult(mockReq(1, "12345678901234567890123456789016", {
+                newDate: "2022/05/20", newIdTestDescriptor: "Non Integer", newResult: true
+            }), mockRes).catch(err => err.toString())).toBe("404");
         });
 
         test("updateTestResult reqWithZeroNewIdTestDescriptor", async () => {
@@ -91,6 +121,9 @@ describe('Test Result Unit Test', () => {
                 newDate: "Not Date", newIdTestDescriptor: 1, newResult: true
             }).catch(err => err.toString()))
                 .toBe("Error: SQLITE_CONSTRAINT: NOT NULL constraint failed: TestResult.Date");
+            expect(await db.updateTestResult(mockReq(1, "12345678901234567890123456789016", {
+                newDate: "Not Date", newIdTestDescriptor: 1, newResult: true
+            }), mockRes).catch(err => err.toString())).toBe("404");
         });
 
         test("updateTestResult reqWithNonBooleanNewResult", async () => {
@@ -104,9 +137,13 @@ describe('Test Result Unit Test', () => {
 
     describe("deleteTestResult Black Box", () => {
 
+        init_test();
+
         test("reqWithCorrectData", async () => {
             expect(await db.deleteTestResult(1)).toBe(1);
             expect(await db.getTestResultById(1).catch(err => err.toString())).toBe("404");
+            expect(await trController.getTestResultById(mockReq(1, "12345678901234567890123456789016", undefined), mockRes)
+                .catch(err => err.toString())).toBe("no test result associated to id");
             expect(await db.getTestResults()).toEqual([{
                 "id": 2, "Date": "2020/11/28", "idTestDescriptor": 2, "Result": false
             }]);
@@ -123,12 +160,21 @@ describe('Test Result Unit Test', () => {
 
     describe("TestResult General White Box", () => {
 
+        init_test();
+
 
         test("updateTestResult id does not exist", async () => {
             expect(await db.updateTestResult(99, {
                 "newIdTestDescriptor": 1, "newDate": "2021/11/28", "newResult": true
             }).catch(err => err.toString()))
                 .toBe("404");
+            expect(await trController.updateTestResult(mockReq(
+                99,
+                "12345678901234567890123456789016",
+                { "newIdTestDescriptor": 1, "newDate": "2021/11/28", "newResult": true }
+                ), mockRes)
+            .catch(err => err.toString()))
+                .toBe("no test result associated to id");
         });
 
         test("getTestResultsByTdId TdId does not exist", async () => {
@@ -139,16 +185,29 @@ describe('Test Result Unit Test', () => {
         test("deleteTestResult id does not exist", async () => {
             expect(await db.deleteTestResult(99).catch(err => err.toString()))
                 .toBe("404");
+            expect(await trController.deleteTestResult(mockReq(
+                99, "12345678901234567890123456789016", undefined),
+            mockRes).catch(err => err.toString()))
+                .toBe("no test result associated to id");
         });
 
         test("getTestResults consistency test", async () => {
             const getTRsFromTable = await db.getTestResults();
             const getTRsByRFID = await db.getTestResultsByRfid("12345678901234567890123456789016");
+            const getTRsFromTableWithController = await trController.getTestResults(
+                mockReq(undefined, "12345678901234567890123456789016", undefined),
+                mockRes).catch(err => err.toString());
+            const getTRsByRFIDWithController = await trController.getTestResultsByRFID(
+                mockReq(undefined, "12345678901234567890123456789016", undefined),
+                mockRes).catch(err => err.toString());
+            expect(getTRsFromTableWithController).toStrictEqual(getTRsByRFIDWithController);
             expect(getTRsFromTable[0]).toStrictEqual(getTRsByRFID[0]);
         });
     });
 
     describe("TestResult Dropped Table White Box", () => {
+
+        init_test();
 
 
         test("addTestResult dropped table", async () => {
@@ -165,24 +224,43 @@ describe('Test Result Unit Test', () => {
                 "newIdTestDescriptor": 1, "newDate": "2021/11/28", "newResult": true
             }).catch(err => err.toString()))
                 .toBe("Error: SQLITE_ERROR: no such table: TestResult");
+            expect(await trController.updateTestResult(mockReq(
+                    1, "12345678901234567890123456789016",
+                    {
+                        "newIdTestDescriptor": 1, "newDate": "2021/11/28", "newResult": true
+                    }),
+                mockRes).catch(err => err.toString()))
+                .toBe("generic error");
         });
 
         test("deleteTestResult dropped table", async () => {
             await db.dropTable();
             expect(await db.deleteTestResult(1).catch(err => err.toString()))
                 .toBe("Error: SQLITE_ERROR: no such table: TestResult");
+            expect(await trController.deleteTestResult(mockReq(
+                    1, "12345678901234567890123456789016", undefined),
+                mockRes).catch(err => err.toString()))
+                .toBe("generic error");
         });
 
         test("getTestResults dropped table", async () => {
             await db.dropTable();
             expect(await db.getTestResults().catch(err => err.toString()))
                 .toBe("Error: SQLITE_ERROR: no such table: TestResult");
+            expect(await trController.getTestResults(
+                mockReq(undefined, "12345678901234567890123456789016", undefined),
+                mockRes).catch(err => err.toString()))
+                .toBe("generic error");
         });
 
         test("getTestResultById dropped table", async () => {
             await db.dropTable();
             expect(await db.getTestResultById(1).catch(err => err.toString()))
                 .toBe("Error: SQLITE_ERROR: no such table: TestResult");
+            expect(await trController.getTestResultById(
+                mockReq(1, "12345678901234567890123456789016", undefined),
+                mockRes).catch(err => err.toString()))
+                .toBe("generic error");
         });
 
         test("getTestResultByTdId dropped table", async () => {
@@ -194,6 +272,8 @@ describe('Test Result Unit Test', () => {
     });
 
     describe("TestResult Foreign Keys White Box", () => {
+
+        init_test();
 
         test("addTestResult foreign key constraint", async () => {
             await expect(await db.addTestResult({
@@ -212,6 +292,8 @@ describe('Test Result Unit Test', () => {
     });
 
     describe("getTestDescriptorIdsByTdId Black box", () => {
+
+        init_test();
 
         test("reqWithCorrectData", async () => {
             expect(await db.getTestResultsByTdId(2)).toEqual([{
