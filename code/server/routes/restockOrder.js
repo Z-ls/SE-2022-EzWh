@@ -98,7 +98,6 @@ router.put('/restockOrder/:id/skuItems',
     } catch (e) {
       result = e;
     }
-    console.log(result);
     return res.status(result.code).end();
 
   });
