@@ -1,11 +1,11 @@
-const dayjs = require('dayjs');
+const dayjs = require("dayjs");
+const sqlite = require('sqlite3');
+const TestResult = require("../model/TestResult");
 
 class TestResultRepository {
 
-    sqlite = require('sqlite3');
-
     constructor() {
-        this.db = new this.sqlite.Database("../ezwh.db", (err) => {
+        this.db = new sqlite.Database("../ezwh.db", (err) => {
             if (err) throw err;
         });
         this.db.run("PRAGMA foreign_keys = ON");
@@ -24,41 +24,21 @@ class TestResultRepository {
         });
     }
 
-    deleteTestResultdata(){
-        return new Promise((resolve, reject) =>{
-            const sql = 'DELETE FROM TestResult; DELETE FROM sqlite_sequence WHERE name = "TestResult";';
-            this.db.run(sql, (err) => {
-                if(err){
-                    reject(err);
-                    return;
-                }
-                resolve(true);
-            });
-        });
-    }
-
     newTestResultTable() {
         return new Promise((resolve, reject) => {
-            // const sql = 'CREATE TABLE IF NOT EXISTS TestResult(' +
-            //     'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-            //     'idTestDescriptor INTEGER NOT NULL,' +
-            //     'Date DATE NOT NULL, ' +
-            //     'Result VARCHAR NOT NULL,' +
-            //     'FOREIGN KEY(idTestDescriptor) REFERENCES TestDescriptor(id)' +
-            //     ');'
             const sql = 'CREATE TABLE IF NOT EXISTS TestResult(' +
                 'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
                 'idTestDescriptor INTEGER NOT NULL, ' +
                 'rfid VARCHAR NOT NULL, ' +
                 'Date DATE NOT NULL, ' +
                 'Result VARCHAR NOT NULL,' +
-                'FOREIGN KEY(idTestDescriptor) REFERENCES TestDescriptor(id), ' +
-                'FOREIGN KEY(rfid) REFERENCES SkuItem(RFID)' +
+                'FOREIGN KEY(idTestDescriptor) REFERENCES TestDescriptor(id) ON DELETE CASCADE, ' +
+                'FOREIGN KEY(rfid) REFERENCES SkuItem(RFID) ON DELETE CASCADE' +
                 ');'
             this.db.run(sql, (err) => {
                 if (err) {
                     reject(err);
-                    return false;
+                    return;
                 }
                 resolve();
             });
@@ -71,20 +51,16 @@ class TestResultRepository {
             this.db.all(sql, [], (err, rows) => {
                 if (err) {
                     reject(err);
-                    return "500";
-                }
-                if (rows.length === 0) {
-                    reject(err);
                     return;
                 }
-                const trs = rows.map((tr) => (
-                    {
-                        id: parseInt(tr.id),
-                        idTestDescriptor: tr.idTestDescriptor,
-                        Date: tr.Date,
-                        Result: tr.Result === "true"
-                    }
-                ));
+                const trs = rows.map(tr => {
+                    return new TestResult(
+                        tr.id,
+                        tr.idTestDescriptor,
+                        dayjs(tr.Date).format("YYYY/MM/DD"),
+                        tr.Result === "true"
+                        )
+                });
                 resolve(trs);
             });
         });
@@ -96,39 +72,38 @@ class TestResultRepository {
             this.db.get(sql, [id], (err, row) => {
                 if (err) {
                     reject(err);
-                    return "500";
-                }
-                if (!row) {
-                    reject(err);
                     return;
                 }
-                const tr = (
-                    {
-                        "rfid": row.rfid,
-                        "id": row.id,
-                        "idTestDescriptor": row.idTestDescriptor,
-                        "Date": row.Date,
-                        "Result": row.Result === "true"
-                    }
-                )
-                resolve(tr);
+                if (!row) {
+                    reject(404);
+                    return;
+                }
+                resolve(new TestResult(
+                    row.id,
+                    row.idTestDescriptor,
+                    dayjs(row.Date).format("YYYY/MM/DD"),
+                    row.Result === "true"
+                ));
             });
         });
     }
 
-    getTestResultIdByRfid(rfid) {
+    getTestResultsByRfid(rfid) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM TestResult WHERE rfid =?';
-            this.db.get(sql, [rfid], (err, row) => {
+            const sql = 'SELECT * FROM TestResult WHERE rfid = ?';
+            this.db.all(sql, [rfid], (err, rows) => {
                 if (err) {
-                    reject(err);
-                    return "500";
-                }
-                if (!row) {
-                    reject(err);
+                    reject(500);
                     return;
                 }
-                resolve(row);
+                const tr = rows.map(r => {
+                    return new TestResult(
+                        r.id,
+                        r.idTestDescriptor,
+                        dayjs(r.Date).format("YYYY/MM/DD"),
+                        r.Result === "true")
+                });
+                resolve(tr);
             });
         })
     }
@@ -141,7 +116,18 @@ class TestResultRepository {
                     reject(err);
                     return;
                 }
-                resolve(rows);
+                if (rows.length === 0) {
+                    reject(404);
+                    return;
+                }
+                const tr = rows.map(r => {
+                    return new TestResult(
+                        r.id,
+                        r.idTestDescriptor,
+                        dayjs(r.Date).format("YYYY/MM/DD"),
+                        r.Result === "true")
+                });
+                resolve(tr);
             });
         });
     }
@@ -153,13 +139,17 @@ class TestResultRepository {
                 'rfid, ' +
                 'Date,' +
                 'Result) ' +
-                'VALUES(?, ?, ?, ?);';
+                'VALUES(?, ?, (SELECT DATE(?)), ?);';
             this.db.run(sql, [
                 nTR.idTestDescriptor,
                 nTR.rfid,
-                dayjs(nTR.Date).format("YYYY-MM-DD"),
-                nTR.Result ? "true" : "false"
-            ], (err) => {
+                dayjs(nTR.Date).isValid() ?
+                    dayjs(nTR.Date).format("YYYY-MM-DD") :
+                    null,
+                typeof nTR.Result === "boolean" ?
+                    nTR.Result.toString() :
+                    null
+            ], function (err) {
                 if (err) {
                     reject(err);
                     return;
@@ -173,19 +163,25 @@ class TestResultRepository {
         return new Promise((resolve, reject) => {
             const sql = 'UPDATE TestResult SET ' +
                 `idTestDescriptor = ?, ` +
-                `rfid = ?`
-                `Date = Date(?), ` +
+                `Date = (SELECT DATE(?)), ` +
                 `Result = ? ` +
                 `WHERE id = ?;`;
             this.db.run(sql, [
                 nTR.newIdTestDescriptor,
-                nTR.newRfid,
-                nTR.newDate,
-                nTR.newResult ? "true" : "false",
+                dayjs(nTR.newDate).isValid() ?
+                    dayjs(nTR.newDate).format("YYYY-MM-DD") :
+                    null,
+                typeof nTR.newResult === "boolean" ?
+                    nTR.newResult.toString() :
+                    null,
                 id
-            ], (err) => {
+            ], function (err) {
                 if (err) {
                     reject(err);
+                    return;
+                }
+                if (this.changes === 0) {
+                    reject(404);
                     return;
                 }
                 resolve(nTR);
@@ -202,9 +198,23 @@ class TestResultRepository {
                     return;
                 }
                 if (this.changes === 0) {
-                    return "404";
+                    reject(404);
+                    return;
                 }
                 resolve(id);
+            });
+        });
+    }
+
+    deleteTestResultdata(){
+        return new Promise((resolve, reject) =>{
+            const sql = 'DELETE FROM TestResult; DELETE FROM sqlite_sequence WHERE name = "TestResult";';
+            this.db.run(sql, (err) => {
+                if(err){
+                    reject(err);
+                    return;
+                }
+                resolve(true);
             });
         });
     }

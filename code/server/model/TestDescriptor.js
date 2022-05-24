@@ -1,5 +1,6 @@
 
-function TestDescriptor(name, procedureDescription, idSKU) {
+function TestDescriptor(id, name, procedureDescription, idSKU) {
+    this.id = id;
     this.name = name;
     this.procedureDescription = procedureDescription;
     this.idSKU = idSKU;
