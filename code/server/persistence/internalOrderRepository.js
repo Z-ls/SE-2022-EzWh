@@ -106,13 +106,13 @@ class InternalOrderRepository {
       this.db.run(query, [internalOrder.issueDate, internalOrder.customerId],
         function (err) {
           if (err)
-            return reject({ code: 503 });
+            return reject({ code: 503, data: err });
           else {
             if (this.lastID) {
               resolve(this.lastID);
             }
             else {
-              reject({ code: 503 });
+              reject({ code: 503, data: "error while adding to internalOrder" });
             }
           }
         })

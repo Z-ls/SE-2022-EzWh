@@ -70,7 +70,6 @@ class InternalOrderController {
         await Promise.all([this.IOrepo.addToTransactionRFIDs(id, body.products), this.IOrepo.removeInternalTransactions(id)]);
       }
       catch (e) {
-        console.log(e);
         return e;
       }
     }

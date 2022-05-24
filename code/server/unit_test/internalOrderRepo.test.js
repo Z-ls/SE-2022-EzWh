@@ -38,10 +38,15 @@ describe("add internal order", () => {
     await userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));
     await testDescriptorRepo.addTestDescriptor(new TestDescriptor('test descriptor', 'procedure description', 1));
   })
-  const io = new InternalOrder(1, dayjs(), "ISSUED", [{ SKUId: 1, description: sku1.description, price: sku1.price, qty: 3 }], 1).toString();
 
-  testAdd(io, io);
-  testAdd({ code: 404, data: "Internal order not found" });
+  const io = new InternalOrder(1, dayjs(), "ISSUED", [{ SKUId: 1, description: sku1.description, price: sku1.price, qty: 3 }], 1).toString();
+  testAdd(io, io); // correct internal order
+
+  const io2 = new InternalOrder(1, dayjs(), "ISSUED", [{ SKUId: 999, description: sku1.description, price: sku1.price, qty: 3 }], 1).toString();
+  testAdd({ code: 503 }, io2); // non existing skuid
+
+  const io3 = new InternalOrder(1, dayjs(), "ISSUED", [{ SKUId: 1, description: sku1.description, price: sku1.price, qty: 3 }], 999).toString();
+  testAdd({ code: 503 }, io3); // non existing customerId
 })
 
 describe("update state", () => {
@@ -73,20 +78,30 @@ describe("update state", () => {
 
   io.state = "ACCEPTED";
   testUpdateState(1, "ACCEPTED", io);
+  testUpdateState(999, "ACCEPTED", { code: 404 }); // wrong internal order id
   testUpdateState(1, "COMPLETED", ioCompleted, products);
+  testUpdateState(999, "COMPLETED", ioCompleted, products); // wrong internal order id
+  const ioCompleted1 = new InternalOrder(1,
+    dayjs(),
+    "COMPLETED",
+    [{ SKUId: 999, RFID: "12345678901234567890123456789016" }, { SKUId: 1, RFID: "12345678901234567890123456789038" }]
+    , 1)
+    .toString();
+  testUpdateState(1, "COMPLETED", { code: 503 }, ioCompleted1); // nonexisting skuid
 })
 
 function testUpdateState(id, newState, expected, products = undefined) {
-  test('update state', async function () {
+  test('update state', async () => {
     if (newState === 'COMPLETED') {
-      await Promise.all([
-        internalRepo.addToTransactionRFIDs(id, products),
-        internalRepo.removeInternalTransactions(id)
-      ]
-      );
+      try {
+        await Promise.all([
+          internalRepo.addToTransactionRFIDs(id, products),
+          internalRepo.removeInternalTransactions(id)
+        ]);
+      } catch (e) { expect(e.code).toEqual(e.code); return; }
     }
 
-    await internalRepo.updateState(newState, id);
+    try { await internalRepo.updateState(newState, id); } catch (e) { expect(e.code).toEqual(expected.code); return; }
     const result = await internalRepo.get(id, newState);
     expect(result).toEqual(expected);
   });
@@ -96,7 +111,11 @@ function testAdd(expected, io = undefined) {
   test('add internal order', async () => {
     let result;
     if (io) {
-      await internalRepo.add(io);
+      try { await internalRepo.add(io); }
+      catch (e) {
+        expect(e.code).toEqual(expected.code);
+        return;
+      }
     }
     try {
       result = await internalRepo.get(1, "ISSUED");
