@@ -27,27 +27,20 @@ const nTr = (n) => ({
 
 const init_test = () => {
     before(async () => {
-        await dbTd.newTestDescriptorTable();
-        await db.newTestResultTable();
-        await dbHandler.deleteAllTablesData();
-        await dbTd.repopulateDataBase();
-    });
-
-    beforeEach(async () => {
-        await dbTd.newTestDescriptorTable();
-        await db.newTestResultTable();
         await dbHandler.deleteAllTablesData();
         await dbTd.repopulateDataBase();
         await dbTd.addTestDescriptor(td(1));
         await dbTd.addTestDescriptor(td(2));
         await dbTd.addTestDescriptor(td(3));
+    });
+
+    beforeEach(async () => {
+        await db.deleteTestResultdata();
         await db.addTestResult(tr(1));
         await db.addTestResult(tr(2));
     });
 
     after(async () => {
-        await db.newTestResultTable();
-        await dbTd.newTestDescriptorTable();
         await dbHandler.deleteAllTablesData();
         await dbTd.repopulateDataBase();
     });
@@ -84,14 +77,7 @@ describe('Test Result API Test', () => {
                 })
         });
 
-        it("get test results after table dropped", done => {
-            db.dropTable();
-            agent.get('/api/skuitems/12345678901234567890123456789016/testResults')
-                .then(res => {
-                    res.should.have.status(500);
-                    done();
-                })
-        });
+
     });
 
     describe("TEST GET /api/skuitems/:rfid/testResult/:id", () => {
@@ -142,14 +128,6 @@ describe('Test Result API Test', () => {
                 })
         });
 
-        it("get test result after table dropped", done => {
-            db.dropTable();
-            agent.get('/api/skuitems/12345678901234567890123456789016/testResults/1')
-                .then(res => {
-                    res.should.have.status(500);
-                    done();
-                })
-        });
 
     });
 
@@ -341,15 +319,7 @@ describe('Test Result API Test', () => {
                 })
         });
 
-        it("update test result after table dropped", done => {
-            db.dropTable();
-            agent.put('/api/skuitems/12345678901234567890123456789016/testResult/1')
-                .send(nTr(2))
-                .then(res => {
-                    res.should.have.status(503);
-                    done();
-                })
-        });
+
     });
 
     describe("TEST DELETE /api/skuitems/:rfid/testResult/:id", () => {
@@ -396,14 +366,7 @@ describe('Test Result API Test', () => {
                 })
         });
 
-        it("delete test result after table dropped", done => {
-            db.dropTable();
-            agent.delete('/api/skuitems/12345678901234567890123456789016/testResult/1')
-                .then(res => {
-                    res.should.have.status(503);
-                    done();
-                });
-        });
+
     });
 });
 

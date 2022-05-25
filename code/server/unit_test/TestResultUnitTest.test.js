@@ -21,25 +21,8 @@ const mockRes = {
 }
 
 const init_test = () => {
-    
-    beforeAll(async () => {
-        await dbTd.newTestDescriptorTable();
-        await db.newTestResultTable();
-        await dbHandler.deleteAllTablesData();
-        await dbTd.repopulateDataBase();
-    });
 
     beforeEach(async () => {
-        await dbTd.newTestDescriptorTable();
-        await db.newTestResultTable();
-        await dbHandler.deleteAllTablesData();
-        await dbTd.repopulateDataBase();
-        await dbTd.addTestDescriptor({
-            name: "Test Descriptor 1", idSKU: 1, procedureDescription: "This test is described by ..."
-        });
-        await dbTd.addTestDescriptor({
-            name: "Test Descriptor 2", idSKU: 2, procedureDescription: "This test is described by ..."
-        });
         await db.addTestResult({
             "rfid": "12345678901234567890123456789016", "idTestDescriptor": 1, "Date": "2021/11/28", "Result": true
         });
@@ -48,15 +31,24 @@ const init_test = () => {
         }), mockRes);
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         await db.newTestResultTable();
-        await dbTd.newTestDescriptorTable();
-        await dbHandler.deleteAllTablesData();
-        await dbTd.repopulateDataBase();
+        await db.deleteTestResultdata();
     });
 }
 
 describe('Test Result Unit Test', () => {
+
+    beforeAll(async () => {
+        await dbHandler.deleteAllTablesData();
+        await dbTd.repopulateDataBase();
+        await dbTd.addTestDescriptor({
+            name: "Test Descriptor 1", idSKU: 1, procedureDescription: "This test is described by ..."
+        });
+        await dbTd.addTestDescriptor({
+            name: "Test Descriptor 2", idSKU: 2, procedureDescription: "This test is described by ..."
+        });
+    });
 
     describe("updateTestResult Black Box", () => {
 
@@ -175,6 +167,86 @@ describe('Test Result Unit Test', () => {
                 ), mockRes)
             .catch(err => err.toString()))
                 .toBe("no test result associated to id");
+        });
+
+        test("updateTestResult newIdDescriptor does not exist", async () => {
+            expect(await trController.updateTestResult(mockReq(
+                1,
+                "12345678901234567890123456789016",
+                { "newIdTestDescriptor": 99, "newDate": "2021/11/28", "newResult": true }
+            ), mockRes)
+                .catch(err => err.toString()))
+                .toBe("no test descriptor associated to idTestDescriptor");
+        });
+
+        test("updateTestResult RFID does not exist", async () => {
+            expect(await trController.updateTestResult(mockReq(
+                1,
+                "12345678901234567890123456789099",
+                { "newIdTestDescriptor": 1, "newDate": "2021/11/28", "newResult": true }
+            ), mockRes)
+                .catch(err => err.toString()))
+                .toBe("no sku item associated to rfid");
+        });
+
+        test("updateTestResult newIdTestDescriptor non existent", async () => {
+            expect(await trController.updateTestResult(mockReq(
+                1,
+                "12345678901234567890123456789021",
+                { "newIdTestDescriptor": 99, "newDate": "2021/11/28", "newResult": true }
+            ), mockRes)
+                .catch(err => err.toString()))
+                .toBe("no test descriptor associated to idTestDescriptor");
+        });
+
+        test("updateTestResult SKU Item does not have the right descriptor", async () => {
+            expect(await trController.updateTestResult(mockReq(
+                1,
+                "12345678901234567890123456789021",
+                { "newIdTestDescriptor": 1, "newDate": "2021/11/28", "newResult": true }
+            ), mockRes)
+                .catch(err => err.toString()))
+                .toBe("no test description attached to this SKU Item");
+        });
+
+        test("getTestResultsByRFID RFID does not exist", async () => {
+            expect(await trController.getTestResultsByRFID(mockReq(
+                1,
+                "12345678901234567890123456789099",
+                undefined
+            ), mockRes)
+                .catch(err => err.toString()))
+                .toBe("no sku item associated to rfid");
+        });
+
+        test("getTestResultsByRFID SKU Item has no test descriptors", async () => {
+            expect(await trController.getTestResultsByRFID(mockReq(
+                1,
+                "12345678901234567890123456789018",
+                undefined
+            ), mockRes)
+                .catch(err => err.toString()))
+                .toBe("no test descriptor associated to idTestDescriptor");
+        });
+
+        test("addTestResultsByRFID RFID does not exist", async () => {
+            expect(await trController.addTestResult(mockReq(
+                undefined,
+                undefined,
+                { "rfid": "12345678901234567890123456789099", "idTestDescriptor": 1, "Date": "2021/11/28", "Result": true }
+            ), mockRes)
+                .catch(err => err.toString()))
+                .toBe("no sku item associated to rfid");
+        });
+
+        test("addTestResultsByRFID idTestDescriptor non existent", async () => {
+            expect(await trController.addTestResult(mockReq(
+                undefined,
+                undefined,
+                { "rfid": "12345678901234567890123456789016", "idTestDescriptor": 99, "Date": "2021/11/28", "Result": true }
+            ), mockRes)
+                .catch(err => err.toString()))
+                .toBe("no test descriptor associated to idTestDescriptor");
         });
 
         test("getTestResultsByTdId TdId does not exist", async () => {

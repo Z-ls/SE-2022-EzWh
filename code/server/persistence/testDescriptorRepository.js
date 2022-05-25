@@ -131,7 +131,7 @@ class TestDescriptorRepository {
     deleteTestDescriptordata = () => {
         return new Promise((resolve, reject) => {
             const sql = `DELETE FROM TestDescriptor; DELETE FROM sqlite_sequence WHERE name = "TestDescriptor";`;
-            this.db.run(sql, (err) => {
+            this.db.exec(sql, (err) => {
                 if (err) {
                     reject(err);
                     return;

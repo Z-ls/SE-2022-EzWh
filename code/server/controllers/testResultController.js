@@ -3,6 +3,7 @@ const testDescriptorRepository = require('../persistence/testDescriptorRepositor
 const skuItemRepository = require('../persistence/skuItemRepository');
 const skuRepository = require('../persistence/skuRepository');
 const { validationResult } = require("express-validator");
+const TestResult = require("../model/TestResult");
 const tdRepo = new testDescriptorRepository();
 const trRepo = new testResultRepository();
 const siRepo = new skuItemRepository();
@@ -33,9 +34,8 @@ exports.getTestResultsByRFID = async(req, res) => {
             return res.status(404).send("no sku item associated to rfid");
         // Searching for Test Descriptors with SKU IDs,
         // using functions defined in Test Descriptor Controller.
-        let tdIds = await tdRepo.getTestDescriptorIdsBySKUId(skuItem[0].SKUId).catch(err => {
-            if (err === 404) return err; else throw (err);});
-        if (tdIds === 404)
+        let tdIds = await tdRepo.getTestDescriptorIdsBySKUId(skuItem[0].SKUId).catch(err => {throw (err)});
+        if (tdIds.length === 0)
             return res.status(404).send("no test descriptor associated to idTestDescriptor");
         // Get the list of Test Results for corresponding Test Descriptor ID.
         let trs = await Promise.all(tdIds.map((tdIdArray) => {
@@ -43,13 +43,11 @@ exports.getTestResultsByRFID = async(req, res) => {
         }));
         // Re-formatting the list and transfer data types.
         let trj = (trs.flat(1).map(tri => {
-            return (
-                {
-                    id: tri.id,
-                    idTestDescriptor: tri.idTestDescriptor,
-                    Date: tri.Date,
-                    Result: tri.Result === "true"
-                }
+            return new TestResult(
+                    tri.id,
+                    tri.idTestDescriptor,
+                    tri.Date,
+                    tri.Result === "true"
             )
         }));
         return res.status(200).json(trj);
@@ -102,7 +100,7 @@ exports.addTestResult = async (req, res) => {
             return res.status(201).end();
         });
     } catch (err) {
-            return res.status(503).send("generic error");
+        return res.status(503).send("generic error");
     }
 }
 
@@ -121,9 +119,8 @@ exports.updateTestResult = async (req, res) => {
         if (skuItem.length === 0)
             return res.status(404).send("no sku item associated to rfid");
         // Get the "list" of Test Descriptors with SKU ID
-        if (await tdRepo.getTestDescriptorIdsBySKUId(skuItem[0].SKUId).catch(err => {
-            if (err === 404) return err; else { throw err }
-        }) === 404)
+        if ((await tdRepo.getTestDescriptorIdsBySKUId(skuItem[0].SKUId)
+            .catch(err => { throw err })).length === 0)
             return res.status(404).send("no test description attached to this SKU Item");
         // Update the Test Descriptors for the SKU
         let sku = await skuRepo.getSkuById(skuItem[0].SKUId).catch(err => { throw err });
