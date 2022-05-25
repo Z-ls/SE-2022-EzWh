@@ -71,7 +71,7 @@ db.run("PRAGMA foreign_keys = ON");
             const sql = 'UPDATE position SET positionID = ?, aisleID = ? ,row= ?,col= ?,maxWeight= ?,maxVolume= ?,occupiedWeight= ?,occupiedVolume= ? WHERE positionID = ?';
             db.run(sql,[pos.newAisleID+pos.newRow+pos.newCol, pos.newAisleID, pos.newRow, pos.newCol, pos.newMaxWeight, pos.newMaxVolume, pos.newOccupiedWeight, pos.newOccupiedVolume, id],(err)=>{
                 if(err)
-                {
+                { 
                     reject(err);
                 }else{
                     resolve(true);
@@ -126,21 +126,20 @@ db.run("PRAGMA foreign_keys = ON");
         });
     }
 
-this.getPOSbyID = (id)=>
-{
-    return new Promise((resolve,reject)=>{
-        const sql = 'SELECT * FROM position WHERE positionID=?';
-        db.all(sql, id,(err, rows) =>{
-            if(err){
-                reject(err);
-            }else{
-                resolve(rows.map((p)=>{
-                    return new POS(p.positionID, p.aisleID, p.row, p.col, p.maxWeight, p.maxVolume, p.occupiedWeight, p.occupiedVolume);
-                }));
-            }
+    this.getPOSbyID = (id) => {
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * FROM position WHERE positionID = ?';
+            db.all(sql, id, (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows.map((p) => {
+                        return new POS(p.positionID, p.aisleID, p.row, p.col, p.maxWeight, p.maxVolume, p.occupiedWeight, p.occupiedVolume);
+                    }));
+                }
+            });
         });
-    });
-}
+    }
 
 }
 

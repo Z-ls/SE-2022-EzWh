@@ -1,35 +1,41 @@
 const RET = require("../model/returnOrder");
 const retRepository = require("../persistence/returnOrderRepository");
 
-const getReturnOrders = async(req, res) => {
+const getReturnOrders = async() => {
     const retRep = new retRepository();
    /* await retRep.dropTable();
     await retRep.newTableRETURN();
     await retRep.addReturnOrder(new RET("2021/11/29 09:33", "1")); */
     const retlist = await retRep.getReturnOrders();
-    let message = retlist
-    return res.status(200).json(message);
+    for (let i = 0; i < retlist.length; i++) {
+        let RetOrd = retlist[i];
+         RetOrd.products= await testDesRep.getProductsbyID(RetOrd.id);
+    }
+    return retlist;//res.status(200).json(message);
 }
 
-const getReturnOrdersByID = async(req, res) => {
+const getReturnOrdersByID = async(id) => {
     const retRep = new retRepository();
-    const retlist = await retRep.getReturnOrderbyID(req.params.id);
-    if(retlist.lenght !== 0){
-    let message = retlist
-    return res.status(200).json(message);}
-    return res.status(404).send('Not found');
+    const res = await retRep.getReturnOrderbyID(id);
+    res.products= await testDesRep.getProductsbyID(res.id)
+    return res;
+    //res.status(200).json(message);}
+    //res.status(404).send('Not found');
 }
 
-const addReturnOrder = async (req, res) => {
+const addReturnOrder = async (newRet) => {
+    console.log(newRet.returnDate);
+    console.log(newRet.products);
+    console.log(newRet.restockOrderID);
     const retRep = new retRepository();
-    const created = await retRep.addReturnOrder(req.params.id, r.params.returnDate, r.params.restockOrderID);
-    return created ? res.status(201).send('Created') : res.status(422).send('Unprocessable Entity');
+    const created = await retRep.addReturnOrder(newRet.returnDate, newRet.products, newRet.restockOrderID);
+    return created;// ? res.status(201).send('Created') : res.status(422).send('Unprocessable Entity');
 }
 
-const deleteReturnOrder = async (req, res) => {
+const deleteReturnOrder = async (id) => {
     const retRep = new retRepository();
-    const deleted = await retRep.deleteReturnOrder(req.params.id);
-    return deleted ? res.status(204).send('Deleted') : res.status(422).send('Unprocessable Entity');
+    const deleted = await retRep.deleteReturnOrder(id);
+    return deleted;// ? res.status(204).send('Deleted') : res.status(422).send('Unprocessable Entity');
 }
 
 module.exports = {

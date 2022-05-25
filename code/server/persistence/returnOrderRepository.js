@@ -1,5 +1,6 @@
 const sqlite = require('sqlite3');
 const RETURN = require('../model/returnOrder');
+const skuItemRepository = require('./skuItemRepository');
 
 function retRepository(){
     const db = new sqlite.Database('../ezwh.db', (err) => {
@@ -9,6 +10,7 @@ function retRepository(){
     });
 
 db.run("PRAGMA foreign_keys = ON");
+this.skuitemRepository = new skuItemRepository();
 
     this.dropTable = () =>{
         return new Promise((resolve, reject) =>{
@@ -34,7 +36,7 @@ db.run("PRAGMA foreign_keys = ON");
                 resolve(true);
             });
         });
-    }
+    }    
 
 this.newTableRETURN = () =>{
     return new Promise((resolve, reject) => {
@@ -50,18 +52,32 @@ this.newTableRETURN = () =>{
     });
 }
 
+this.getProductsbyID = (id) =>{
+    return new Promise((resolve, reject) => {
+        const sql = "SELECT S.SKUId as SKUId, S.description  AS description, S.price AS price, S.RFID AS RFID "
+        + "FROM returnOrder R, returnOrderTransaction RT, SKUITEM SI, SKU S "
+        + "WHERE WHERE R.restockOrderID = RT.idReturnOrder AND RT.RFID=SI.RFID AND SI.SKUid=S.id AND idReturnOrder = ?";
+        this.db.all(sql, id, (err, rows) => {
+           if (err) {
+            reject(err);
+            return;
+           }
+           resolve(rows);
+        });
+    });
+}
+
 this.getReturnOrders = ()=>
 {
     return new Promise((resolve,reject)=>{
-        const sql = "SELECT R.id AS id, R.returnDate AS returnDate, R.restockOrderID AS restockOrderId, S.SKUId AS SKUId, "
-        + "I.description  AS description, I.price AS price, S.RFID AS RFID " 
-        + "FROM returnOrder R, restockOrder O, restockTransactionItem TI, restockTransactionSKU TS, ITEM I, SKUITEM S "
-        + "WHERE R.restockOrderID = O.id AND O.id = TI.idRestockOrder AND O.id = TS.idRestockOrder AND I.id = TI.idItem AND S.RFID = TS.RFID";
+        const sql = "SELECT * FROM returnOrder";
         db.all(sql, (err, rows) =>{
             if(err){
                 reject(err);
             }else{
-                resolve(rows);
+                resolve(rows.map((ro)=>{
+                    return new POS(ro.id, dayjs(ro.returnDate).format("YYYY/MM/DD HH:mm"), ro.restockOrderID);
+                }));
             }
         });
     });
@@ -70,14 +86,14 @@ this.getReturnOrders = ()=>
 this.getReturnOrderbyID = (id)=>
 {
     return new Promise((resolve,reject)=>{
-        const sql = 'SELECT R.id AS id, R.returnDate AS returnDate, R.restockOrderID AS restockOrderId, S.SKUId AS SKUId, I.description  AS description, I.price AS price, S.RFID AS RFID' 
-        + ' FROM returnOrder R, restockOrder O, restockTransactionItem TI, restockTransactionSKU TS, ITEM I, SKUITEM S  '
-        + 'WHERE R.restockOrderID = O.id AND O.id = TI.idRestockOrder AND O.id = TS.idRestockOrder AND I.id = TI.idItem AND S.RFID = TS.RFID AND R.id = ?';
-        db.all(sql, id,(err, rows) =>{
+        const sql = "SELECT * FROM returnOrder WHERE id = ?";
+        db.all(sql, (err, rows) =>{
             if(err){
                 reject(err);
             }else{
-                resolve(rows);
+                resolve(rows.map((ro)=>{
+                    return new POS(ro.id, dayjs(ro.returnDate).format("YYYY/MM/DD HH:mm"), ro.restockOrderID);
+                }));
             }
         });
     });
@@ -98,11 +114,26 @@ this.deleteReturnOrder = (id)=>
     });
 }
 
-this.addReturnOrder = (r)=>
-{
+this.addReturnOrder = (returnDate, products, restockOrderID)=>
+{ 
+    const addReturnOrderTransaction = () =>
+    {
+        return new Promise((resolve, reject) =>{
+            const sql = ("INSERT INTO returnOrderTransaction (idReturnOrder,RFID) values " + "(?,?),".repeat(products.length)).slice(0, -1);
+            db.run(sql,[restockOrderID, products.flatMap(p => p.RFID)],(err)=>{
+                if(err)
+                {
+                    reject(err);
+                }else{
+                    resolve(true);
+                }
+            });
+        });
+    }
     return new Promise((resolve, reject) =>{
         const sql = 'INSERT INTO returnOrder (returnDate,restockOrderID) VALUES(?,?)';
-        db.run(sql,[r.returnDate, r.restockOrderID],(err)=>{
+        const result = addReturnOrderTransaction();
+        db.run(sql,[returnDate, restockOrderID],(err)=>{
             if(err)
             {
                 reject(err);
@@ -111,7 +142,8 @@ this.addReturnOrder = (r)=>
             }
         });
     });
+  }
 }
-}
+
 
 module.exports = retRepository;
