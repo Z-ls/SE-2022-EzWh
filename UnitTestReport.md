@@ -1,8 +1,8 @@
 # Unit Testing Report
 
-Date: 19/05/72022
+Date: 25/05/72022
 
-Version: 1.0
+Version: 1.1
 
 # Contents
 
@@ -873,11 +873,11 @@ Version: 1.0
     <Add here the screenshot report of the statement and branch coverage obtained using
     the coverage tool. >
 
+![](images/Coverage_Unit_Test.PNG)
 
 ### Loop coverage analysis
 
-    <Identify significant loops in the units and reports the test cases
-    developed to cover zero, one or multiple iterations >
+    Not apply
 
 | Unit name | Loop rows | Number of iterations | Jest test case |
 | --------- | --------- | -------------------- | -------------- |
