@@ -44,7 +44,7 @@ describe('POST add internal order', () => {
     await skuRepo.addSKU(sku1);
     await skuRepo.addSKU(sku2);
     await userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));
-    await testDescriptorRepo.addTestDescriptor(new TestDescriptor('test descriptor', 'procedure description', 1));
+    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));
   });
 
   // correct { id: 1, issueDate: dateHandler.DayjsToDateAndTime(dayjs()), state: "ISSUED", products: [{ SKUId: 1, description: sku1.description, price: sku1.price, qty: 3 }], customerId: 1 }
@@ -77,7 +77,7 @@ describe('PUT update state', () => {
     await skuItemRepoo.addSKUItem(skuItem1);
     await skuItemRepoo.addSKUItem(skuItem2);
     await userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));
-    await testDescriptorRepo.addTestDescriptor(new TestDescriptor('test descriptor', 'procedure description', 1));
+    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));
     await internalRepo.add({ id: 1, issueDate: dateHandler.DayjsToDateAndTime(dayjs()), state: "ISSUED", products: [{ SKUId: 1, description: sku1.description, price: sku1.price, qty: 3 }], customerId: 1 });
   });
 

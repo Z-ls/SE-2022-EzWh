@@ -430,6 +430,390 @@ Version: 1.0
 | false                     | Invalid         | ItemRepository itemRep = new ItemRepository();<br />ItemController itemController = new ItemController();<br />//Supplier with supplierid=2 exists in DB<br />//SKU with skuid=1 exists in DB<br />Item i1 = new Item(12,"a new item", 10.99, 1, 2);<br />Item i2 = new Item("a new item2",11.99);<br />itemController.editSKUItem(i2,12); -> returns false<br />itemRep.getSingleSKUItem(12)-> returns [] |                |
 | true                      | Valid           | ItemRepository itemRep = new ItemRepository();<br />ItemController itemController = new ItemController();<br />//Supplier with supplierid=2 exists in DB<br />//SKU with skuid=1 exists in DB<br />Item i1 = new Item(12,"a new item", 10.99, 1, 2);<br />itemRep.addItem(i1)<br />Item i2 = new Item("a new item2",11.99);<br />itemController.editSKUItem(i2,12); -> returns true<br />itemRep.getSingleSKUItem(12)-> returns {12,"a new item", 11.99, 1, 2} |                |
 
+### **Class *TestDescriptor* - method *updateTestDescriptor***
+
+
+
+**Criteria for method *updateTestDescriptor*:**
+
+
+- **ID** has to be an **integer**
+- **ID** has to be **bigger than 0**
+- **newIdSKU** has to be an **integer**
+- **newIdSKU** has to be **bigger than 0**
+- **newName** has to be a **non-empty** string
+- **newProcedureDescription** has to be a **non-empty** string
+
+
+
+
+**Predicates for method *updateTestDescriptor*:**
+
+| Criteria                                             | Predicate                          |
+|------------------------------------------------------|------------------------------------|
+| ID has to be an integer                              | typeof id === "Integer"            |
+| ID has to be bigger than 0                           | id > 0                             |
+| newIdSKU has to be an integer                        | typeof newIdSKU === "Integer"      |
+| newIdSKU has to be bigger than 0                     | newIdSKU > 0                       |
+| newName has to be a non-empty string                 | newName !== undefined              |
+| newProcedureDescription has to be a non-empty string | newProcedureDescription.length > 0 |
+
+
+**Boundaries**:
+
+| Criteria                                              | Boundary values |
+|-------------------------------------------------------|-----------------|
+| ID has to be bigger than 0                            | 0               |
+| newIdSKU has to be bigger than 0                      | 0               |
+
+**Combination of predicates**:
+
+
+| ID is integer | ID is bigger than 0 | newIdSKu is integer | newIdSKU is bigger than 0 | newName is non-empty | newProcedureDescription is non-empty | Valid / Invalid | Description of the test case                                                                                                                                                  | Jest test case                       |
+|---------------|---------------------|---------------------|---------------------------|----------------------|--------------------------------------|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| true          | true                | true                | true                      | true                 | true                                 | Valid           | db.updateTestDescriptor({<br/>*newName*: "New Test Descriptor 1",<br/>*newIdSKU*: 1,<br/>*newProcedureDescription*: "New This test is described by ..."}, 1);                 | reqWithCorrectData                   |
+| **false**     | **false**           | true                | true                      | true                 | true                                 | Invalid         | db.updateTestDescriptor({<br/>*newName*: "New Test Descriptor 1",<br/>*newIdSKU*: 1,<br/>*newProcedureDescription*: "New This test is described by ..."}, **"Not Integer"**); | reqWithNonIntegerId                  |
+| true          | **false**           | true                | true                      | true                 | true                                 | Invalid         | db.updateTestDescriptor({<br/>*newName*: "New Test Descriptor 1",<br/>*newIdSKU*: 1,<br/>*newProcedureDescription*: "New This test is described by ..."}, **0**);             | reqWithZeroId                        |
+| true          | true                | **false**           | **false**                 | true                 | true                                 | Invalid         | db.updateTestDescriptor({<br/>*newName*: "New Test Descriptor 1",<br/>***newIdSKU*: "Not Integer"**,<br/>*newProcedureDescription*: "New This test is described by ..."}, 1); | reqWithNonIntegerNewIdSKU            |
+| true          | true                | true                | **false**                 | true                 | true                                 | Invalid         | db.updateTestDescriptor({<br/>*newName*: "New Test Descriptor 1",<br/>***newIdSKU*: 0**,<br/>*newProcedureDescription*: "New This test is described by ..."}, 1);             | reqWithZeroNewIdSKU                  |
+| true          | true                | true                | true                      | **false**            | true                                 | Invalid         | db.updateTestDescriptor({<br/>***newName*: undefined**,<br/>*newIdSKU*: 1,<br/>*newProcedureDescription*: "New This test is described by ..."}, 1);                           | reqWithEmptyNewName                  |
+| true          | true                | true                | true                      | true                 | **false**                            | Invalid         | db.updateTestDescriptor({<br/>*newName*: "New Test Descriptor 1",<br/>*newIdSKU*: 1,<br/>***newProcedureDescription*: undefined**}, 1);                                       | reqWithEmptyNewProcedureDescription  |
+| true          | true                | true                | true                      | true                 | true                                 | Invalid         | db.updateTestDescriptor({<br/>*newName*: "New Test Descriptor 1",<br/>*newIdSKU*: 1,<br/>***newProcedureDescription*: undefined**}, 1);                                       | reqWithEmptyNewProcedureDescription  |
+
+
+
+
+### **Class *TestDescriptor* - method *deleteTestDescriptor***
+
+**Criteria for method *deleteTestDescriptor*:**
+
+
+- **ID** has to be an **integer**
+- **ID** has to be **bigger than 0**
+- **Test Descriptor** has to be **existent**
+
+
+**Predicates for method *deleteTestDescriptor*:**
+
+| Criteria                     | Predicate               |
+|------------------------------|-------------------------|
+| ID has to be an integer      | typeof id === "Integer" |
+| ID has to be bigger than 0   | id > 0                  |
+| Test Descriptor has to exist | true                    | 
+|                              | false                   |
+
+
+**Boundaries**:
+
+| Criteria                                              | Boundary values |
+|-------------------------------------------------------|-----------------|
+| ID has to be bigger than 0                            | 0               |
+
+
+
+**Combination of predicates**:
+
+
+| ID is integer | ID is bigger than 1 | Test Descriptor exist | Valid / Invalid | Description of the test case               | Jest test case                            |
+|---------------|---------------------|-----------------------|-----------------|--------------------------------------------|-------------------------------------------|
+| true          | true                | true                  | Valid           | db.deleteTestDescriptor(1)                 | reqWithCorrectData()                      |
+| **false**     | **false**           | **false**             | Invalid         | db.deleteTestDescriptor(**"Not Integer"**) | reqWithNonIntegerId()                     |
+| true          | **false**           | **false**             | Invalid         | db.deleteTestDescriptor(**0**)             | reqWithZeroId()                           |
+| true          | true                | true                  | Invalid         | db.deleteTestDescriptor(**99**)            | deleteTestDescriptor with ID non existent |
+
+### **Class *TestResult* - method *updateTestResult***
+
+
+
+**Criteria for method *updateTestResult*:**
+
+- **ID** has to be an **integer**
+- **ID** has to be **bigger than 0**
+- **newIdTestDescriptor** has to be an **integer**
+- **newIdTestDescriptor** has to be **bigger than 0**
+- **newDate** has to be a **non-empty** string
+- **newResult** has to be a **non-empty** string
+
+
+
+**Predicates for method *updateTestResult*:**
+
+| Criteria                                     | Predicate                                |
+|----------------------------------------------|------------------------------------------|
+| ID has to be an integer                      | typeof id === "Integer"                  |
+| ID has to be bigger than 0                   | id > 0                                   |
+| newIdTestDescriptor has to be an integer     | typeof newIdTestDescriptor === "Integer" |
+| newIdTestDescriptor has to be bigger than 0  | newIdTestDescriptor > 0                  |
+| newDate has to be of valid date-format       | typeof newDate === Date                  |
+| newResult has to of (primitive) boolean type | typeof newResult === "boolean"           |
+
+
+
+**Boundaries**:
+
+| Criteria                                    | Boundary values |
+|---------------------------------------------|-----------------|
+| ID has to be bigger than 0                  | 0               |
+| newIdTestDescriptor has to be bigger than 0 | 0               |
+
+**Combination of predicates**:
+
+
+| ID is integer | ID is bigger than 0 | newIdSKu is integer | newIdTestDescriptor is bigger than 0 | newDate is of Date | newResult is of boolean | Valid / Invalid | Description of the test case                                                                                                 | Jest test case                       |
+|---------------|---------------------|---------------------|--------------------------------------|--------------------|-------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| true          | true                | true                | true                                 | true               | true                    | Valid           | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>*newIdTestDescriptor*: 1,<br/>*newResult*: true}, 1);                 | reqWithCorrectData                   |
+| **false**     | **false**           | true                | true                                 | true               | true                    | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>*newIdTestDescriptor*: 1,<br/>*newResult*: true}, **"Not Integer"**); | reqWithNonIntegerId                  |
+| true          | **false**           | true                | true                                 | true               | true                    | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>*newIdTestDescriptor*: 1,<br/>*newResult*: true}, **0**);             | reqWithZeroId                        |
+| true          | true                | **false**           | **false**                            | true               | true                    | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>***newIdTestDescriptor*: "Not Integer"**,<br/>*newResult*: true}, 1); | reqWithNonIntegerNewIdTestDescriptor |
+| true          | true                | true                | **false**                            | true               | true                    | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>***newIdTestDescriptor*: 0**,<br/>*newResult*: true}, 1);             | reqWithZeroNewIdTestDescriptor       |
+| true          | true                | true                | true                                 | **false**          | true                    | Invalid         | db.updateTestResult({<br/>***newDate*: "Not Date"**,<br/>*newIdTestDescriptor*: 1,<br/>*newResult*: true}, 1);               | reqWithNonDateNewDate                |
+| true          | true                | true                | true                                 | true               | **false**               | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>*newIdTestDescriptor*: 1,<br/>***newResult*: "Not boolean"**}, 1);    | reqWithNonBooleanNewResult           |
+
+
+### **Class *TestResult* - method *updateTestResult***
+
+
+
+**Criteria for method *updateTestResult*:**
+
+- **ID** has to be an **integer**
+- **ID** has to be **bigger than 0**
+- **newIdTestDescriptor** has to be an **integer**
+- **newIdTestDescriptor** has to be **bigger than 0**
+- **newDate** has to be a **non-empty** string
+- **newResult** has to be a **non-empty** string
+
+
+
+**Predicates for method *updateTestResult*:**
+
+| Criteria                                     | Predicate                                |
+|----------------------------------------------|------------------------------------------|
+| ID has to be an integer                      | typeof id === "Integer"                  |
+| ID has to be bigger than 0                   | id > 0                                   |
+| newIdTestDescriptor has to be an integer     | typeof newIdTestDescriptor === "Integer" |
+| newIdTestDescriptor has to be bigger than 0  | newIdTestDescriptor > 0                  |
+| newDate has to be of valid date-format       | typeof newDate === Date                  |
+| newResult has to of (primitive) boolean type | typeof newResult === "boolean"           |
+
+
+
+**Boundaries**:
+
+| Criteria                                    | Boundary values |
+|---------------------------------------------|-----------------|
+| ID has to be bigger than 0                  | 0               |
+| newIdTestDescriptor has to be bigger than 0 | 0               |
+
+**Combination of predicates**:
+
+
+| ID is integer | ID is bigger than 0 | newIdSKu is integer | newIdTestDescriptor is bigger than 0 | newDate is of Date | newResult is of boolean | Valid / Invalid | Description of the test case                                                                                                 | Jest test case                       |
+|---------------|---------------------|---------------------|--------------------------------------|--------------------|-------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| true          | true                | true                | true                                 | true               | true                    | Valid           | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>*newIdTestDescriptor*: 1,<br/>*newResult*: true}, 1);                 | reqWithCorrectData                   |
+| **false**     | **false**           | true                | true                                 | true               | true                    | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>*newIdTestDescriptor*: 1,<br/>*newResult*: true}, **"Not Integer"**); | reqWithNonIntegerId                  |
+| true          | **false**           | true                | true                                 | true               | true                    | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>*newIdTestDescriptor*: 1,<br/>*newResult*: true}, **0**);             | reqWithZeroId                        |
+| true          | true                | **false**           | **false**                            | true               | true                    | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>***newIdTestDescriptor*: "Not Integer"**,<br/>*newResult*: true}, 1); | reqWithNonIntegerNewIdTestDescriptor |
+| true          | true                | true                | **false**                            | true               | true                    | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>***newIdTestDescriptor*: 0**,<br/>*newResult*: true}, 1);             | reqWithZeroNewIdTestDescriptor       |
+| true          | true                | true                | true                                 | **false**          | true                    | Invalid         | db.updateTestResult({<br/>***newDate*: "Not Date"**,<br/>*newIdTestDescriptor*: 1,<br/>*newResult*: true}, 1);               | reqWithNonDateNewDate                |
+| true          | true                | true                | true                                 | true               | **false**               | Invalid         | db.updateTestResult({<br/>*newDate*: "2022-05-20",<br/>*newIdTestDescriptor*: 1,<br/>***newResult*: "Not boolean"**}, 1);    | reqWithNonBooleanNewResult           |
+
+### **Class *TestResult* - method *deleteTestResult***
+
+**Criteria for method *deleteTestResult*:**
+
+
+- **ID** has to be an **integer**
+- **ID** has to be **bigger than 0**
+- **Test Result** has to exist
+- **SKU Item** has to exist 
+
+**Predicates for method *deleteTestResult*:**
+
+| Criteria                                             | Predicate                          |
+|------------------------------------------------------|------------------------------------|
+| ID has to be an integer                              | typeof id === "Integer"            |
+| ID has to be bigger than 0                           | id > 0                             |
+
+
+
+**Boundaries**:
+
+| Criteria                                              | Boundary values |
+|-------------------------------------------------------|-----------------|
+| ID has to be bigger than 0                            | 0               |
+
+
+
+**Combination of predicates**:
+
+
+| ID is integer | ID is bigger than 1 | SKU Item exists | Test Result exists | Valid / Invalid | Description of the test case                                           | Jest test case                                                  |
+|---------------|---------------------|-----------------|--------------------|-----------------|------------------------------------------------------------------------|-----------------------------------------------------------------|
+| true          | true                | true            | true               | Valid           | testResultRepository.deleteTestResult(1)                               | Test Result Unit Test > reqWithCorrectData()                    |
+| **false**     | **false**           | true            | **false**          | Invalid         | testResultRepository.deleteTestResult(**"Not Integer"**)               | Test Result Unit Test > reqWithNonIntegerId()                   |
+| true          | **false**           | true            | **false**          | Invalid         | testResultRepository.deleteTestResult(**0**)                           | Test Result Unit Test > reqWithZeroId()                         |
+| true          | true                | true            | **false**          | Invalid         | testResultRepository.deleteTestResult(**99**)                          | Test Result Unit Test > delete test result by non-existent id   |
+| true          | true                | **false**       | **false**          | Invalid         | delete('/api/skuitems/12345678901234567890123456789099/testResult/1')  | Test Result Unit Test > delete test result by rfid non-existent |
+
+
+## Class restockOrderRepository
+
+### returnItems(id)
+
+#### Criteria
+
+- id of the restock order exists
+
+#### Predicates
+
+| Criteria            | Predicate |
+| ------------------- | --------- |
+| id exists in the db | true      |
+|                     | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| id already exists in DB | the id is associated to some items which must be returned | Valid / Invalid | Description of the test case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------- | --------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `false`                 |                                                           | Invalid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1,'test descriptor', 'procedure description', 1));<br />restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",[{ SKUId: 1, description: "item description", price: 3, qty: 2 }], 1, {}, []));<br />restockRepo.updateState(1, "DELIVERED");<br />restockRepo.addSKUItems(1, [{ SKUId: 1, rfid: rfid1 },{ SKUId: 1, rfid: rfid2 }]);<br />restockRepo.updateState(1, "COMPLETEDRETURN");<br />let tr = new testResult(1, 1, dateHandler.DayjsToDate(dayjs()), false);<br />tr.rfid = skuItem[0].rfid;<br />testResultRepo.addTestResult(tr);<br />restockRepo.returnItems(id)<br />// result = {code: 404} |
+| `true`                  | `false`                                                   | Invalid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1,'test descriptor', 'procedure description', 1));<br />restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",[{ SKUId: 1, description: "item description", price: 3, qty: 2 }], 1, {}, []));<br />restockRepo.updateState(1, "DELIVERED");<br />restockRepo.addSKUItems(1, [{ SKUId: 1, rfid: rfid1 },{ SKUId: 1, rfid: rfid2 }]);<br />restockRepo.updateState(1, "COMPLETEDRETURN");<br />let tr = new testResult(1, 1, dateHandler.DayjsToDate(dayjs()), false);<br />tr.rfid = skuItem[0].rfid;<br />testResultRepo.addTestResult(tr);<br />restockRepo.returnItems(id)<br />// result = []          |
+| `true`                  | `true`                                                    | Valid           | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1,'test descriptor', 'procedure description', 1));<br />restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",[{ SKUId: 1, description: "item description", price: 3, qty: 2 }], 1, {}, []));<br />restockRepo.updateState(1, "DELIVERED");<br />restockRepo.addSKUItems(1, [{ SKUId: 1, rfid: rfid1 },{ SKUId: 1, rfid: rfid2 }]);<br />restockRepo.updateState(1, "COMPLETEDRETURN");<br />let tr = new testResult(1, 1, dateHandler.DayjsToDate(dayjs()), false);<br />tr.rfid = skuItem[0].rfid;<br />testResultRepo.addTestResult(tr);<br />restockRepo.returnItems(id)<br />// result = skuItem[0]  |
+
+### add
+
+#### Criteria
+
+- SKUId(s) exists
+
+- supplierId exists
+
+#### Predicates
+
+| Criteria                       | Predicate |
+| ------------------------------ | --------- |
+| exists an item with that SKUId | true      |
+|                                | false     |
+| the supplierId exists          | true      |
+|                                | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------: | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| exists an item with that SKUId | the supplierId exists | Valid/Invalid | Description of the test case                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------ | --------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `false`                        |                       | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro); // ro has at least one wrong skuid<br />restockRepo.get(id);<br />// result = {code: 422} |
+| `true`                         | `false`               | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro); // ro has a wrong supplierId<br />restockRepo.get(id);<br />// result = {code: 422}       |
+| `true`                         | `true`                | Valid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro); // ro has a wrong supplierId<br />restockRepo.get(id);<br />// result = {code: 200}       |
+
+### addSKUItems
+
+#### Criteria
+
+- id exists
+- SKUId(s) exist
+- unique RFIDs
+
+#### Predicates
+
+| Criteria       | Predicate |
+| -------------- | --------- |
+| id exists      | true      |
+|                | false     |
+| SKUId(s) exist | true      |
+|                | false     |
+| unique RFIDs   | true      |
+|                | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------: | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| id exists | SKUId(s) exist | unique RFIDs | Valid/Invalid | Description of the test case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------- | -------------- | ------------ | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `false`   |                |              | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro);<br />restockRepo.updateState(1, 'DELIVERED');<br />restockRepo.addSKUItems(id, skuItems);<br />restockRepo.get(id);<br />// result = {code:404} |
+| `true`    | `false`        |              | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro);<br />restockRepo.updateState(1, 'DELIVERED');<br />restockRepo.addSKUItems(id, skuItems);<br />restockRepo.get(id);<br />// result = {code:422} |
+| `true`    | `true`         | `false`      | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro);<br />restockRepo.updateState(1, 'DELIVERED');<br />restockRepo.addSKUItems(id, skuItems);<br />restockRepo.get(id);<br />// result = {code:422} |
+| `true`    | `true`         | `true`       | Valid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro);<br />restockRepo.updateState(1, 'DELIVERED');<br />restockRepo.addSKUItems(id, skuItems);<br />restockRepo.get(id);<br />// result = {code:422} |
+
+## Class internalOrderRepository
+
+### add
+
+#### Criteria
+
+- products.SKUId exist
+- customerId exists
+
+#### Predicates
+
+| Criteria                           | Predicate |
+| ---------------------------------- | --------- |
+| products.SKUId exist               | true      |
+|                                    | false     |
+| products has the correct structure | true      |
+|                                    | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------: | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| customerId exists | products has the correct structure | Valid/Invalid | Description of the test                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------- | ---------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `false`           |                                    | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.get(1);<br />// result = {code: 422} |
+| `true`            | `false`                            | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.get(1);<br />// result = {code: 422} |
+| `true`            | `true`                             | Valid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.get(1);<br />// result = ro          |
+
+### updateState
+
+#### Criteria
+
+- internal order id exists
+- SKUId exists
+
+#### Predicates
+
+| Criteria                 | Predicate |
+| ------------------------ | --------- |
+| internal order id exists | true      |
+|                          | false     |
+| SKUId exists             | true      |
+|                          | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------: | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| internal order id exists | SKUId exists | Valid/Invalid | Description of the test                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------ | ------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `false`                  |              | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789038", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789016", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.addToTransactionRFIDs(id, products);<br />internalRepo.removeInternalTransactions(id);<br />// result = { code: 404 } |
+| `true`                   | `false`      | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789038", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789016", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.addToTransactionRFIDs(id, products);<br />internalRepo.removeInternalTransactions(id);<br />// result = { code: 503 } |
+| `true`                   | `true`       | Valid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789038", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789016", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.addToTransactionRFIDs(id, products);<br />internalRepo.removeInternalTransactions(id);<br />// result = { code: 200 } |
+
+
 # White Box Unit Tests
 
 ### Test cases definition
@@ -439,36 +823,50 @@ Version: 1.0
     <For traceability write the class and method name that contains the test case>
 
 
-| Unit name                                          | Jest test case                                               |
-| -------------------------------------------------- | ------------------------------------------------------------ |
-| SKURepository.test.js  edit SKU                    | testEditSKU({newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50},1000,[]); |
-| SKURepository.test.js  edit SKU                    | testEditSKU({   newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50  },1,[new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99)]); |
-| SKURepository.test.js edit SKU Position            | testEditSKUPosition("800234523412",1000,[]);                 |
-| SKURepository.test.js edit SKU Position            | testEditSKUPosition("800234523412",1,[new SKU(1,"a new sku",100, 50,"first SKU", "800234523412",50, 10.99)]); |
-| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50},1000,undefined); |
-| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50   },1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[]) ); |
-| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku 2",newWeight : 100,newVolume : 50,newNotes : "second SKU",newPrice : 11.99,newAvailableQuantity : 50  },2,new SKU(2,"a new sku 2",2, 3,"second SKU", "800234543412",50, 11.99,[]) ); |
+| Unit name                                          | Jest test case                                                                                                                                                                                                                               |
+|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SKURepository.test.js  edit SKU                    | testEditSKU({newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50},1000,[]);                                                                                        |
+| SKURepository.test.js  edit SKU                    | testEditSKU({   newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50  },1,[new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99)]);                            |
+| SKURepository.test.js edit SKU Position            | testEditSKUPosition("800234523412",1000,[]);                                                                                                                                                                                                 |
+| SKURepository.test.js edit SKU Position            | testEditSKUPosition("800234523412",1,[new SKU(1,"a new sku",100, 50,"first SKU", "800234523412",50, 10.99)]);                                                                                                                                |
+| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50},1000,undefined);                                                                      |
+| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50   },1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[]) );                 |
+| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku 2",newWeight : 100,newVolume : 50,newNotes : "second SKU",newPrice : 11.99,newAvailableQuantity : 50  },2,new SKU(2,"a new sku 2",2, 3,"second SKU", "800234543412",50, 11.99,[]) );     |
 | SKUController.test.js edit SKU Controller          | testEditSKUController({  newDescription : "a new sku 2",newWeight : 20,newVolume : 20,newNotes : "second SKU",newPrice : 11.99,newAvailableQuantity : 50   },2,new SKU(2,"a new sku 2",20, 20,"second SKU", "800234543412",50, 11.99,[])  ); |
-| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543412",1000,undefined); |
-| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("900234523415",1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[])); |
-| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543412",2,new SKU(2,"a new sku 2",2, 3,"second SKU", "800234543412",50, 11.99,[])); |
-| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543413",1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[])); |
-| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("900234543417",1,new SKU(1,"a new sku",100, 50,"first SKU", "900234543417",50, 10.99,[])); |
-| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"12345678901234567890123456789015", SKUId:1, DateOfStock:"2020/02/28 15:30"}, [new skuItem("12345678901234567890123456789015", 1,0,"2021/11/29 12:30")]); |
-| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"22455678901234567890123456789024", SKUId:2, DateOfStock:"2021/04/28 15:35"},[]); |
-| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"22455678901234567890123456789024", SKUId:1, DateOfStock:"2021/04/28 15:35"},[ new skuItem("22455678901234567890123456789024",1,0,"2021/04/28 15:35")]); |
-| skuItemRepository.test.js delete SKUItem           | testDeleteSKUItem("22455678901234567890123456789024",[false,[]]); |
-| skuItemRepository.test.js delete SKUItem           | testDeleteSKUItem("12345678901234567890123456789015", [true,[]]); |
-| skuItemController.test.js edit SKUItem Controller  | testEditSKUItem({newRFID:"22455678901234567890123456789024",newAvailable:1,newDateOfStock:"2021/11/29 12:30"},"22455678901234567890123456789024",undefined); |
-| skuItemController.test.js edit SKUItem Controller  | testEditSKUItem({newRFID:"12345678901234567890123456789015",newAvailable:1,newDateOfStock:"2020/12/29 13:30"},"12345678901234567890123456789015",new skuItem("12345678901234567890123456789015",1,1,"2020/12/29 13:30")); |
-| itemRepository.test.js  add item                   | testAddItem({id : 12,description : "a new item 2",price : 11.99,SKUId : 1, supplierId : 1}, [new Item(12,"a new item",10.99,1,1)]); |
-| itemRepository.test.js  add item                   | testAddItem({id : 12,description : "a new item 2",price : 11.99,SKUId : 1, supplierId : 3}, [new Item(12,"a new item",10.99,1,1)]); |
-| itemRepository.test.js  add item                   | testAddItem({id : 13,description : "a new item 2",price : 11.99,SKUId : 3, supplierId : 1}, []); |
-| itemRepository.test.js  add item                   | testAddItem({id : 13,description : "a new item 2",price : 11.99,SKUId : 2, supplierId : 1}, [new Item(13,"a new item 2",11.99,2,1)]); |
-| itemRepository.test.js  delete item                | testDeleteitem(13,[false,[]]);                               |
-| itemRepository.test.js  delete item                | testDeleteitem(12, [true,[]]);                               |
-| itemController.test.js   edit Item Controller      | testEditItem({newDescription : "a new item 2", newPrice : 11.99},13,undefined); |
-| itemController.test.js   edit Item Controller      | testEditItem({newDescription : "a new item 2", newPrice : 11.99},12,new Item(12,"a new item 2",11.99,1,1)); |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543412",1000,undefined);                                                                                                                                                                                |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("900234523415",1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[]));                                                                                                                               |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543412",2,new SKU(2,"a new sku 2",2, 3,"second SKU", "800234543412",50, 11.99,[]));                                                                                                                     |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543413",1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[]));                                                                                                                               |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("900234543417",1,new SKU(1,"a new sku",100, 50,"first SKU", "900234543417",50, 10.99,[]));                                                                                                                     |
+| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"12345678901234567890123456789015", SKUId:1, DateOfStock:"2020/02/28 15:30"}, [new skuItem("12345678901234567890123456789015", 1,0,"2021/11/29 12:30")]);                                                              |
+| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"22455678901234567890123456789024", SKUId:2, DateOfStock:"2021/04/28 15:35"},[]);                                                                                                                                      |
+| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"22455678901234567890123456789024", SKUId:1, DateOfStock:"2021/04/28 15:35"},[ new skuItem("22455678901234567890123456789024",1,0,"2021/04/28 15:35")]);                                                               |
+| skuItemRepository.test.js delete SKUItem           | testDeleteSKUItem("22455678901234567890123456789024",[false,[]]);                                                                                                                                                                            |
+| skuItemRepository.test.js delete SKUItem           | testDeleteSKUItem("12345678901234567890123456789015", [true,[]]);                                                                                                                                                                            |
+| skuItemController.test.js edit SKUItem Controller  | testEditSKUItem({newRFID:"22455678901234567890123456789024",newAvailable:1,newDateOfStock:"2021/11/29 12:30"},"22455678901234567890123456789024",undefined);                                                                                 |
+| skuItemController.test.js edit SKUItem Controller  | testEditSKUItem({newRFID:"12345678901234567890123456789015",newAvailable:1,newDateOfStock:"2020/12/29 13:30"},"12345678901234567890123456789015",new skuItem("12345678901234567890123456789015",1,1,"2020/12/29 13:30"));                    |
+| itemRepository.test.js  add item                   | testAddItem({id : 12,description : "a new item 2",price : 11.99,SKUId : 1, supplierId : 1}, [new Item(12,"a new item",10.99,1,1)]);                                                                                                          |
+| itemRepository.test.js  add item                   | testAddItem({id : 12,description : "a new item 2",price : 11.99,SKUId : 1, supplierId : 3}, [new Item(12,"a new item",10.99,1,1)]);                                                                                                          |
+| itemRepository.test.js  add item                   | testAddItem({id : 13,description : "a new item 2",price : 11.99,SKUId : 3, supplierId : 1}, []);                                                                                                                                             |
+| itemRepository.test.js  add item                   | testAddItem({id : 13,description : "a new item 2",price : 11.99,SKUId : 2, supplierId : 1}, [new Item(13,"a new item 2",11.99,2,1)]);                                                                                                        |
+| itemRepository.test.js  delete item                | testDeleteitem(13,[false,[]]);                                                                                                                                                                                                               |
+| itemRepository.test.js  delete item                | testDeleteitem(12, [true,[]]);                                                                                                                                                                                                               |
+| itemController.test.js   edit Item Controller      | testEditItem({newDescription : "a new item 2", newPrice : 11.99},13,undefined);                                                                                                                                                              |
+| itemController.test.js   edit Item Controller      | testEditItem({newDescription : "a new item 2", newPrice : 11.99},12,new Item(12,"a new item 2",11.99,1,1));                                                                                                                                  |
+| testDescriptorRepository/addTestDescriptor         | Test Descriptor UNIT TEST > addTestDescriptor foreign key constraint                                                                                                                                                                         |
+| testDescriptorController/addTestDescriptor         | Test Descriptor UNIT TEST > addTestDescriptor foreign key constraint                                                                                                                                                                         |
+| testDescriptorRepository/updateTestDescriptor      | Test Descriptor UNIT TEST > updateTestDescriptor dropped table                                                                                                                                                                               |
+| testDescriptorRepository/updateTestDescriptor      | Test Descriptor UNIT TEST > updateTestDescriptor id does not exist                                                                                                                                                                           |
+| testDescriptorRepository/updateTestDescriptor      | Test Descriptor UNIT TEST > updateTestDescriptor foreign key constraint                                                                                                                                                                      |
+| testDescriptorRepository/deleteTestDescriptor      | Test Descriptor UNIT TEST > deleteTestDescriptorData dropped table                                                                                                                                                                           |
+| testDescriptorController/deleteTestDescriptor      | Test Descriptor UNIT TEST > deleteTestDescriptorData dropped table                                                                                                                                                                           |
+| testResultRepository/getTestResults                | "getTestResults consistency test"                                                                                                                                                                                                            |
+| testResultRepository/addTestResult                 | "addTestResult foreign key constraint"                                                                                                                                                                                                       |
+| testResultRepository/updateTestResult              | "updateTestResult dropped table"                                                                                                                                                                                                             |
+| testResultRepository/updateTestResult              | "updateTestResult id does not exist"                                                                                                                                                                                                         |
+| testResultRepository/updateTestResult              | "updateTestResult foreign key constraint"                                                                                                                                                                                                    |
+| testResultRepository/All                           | "TestResult Dropped Table"                                                                                                                                                                                                                   |
+
 
 ### Code coverage report
 

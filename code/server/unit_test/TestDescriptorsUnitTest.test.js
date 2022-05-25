@@ -22,12 +22,14 @@ const init_test = () => {
     beforeAll(async () => {
         await db.newTestDescriptorTable();
         await dbHandler.deleteAllTablesData();
+        await db.repopulateDataBase();
     });
 
     beforeEach(async () => {
-        await db.newTestDescriptorTable();
-        await dbHandler.deleteAllTablesData();
-        await db.repopulateDataBase();
+        // await db.newTestDescriptorTable();
+        // await dbHandler.deleteAllTablesData();
+        // await db.deleteTestDescriptordata();
+        // await db.repopulateDataBase();
         await db.addTestDescriptor({
             name: "Test Descriptor 1", idSKU: 1, procedureDescription: "This test is described by ..."
         });
@@ -36,10 +38,17 @@ const init_test = () => {
         }), mockRes);
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
         await db.newTestDescriptorTable();
+        await db.deleteTestDescriptordata();
+        // await dbHandler.deleteAllTablesData();
+        // await db.repopulateDataBase();
+    });
+
+    afterAll(async () => {
+        // await db.newTestDescriptorTable();
         await dbHandler.deleteAllTablesData();
-        await db.repopulateDataBase();
+        // await db.repopulateDataBase();
     });
 }
 
@@ -211,11 +220,6 @@ describe('Test Descriptor Unit Test', () => {
                 id: 2, name: "Test Descriptor 2", idSKU: 2, procedureDescription: "This test is described by ..."
             }]);
         });
-    });
-
-    describe("deleteTestDescriptor White Box", () => {
-
-        init_test();
 
         test("deleteTestDescriptor id do not exist", () => {
             expect(async () => await db.deleteTestDescriptor(99)).rejects.toBe(404);

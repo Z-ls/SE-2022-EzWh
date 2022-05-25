@@ -36,7 +36,7 @@ describe("add internal order", () => {
     await skuRepo.addSKU(sku1);
     await skuRepo.addSKU(sku2);
     await userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));
-    await testDescriptorRepo.addTestDescriptor(new TestDescriptor('test descriptor', 'procedure description', 1));
+    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));
   })
 
   const io = new InternalOrder(1, dayjs(), "ISSUED", [{ SKUId: 1, description: sku1.description, price: sku1.price, qty: 3 }], 1).toString();
@@ -71,7 +71,7 @@ describe("update state", () => {
     await skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789038", 1, 1, dateHandler.DayjsToDate(dayjs())));
     await skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789016", 1, 1, dateHandler.DayjsToDate(dayjs())));
     await userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));
-    await testDescriptorRepo.addTestDescriptor(new TestDescriptor('test descriptor', 'procedure description', 1));
+    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));
     await internalRepo.add(io);
   })
 
@@ -89,23 +89,6 @@ describe("update state", () => {
     .toString();
   testUpdateState(1, "COMPLETED", { code: 503 }, ioCompleted1); // nonexisting skuid
 })
-
-function testUpdateState(id, newState, expected, products = undefined) {
-  test('update state', async () => {
-    if (newState === 'COMPLETED') {
-      try {
-        await Promise.all([
-          internalRepo.addToTransactionRFIDs(id, products),
-          internalRepo.removeInternalTransactions(id)
-        ]);
-      } catch (e) { expect(e.code).toEqual(e.code); return; }
-    }
-
-    try { await internalRepo.updateState(newState, id); } catch (e) { expect(e.code).toEqual(expected.code); return; }
-    const result = await internalRepo.get(id, newState);
-    expect(result).toEqual(expected);
-  });
-}
 
 function testAdd(expected, io = undefined) {
   test('add internal order', async () => {
@@ -126,4 +109,21 @@ function testAdd(expected, io = undefined) {
 
     expect(result).toEqual(expected);
   })
+}
+
+function testUpdateState(id, newState, expected, products = undefined) {
+  test('update state', async () => {
+    if (newState === 'COMPLETED') {
+      try {
+        await Promise.all([
+          internalRepo.addToTransactionRFIDs(id, products),
+          internalRepo.removeInternalTransactions(id)
+        ]);
+      } catch (e) { expect(e.code).toEqual(e.code); return; }
+    }
+
+    try { await internalRepo.updateState(newState, id); } catch (e) { expect(e.code).toEqual(expected.code); return; }
+    const result = await internalRepo.get(id, newState);
+    expect(result).toEqual(expected);
+  });
 }
