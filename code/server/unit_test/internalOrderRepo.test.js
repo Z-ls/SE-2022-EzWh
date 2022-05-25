@@ -90,23 +90,6 @@ describe("update state", () => {
   testUpdateState(1, "COMPLETED", { code: 503 }, ioCompleted1); // nonexisting skuid
 })
 
-function testUpdateState(id, newState, expected, products = undefined) {
-  test('update state', async () => {
-    if (newState === 'COMPLETED') {
-      try {
-        await Promise.all([
-          internalRepo.addToTransactionRFIDs(id, products),
-          internalRepo.removeInternalTransactions(id)
-        ]);
-      } catch (e) { expect(e.code).toEqual(e.code); return; }
-    }
-
-    try { await internalRepo.updateState(newState, id); } catch (e) { expect(e.code).toEqual(expected.code); return; }
-    const result = await internalRepo.get(id, newState);
-    expect(result).toEqual(expected);
-  });
-}
-
 function testAdd(expected, io = undefined) {
   test('add internal order', async () => {
     let result;
@@ -126,4 +109,21 @@ function testAdd(expected, io = undefined) {
 
     expect(result).toEqual(expected);
   })
+}
+
+function testUpdateState(id, newState, expected, products = undefined) {
+  test('update state', async () => {
+    if (newState === 'COMPLETED') {
+      try {
+        await Promise.all([
+          internalRepo.addToTransactionRFIDs(id, products),
+          internalRepo.removeInternalTransactions(id)
+        ]);
+      } catch (e) { expect(e.code).toEqual(e.code); return; }
+    }
+
+    try { await internalRepo.updateState(newState, id); } catch (e) { expect(e.code).toEqual(expected.code); return; }
+    const result = await internalRepo.get(id, newState);
+    expect(result).toEqual(expected);
+  });
 }

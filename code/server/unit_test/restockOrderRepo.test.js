@@ -39,7 +39,7 @@ describe('list return items of an order', () => {
     await skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));
     await userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));
     await itemRepo.addItem(new Item(1, "item description", 10, 1, 1));
-    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1,'test descriptor', 'procedure description', 1));
+    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));
 
     await restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",
       [
@@ -80,6 +80,12 @@ describe('add restockOrder', () => {
 
   testAddRO(1, { code: 404 });
   testAddRO(1, { code: 200, data: ro }, ro);
+
+  ro1 = new RestockOrder(1, dayjs(), "ISSUED", [{ SKUId: 999, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
+  testAddRO(1, { code: 422, data: "Generic error: Error while getting item" }, ro1); // adding non-existing SKUid
+
+  ro2 = new RestockOrder(1, dayjs(), "ISSUED", [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], 999, {}, []);
+  testAddRO(1, { code: 422, data: "Generic error: Error while getting item" }, ro1); // adding non-existing supplierId
 });
 
 describe('add SKU items', () => {
@@ -99,16 +105,31 @@ describe('add SKU items', () => {
   });
 
   testAddSKUItems(1, []);
+
   const rfid1 = "12345678901234567890123456789016";
   const rfid2 = "12345678901234567890123456789017";
   const skus = [{ SKUId: 1, rfid: rfid1 }, { SKUId: 1, rfid: rfid2 }];
   testAddSKUItems(1, skus, skus);
+
+  testAddSKUItems(999, { code: 404, data: "Error while getting restock order with id=999" }, skus);
+
+  const skusWithWrongSKUId = [{ SKUId: 999, rfid: rfid1 }, { SKUId: 1, rfid: rfid2 }];
+  testAddSKUItems(1, { code: 422 }, skusWithWrongSKUId);
+
+  const skusSameRFID = [{ SKUId: 1, rfid: rfid1 }, { SKUId: 1, rfid: rfid1 }];
+  testAddSKUItems(1, { code: 422 }, skusSameRFID);
 });
 
 function testAddSKUItems(id, expected, skuItems = undefined) {
   test('add SKU items', async () => {
     if (skuItems) {
-      await restockRepo.addSKUItems(id, skuItems);
+      try {
+        await restockRepo.addSKUItems(id, skuItems);
+      }
+      catch (e) {
+        expect(e).toEqual(expected);
+        return;
+      }
 
     }
     const res = await restockRepo.get(id);
@@ -119,7 +140,8 @@ function testAddSKUItems(id, expected, skuItems = undefined) {
 function testAddRO(id, expected, ro = undefined) {
   test('add restockOrder', async () => {
     if (ro)
-      await restockRepo.add(ro);
+      try { await restockRepo.add(ro); }
+      catch (e) { expect(e).toEqual(expected); return; }
     let res;
     try {
       res = await restockRepo.get(id);

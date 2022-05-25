@@ -657,6 +657,163 @@ Version: 1.0
 | true          | true                | **false**       | **false**          | Invalid         | delete('/api/skuitems/12345678901234567890123456789099/testResult/1')  | Test Result Unit Test > delete test result by rfid non-existent |
 
 
+## Class restockOrderRepository
+
+### returnItems(id)
+
+#### Criteria
+
+- id of the restock order exists
+
+#### Predicates
+
+| Criteria            | Predicate |
+| ------------------- | --------- |
+| id exists in the db | true      |
+|                     | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| id already exists in DB | the id is associated to some items which must be returned | Valid / Invalid | Description of the test case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------- | --------------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `false`                 |                                                           | Invalid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1,'test descriptor', 'procedure description', 1));<br />restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",[{ SKUId: 1, description: "item description", price: 3, qty: 2 }], 1, {}, []));<br />restockRepo.updateState(1, "DELIVERED");<br />restockRepo.addSKUItems(1, [{ SKUId: 1, rfid: rfid1 },{ SKUId: 1, rfid: rfid2 }]);<br />restockRepo.updateState(1, "COMPLETEDRETURN");<br />let tr = new testResult(1, 1, dateHandler.DayjsToDate(dayjs()), false);<br />tr.rfid = skuItem[0].rfid;<br />testResultRepo.addTestResult(tr);<br />restockRepo.returnItems(id)<br />// result = {code: 404} |
+| `true`                  | `false`                                                   | Invalid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1,'test descriptor', 'procedure description', 1));<br />restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",[{ SKUId: 1, description: "item description", price: 3, qty: 2 }], 1, {}, []));<br />restockRepo.updateState(1, "DELIVERED");<br />restockRepo.addSKUItems(1, [{ SKUId: 1, rfid: rfid1 },{ SKUId: 1, rfid: rfid2 }]);<br />restockRepo.updateState(1, "COMPLETEDRETURN");<br />let tr = new testResult(1, 1, dateHandler.DayjsToDate(dayjs()), false);<br />tr.rfid = skuItem[0].rfid;<br />testResultRepo.addTestResult(tr);<br />restockRepo.returnItems(id)<br />// result = []          |
+| `true`                  | `true`                                                    | Valid           | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1,'test descriptor', 'procedure description', 1));<br />restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",[{ SKUId: 1, description: "item description", price: 3, qty: 2 }], 1, {}, []));<br />restockRepo.updateState(1, "DELIVERED");<br />restockRepo.addSKUItems(1, [{ SKUId: 1, rfid: rfid1 },{ SKUId: 1, rfid: rfid2 }]);<br />restockRepo.updateState(1, "COMPLETEDRETURN");<br />let tr = new testResult(1, 1, dateHandler.DayjsToDate(dayjs()), false);<br />tr.rfid = skuItem[0].rfid;<br />testResultRepo.addTestResult(tr);<br />restockRepo.returnItems(id)<br />// result = skuItem[0]  |
+
+### add
+
+#### Criteria
+
+- SKUId(s) exists
+
+- supplierId exists
+
+#### Predicates
+
+| Criteria                       | Predicate |
+| ------------------------------ | --------- |
+| exists an item with that SKUId | true      |
+|                                | false     |
+| the supplierId exists          | true      |
+|                                | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------: | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| exists an item with that SKUId | the supplierId exists | Valid/Invalid | Description of the test case                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------ | --------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `false`                        |                       | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro); // ro has at least one wrong skuid<br />restockRepo.get(id);<br />// result = {code: 422} |
+| `true`                         | `false`               | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro); // ro has a wrong supplierId<br />restockRepo.get(id);<br />// result = {code: 422}       |
+| `true`                         | `true`                | Valid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "salva", "riccardo.salva", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro); // ro has a wrong supplierId<br />restockRepo.get(id);<br />// result = {code: 200}       |
+
+### addSKUItems
+
+#### Criteria
+
+- id exists
+- SKUId(s) exist
+- unique RFIDs
+
+#### Predicates
+
+| Criteria       | Predicate |
+| -------------- | --------- |
+| id exists      | true      |
+|                | false     |
+| SKUId(s) exist | true      |
+|                | false     |
+| unique RFIDs   | true      |
+|                | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------: | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| id exists | SKUId(s) exist | unique RFIDs | Valid/Invalid | Description of the test case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------- | -------------- | ------------ | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `false`   |                |              | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro);<br />restockRepo.updateState(1, 'DELIVERED');<br />restockRepo.addSKUItems(id, skuItems);<br />restockRepo.get(id);<br />// result = {code:404} |
+| `true`    | `false`        |              | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro);<br />restockRepo.updateState(1, 'DELIVERED');<br />restockRepo.addSKUItems(id, skuItems);<br />restockRepo.get(id);<br />// result = {code:422} |
+| `true`    | `true`         | `false`      | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro);<br />restockRepo.updateState(1, 'DELIVERED');<br />restockRepo.addSKUItems(id, skuItems);<br />restockRepo.get(id);<br />// result = {code:422} |
+| `true`    | `true`         | `true`       | Valid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />itemRepo.addItem(new Item(1, "item description", 10, 1, 1));<br />restockRepo.add(ro);<br />restockRepo.updateState(1, 'DELIVERED');<br />restockRepo.addSKUItems(id, skuItems);<br />restockRepo.get(id);<br />// result = {code:422} |
+
+## Class internalOrderRepository
+
+### add
+
+#### Criteria
+
+- products.SKUId exist
+- customerId exists
+
+#### Predicates
+
+| Criteria                           | Predicate |
+| ---------------------------------- | --------- |
+| products.SKUId exist               | true      |
+|                                    | false     |
+| products has the correct structure | true      |
+|                                    | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------: | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| customerId exists | products has the correct structure | Valid/Invalid | Description of the test                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------- | ---------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `false`           |                                    | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.get(1);<br />// result = {code: 422} |
+| `true`            | `false`                            | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.get(1);<br />// result = {code: 422} |
+| `true`            | `true`                             | Valid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.get(1);<br />// result = ro          |
+
+### updateState
+
+#### Criteria
+
+- internal order id exists
+- SKUId exists
+
+#### Predicates
+
+| Criteria                 | Predicate |
+| ------------------------ | --------- |
+| internal order id exists | true      |
+|                          | false     |
+| SKUId exists             | true      |
+|                          | false     |
+
+#### Boundaries
+
+| Criteria | Boundary values |
+| -------: | --------------- |
+|          |                 |
+
+#### Combination of predicates
+
+| internal order id exists | SKUId exists | Valid/Invalid | Description of the test                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------ | ------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `false`                  |              | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789038", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789016", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.addToTransactionRFIDs(id, products);<br />internalRepo.removeInternalTransactions(id);<br />// result = { code: 404 } |
+| `true`                   | `false`      | Invalid       | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789038", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789016", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.addToTransactionRFIDs(id, products);<br />internalRepo.removeInternalTransactions(id);<br />// result = { code: 503 } |
+| `true`                   | `true`       | Valid         | <br />positionRepo.addPOS(new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0));<br />positionRepo.addPOS(new Position("800234543413", "8002", "3454", "3413", 100, 100, 0, 0));<br />skuRepo.addSKU(sku1);<br />skuRepo.addSKU(sku2);<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789038", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />skuItemRepoo.addSKUItem(new SKUItem("12345678901234567890123456789016", 1, 1, dateHandler.DayjsToDate(dayjs())));<br />userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));<br />testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));<br />internalRepo.add(io);<br />internalRepo.addToTransactionRFIDs(id, products);<br />internalRepo.removeInternalTransactions(id);<br />// result = { code: 200 } |
+
+
 # White Box Unit Tests
 
 ### Test cases definition
