@@ -39,7 +39,7 @@ describe('list return items of an order', () => {
     await skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));
     await userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));
     await itemRepo.addItem(new Item(1, "item description", 10, 1, 1));
-    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));
+    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1,'test descriptor', 'procedure description', 1));
 
     await restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",
       [
@@ -58,10 +58,8 @@ describe('list return items of an order', () => {
   });
 
   testReturnItems(1, []);
-  testReturnItems(1, [{ SKUId: 1, rfid: rfid1 }], { SKUId: 1, rfid: rfid1 });
-  testReturnItems(1, [{ SKUId: 1, rfid: rfid2 }], { SKUId: 1, rfid: rfid2 });
-
-
+  testReturnItems(1, [{ SKUId: 1, rfid: rfid1 }], [{ SKUId: 1, rfid: rfid1 }]);
+  testReturnItems(1, [{ SKUId: 1, rfid: rfid2 }], [{ SKUId: 1, rfid: rfid2 }, { SKUId: 1, rfid: rfid1 }]);
 });
 
 describe('add restockOrder', () => {
@@ -133,13 +131,13 @@ function testAddRO(id, expected, ro = undefined) {
   });
 }
 
+// only the first skuItem won't pass the test
 function testReturnItems(id, expected, skuItem = undefined) {
   test('list return items of an order', async () => {
-    if (skuItem) {
+    if (skuItem && skuItem[0]) {
       let tr = new testResult(1, 1, dateHandler.DayjsToDate(dayjs()), false);
-      tr.rfid = skuItem.rfid;
+      tr.rfid = skuItem[0].rfid;
       await testResultRepo.addTestResult(tr);
-
     }
 
     const returnItems = await restockRepo.returnItems(id);
