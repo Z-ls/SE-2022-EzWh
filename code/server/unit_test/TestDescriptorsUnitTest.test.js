@@ -211,11 +211,6 @@ describe('Test Descriptor Unit Test', () => {
                 id: 2, name: "Test Descriptor 2", idSKU: 2, procedureDescription: "This test is described by ..."
             }]);
         });
-    });
-
-    describe("deleteTestDescriptor White Box", () => {
-
-        init_test();
 
         test("deleteTestDescriptor id do not exist", () => {
             expect(async () => await db.deleteTestDescriptor(99)).rejects.toBe(404);
