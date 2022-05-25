@@ -20,21 +20,19 @@ const nTd = (n) => ({
 });
 
 const init_test = () => {
+
     before(async () => {
-        await db.newTestDescriptorTable();
         await dbHandler.deleteAllTablesData();
+        await db.repopulateDataBase();
     });
 
     beforeEach(async () => {
-        await db.newTestDescriptorTable();
-        await dbHandler.deleteAllTablesData();
-        await db.repopulateDataBase();
+        await db.deleteTestDescriptordata();
         await db.addTestDescriptor(td(1));
         await db.addTestDescriptor(td(2));
     });
 
     after(async () => {
-        await db.newTestDescriptorTable();
         await dbHandler.deleteAllTablesData();
         await db.repopulateDataBase();
     });
@@ -56,14 +54,7 @@ describe('Test Descriptor API Test', () => {
                 }).catch(done)
         });
 
-        it("get descriptors after table dropped", done => {
-            db.dropTable();
-            agent.get('/api/testDescriptors')
-                .then(res => {
-                    res.should.have.status(500);
-                    done();
-                });
-        });
+
     });
 
     describe("TEST GET /api/testDescriptor/:id", () => {
@@ -90,14 +81,7 @@ describe('Test Descriptor API Test', () => {
                 })
         });
 
-        it("get descriptor after table dropped", done => {
-            db.dropTable();
-            agent.get('/api/testDescriptor/1')
-                .then(res => {
-                    res.should.have.status(500);
-                    done();
-                });
-        });
+
     });
 
     describe("TEST POST /api/testDescriptor", () => {
@@ -163,15 +147,7 @@ describe('Test Descriptor API Test', () => {
                 });
         });
 
-        it("update a descriptor after table dropped", done => {
-            db.dropTable();
-            agent.put('/api/testDescriptor/1')
-                .send(nTd(2))
-                .then(res => {
-                    done();
-                    res.should.have.status(503);
-                });
-        });
+
     });
 
     describe("TEST DELETE /api/testDescriptor/:id", () => {
@@ -203,13 +179,6 @@ describe('Test Descriptor API Test', () => {
                 });
         });
 
-        it("delete a descriptor after table dropped", done => {
-            db.dropTable();
-            agent.delete('/api/testDescriptor/1')
-                .then(res => {
-                    res.should.have.status(503);
-                    done();
-                });
-        });
+
     });
 });

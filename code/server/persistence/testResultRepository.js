@@ -209,7 +209,7 @@ class TestResultRepository {
     deleteTestResultdata(){
         return new Promise((resolve, reject) =>{
             const sql = 'DELETE FROM TestResult; DELETE FROM sqlite_sequence WHERE name = "TestResult";';
-            this.db.run(sql, (err) => {
+            this.db.exec(sql, (err) => {
                 if(err){
                     reject(err);
                     return;
