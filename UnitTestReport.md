@@ -22,6 +22,71 @@ Version: 1.1
     class and method name that contains the test case>
     <Jest tests  must be in code/server/unit_test  >
 
+ ### **Class *returnOrderRepository* - method *addReturnOrder(returnDate,restockOrderId)***
+
+**Criteria for method *addReturnOrder(returnDate,restockOrderId)*:**
+
+-returnDate is valid
+-restockOrderid already in db
+
+**Predicates for method *addReturnOrder(returnDate,restockOrderId)*:**
+
+| Criteria                | Predicate |
+| ----------------------- | --------- |
+| restockOrderid already exists in DB | true      |
+|                         | false     |
+| returnDate is valid         | true      |
+|                         | false     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| restockOrderid already exists in DB | returnDate is valid | Valid / Invalid | Description of the test case  |
+| ----------------------- | ---------------- | -------------- | ----------------------------  |
+| true | true | valid | returns true  |
+| true | false | invalid | returns false  |
+| false | true | invalid | returns false  |
+| false | false | invalid | returns false  |
+
+ ### **Class *posRepository* - method *editPos(pos,id)***
+
+**Criteria for method *editPOS(pos,id)*:**
+
+-id exists in db
+-new id is valid
+
+**Predicates for method *editPOS(pos,id)*:**
+
+| Criteria                | Predicate |
+| ----------------------- | --------- |
+| id already exists in DB | true      |
+|                         | false     |
+| new id is valid         | true      |
+|                         | false     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| id already exists in DB | new id is valid | Valid / Invalid | Description of the test case  |
+| ----------------------- | ---------------- | -------------- | ----------------------------  |
+| true | true | valid | returns true  |
+| true | false | invalid | returns false  |
+| false | true | invalid | returns false  |
+| false | false | invalid | returns false  |
+
+
  ### **Class *skuRepository* - method *editSKU(sku,id)***
 
 
