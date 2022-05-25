@@ -9,26 +9,23 @@ const getReturnOrders = async() => {
     const retlist = await retRep.getReturnOrders();
     for (let i = 0; i < retlist.length; i++) {
         let RetOrd = retlist[i];
-         RetOrd.products= await testDesRep.getProductsbyID(RetOrd.id);
+         RetOrd.products= await retRep.getProductsbyID(RetOrd.returnOrderID);
     }
     return retlist;//res.status(200).json(message);
 }
 
 const getReturnOrdersByID = async(id) => {
     const retRep = new retRepository();
-    const res = await retRep.getReturnOrderbyID(id);
-    res.products= await testDesRep.getProductsbyID(res.id)
-    return res;
-    //res.status(200).json(message);}
-    //res.status(404).send('Not found');
+    const RetOrd = await retRep.getReturnOrderbyID(id);
+    RetOrd[0].products= await retRep.getProductsbyID(RetOrd[0].returnOrderID);
+    console.log(RetOrd);
+    return RetOrd;
 }
 
 const addReturnOrder = async (newRet) => {
-    console.log(newRet.returnDate);
-    console.log(newRet.products);
-    console.log(newRet.restockOrderID);
     const retRep = new retRepository();
-    const created = await retRep.addReturnOrder(newRet.returnDate, newRet.products, newRet.restockOrderID);
+    const lastID = await retRep.addReturnOrder(newRet.returnDate, newRet.restockOrderId);
+    const created = await retRep.addReturnOrderTransaction(lastID, newRet.products);
     return created;// ? res.status(201).send('Created') : res.status(422).send('Unprocessable Entity');
 }
 

@@ -69,12 +69,17 @@ db.run("PRAGMA foreign_keys = ON");
     {
         return new Promise((resolve, reject) =>{
             const sql = 'UPDATE position SET positionID = ?, aisleID = ? ,row= ?,col= ?,maxWeight= ?,maxVolume= ?,occupiedWeight= ?,occupiedVolume= ? WHERE positionID = ?';
-            db.run(sql,[pos.newAisleID+pos.newRow+pos.newCol, pos.newAisleID, pos.newRow, pos.newCol, pos.newMaxWeight, pos.newMaxVolume, pos.newOccupiedWeight, pos.newOccupiedVolume, id],(err)=>{
+            db.run(sql,[pos.newAisleID+pos.newRow+pos.newCol, pos.newAisleID, pos.newRow, pos.newCol, pos.newMaxWeight, pos.newMaxVolume, pos.newOccupiedWeight, pos.newOccupiedVolume, id],function(err){
                 if(err)
                 { 
                     reject(err);
                 }else{
-                    resolve(true);
+                    if(this.changes === 0)
+                    {
+                        resolve(false);
+                    }else{
+                        resolve(true);
+                    }
                 }
             });
         });
@@ -115,12 +120,18 @@ db.run("PRAGMA foreign_keys = ON");
     {
         return new Promise((resolve, reject) =>{
             const sql = 'DELETE FROM position WHERE positionID = ?';
-            db.run(sql,id,(err)=>{
+            db.run(sql,id,function (err){
                 if(err)
                 {
                     reject(err);
                 }else{
-                    resolve(true);
+                    if(this.changes === 0)
+                    {
+                        resolve(false);
+                    }else{
+                        resolve(true);
+                    }
+                    
                 }
             });
         });

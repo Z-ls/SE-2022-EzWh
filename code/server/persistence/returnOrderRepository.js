@@ -1,6 +1,8 @@
 const sqlite = require('sqlite3');
 const RETURN = require('../model/returnOrder');
 const skuItemRepository = require('./skuItemRepository');
+const dayjs = require('dayjs');
+const dateHandler = require('./dateHandler');
 
 function retRepository(){
     const db = new sqlite.Database('../ezwh.db', (err) => {
@@ -11,7 +13,7 @@ function retRepository(){
 
 db.run("PRAGMA foreign_keys = ON");
 this.skuitemRepository = new skuItemRepository();
-
+this.dateHandler = new dateHandler();
     this.dropTable = () =>{
         return new Promise((resolve, reject) =>{
             const sql = 'DROP TABLE IF EXISTS returnOrder';
@@ -54,10 +56,10 @@ this.newTableRETURN = () =>{
 
 this.getProductsbyID = (id) =>{
     return new Promise((resolve, reject) => {
-        const sql = "SELECT S.SKUId as SKUId, S.description  AS description, S.price AS price, S.RFID AS RFID "
-        + "FROM returnOrder R, returnOrderTransaction RT, SKUITEM SI, SKU S "
-        + "WHERE WHERE R.restockOrderID = RT.idReturnOrder AND RT.RFID=SI.RFID AND SI.SKUid=S.id AND idReturnOrder = ?";
-        this.db.all(sql, id, (err, rows) => {
+        const sql = "SELECT S.id as SKUId, I.description  AS description, I.price AS price, SI.RFID AS RFID "
+        + "FROM returnOrder R, returnOrderTransaction RT, SKUITEM SI, SKU S, ITEM I "
+        + "WHERE R.id = RT.idReturnOrder AND I.SKUId = S.id AND RT.RFID=SI.RFID AND SI.SKUId=S.id AND R.id = ?";
+        db.all(sql, id, (err, rows) => {
            if (err) {
             reject(err);
             return;
@@ -76,7 +78,7 @@ this.getReturnOrders = ()=>
                 reject(err);
             }else{
                 resolve(rows.map((ro)=>{
-                    return new POS(ro.id, dayjs(ro.returnDate).format("YYYY/MM/DD HH:mm"), ro.restockOrderID);
+                    return new RETURN(ro.id, dayjs(ro.returnDate).format("YYYY/MM/DD HH:mm"), ro.products, ro.restockOrderId);
                 }));
             }
         });
@@ -87,12 +89,12 @@ this.getReturnOrderbyID = (id)=>
 {
     return new Promise((resolve,reject)=>{
         const sql = "SELECT * FROM returnOrder WHERE id = ?";
-        db.all(sql, (err, rows) =>{
+        db.all(sql, id, (err, rows) =>{
             if(err){
                 reject(err);
             }else{
                 resolve(rows.map((ro)=>{
-                    return new POS(ro.id, dayjs(ro.returnDate).format("YYYY/MM/DD HH:mm"), ro.restockOrderID);
+                    return new RETURN(ro.id, dayjs(ro.returnDate).format("YYYY/MM/DD HH:mm"), ro.products, ro.restockOrderId);
                 }));
             }
         });
@@ -114,13 +116,28 @@ this.deleteReturnOrder = (id)=>
     });
 }
 
-this.addReturnOrder = (returnDate, products, restockOrderID)=>
+this.addReturnOrder = (returnDate, restockOrderID)=>
 { 
-    const addReturnOrderTransaction = () =>
+    return new Promise((resolve, reject) =>{
+        const sql = 'INSERT INTO returnOrder (returnDate,restockOrderID) VALUES(?,?)';
+        
+        db.run(sql,[returnDate, restockOrderID],function (err){
+            if(err)
+            {
+                reject(err);
+            }else{
+                resolve(this.lastID);
+            }
+        });
+    });
+}
+
+
+this.addReturnOrderTransaction = (returnOrderID,products) =>
     {
         return new Promise((resolve, reject) =>{
             const sql = ("INSERT INTO returnOrderTransaction (idReturnOrder,RFID) values " + "(?,?),".repeat(products.length)).slice(0, -1);
-            db.run(sql,[restockOrderID, products.flatMap(p => p.RFID)],(err)=>{
+            db.run(sql,[returnOrderID, products.flatMap(p => p.RFID)],(err)=>{
                 if(err)
                 {
                     reject(err);
@@ -130,20 +147,6 @@ this.addReturnOrder = (returnDate, products, restockOrderID)=>
             });
         });
     }
-    return new Promise((resolve, reject) =>{
-        const sql = 'INSERT INTO returnOrder (returnDate,restockOrderID) VALUES(?,?)';
-        const result = addReturnOrderTransaction();
-        db.run(sql,[returnDate, restockOrderID],(err)=>{
-            if(err)
-            {
-                reject(err);
-            }else{
-                resolve(true);
-            }
-        });
-    });
-  }
 }
-
 
 module.exports = retRepository;

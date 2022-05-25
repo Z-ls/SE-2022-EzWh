@@ -7,11 +7,11 @@ const dayjs = require('dayjs');
 
 const dateHandler = new DateHandler();
 
-router.get('/returnOrders', async(req, res) => {
+router.get('/returnOrders', 
+async(req, res) => {
     try{
-        const returns = await returnController.getReturnOrders()
-        let message = returns
-        return res.status(200).json(message);
+        let returns = await returnController.getReturnOrders()
+        return res.status(200).json(returns);
     }catch(error){
         return res.status(500).send(error);
     }
@@ -19,26 +19,19 @@ router.get('/returnOrders', async(req, res) => {
 
 router.get('/returnOrders/:id', 
 param('id').matches(/^\d+$/).toInt().isInt({min : 1}),
-async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).send("Unprocessable entity");
-    }
+async(req, res) => {
     try{
-        const retres = await returnController.getReturnOrdersByID(req.params.id)
-        if(retres !== undefined)
-        {
-            return res.status(200).json(retres);
-        }else{
-            message = "no Return Order associated to id " + req.params.id;
-            return res.status(404).json(message);
-        }
-    } catch(error){
+        let returns = await returnController.getReturnOrdersByID(req.params.id)
+        return res.status(200).json(returns);
+    }catch(error){
         return res.status(500).send(error);
     }
 });
 
-router.post('/returnOrder', 
+router.post('/returnOrder',
+body('returnDate').exists(),
+body('products').exists().isArray(),
+body('restockOrderId').exists().isInt({min : 1}),
 async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty() || !dateHandler.isDateAndTimeValid(req.body.returnDate)) {
@@ -46,7 +39,7 @@ async (req, res) => {
     } 
     try{
         const deleted = await returnController.addReturnOrder(req.body);
-        return deleted ? res.status(204).send('Deleted') : res.status(422).send('Unprocessable Entity');
+        return deleted ? res.status(201).send('return Order Added') : res.status(404).send('Unprocessable Entity');
     }catch(error){
         return res.status(503).send(error);
     }

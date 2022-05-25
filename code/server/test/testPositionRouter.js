@@ -27,14 +27,14 @@ describe('GET Positions', () => {
 
     beforeEach(async () => {
         await dbHAndler.deleteAllTablesData();
-        await posRep.addPosition({positionID : "101020203030", 
+        await posRep.addPOS({positionID : "101020203030", 
         aisleID : "1010",
         row : "2020",
         col : "3030", 
         maxWeight : 1000, 
         maxVolume : 100}
             );
-        await posRep.addPosition({positionID : "111122223333", 
+        await posRep.addPOS({positionID : "111122223333", 
         aisleID : "1111",
         row : "2222",
         col : "3333", 
@@ -48,13 +48,18 @@ describe('GET Positions', () => {
     row : "2020",
     col : "3030", 
     maxWeight : 1000, 
-    maxVolume : 100},
+    maxVolume : 100,
+    occupiedWeight : 0,
+    occupiedVolume : 0
+},
     {positionID : "111122223333", 
         aisleID : "1111",
         row : "2222",
         col : "3333", 
         maxWeight : 1000, 
-        maxVolume : 100}]);
+        maxVolume : 100,
+        occupiedWeight : 0,
+        occupiedVolume : 0}]);
 });
 
 describe('PUT Position', () => {
@@ -70,15 +75,6 @@ describe('PUT Position', () => {
             maxVolume: 10000
         }
         );
-        await posRep.addPOS({
-            positionID:"900234543413",
-            aisleID: "9002",
-            row: "3454",
-            col: "3413",
-            maxWeight: 10000,
-            maxVolume: 10000
-        }
-        );
     })
 
     editPosition(422,"800234543412",{ newAisleID : "800",newRow : "3454",newCol : "3412",newMaxWeight : 1000,newMaxVolume : 100,newOccupiedWeight : 50, newOccupiedVolume : 50});
@@ -86,16 +82,16 @@ describe('PUT Position', () => {
     editPosition(404,"800234543410",{ newAisleID : "8002",newRow : "3454",newCol : "3412",newMaxWeight : 1000,newMaxVolume : 100,newOccupiedWeight : 50, newOccupiedVolume : 50});
     editPosition(200,"800234543412",{ newAisleID : "8002",newRow : "3454",newCol : "3412",newMaxWeight : 1000,newMaxVolume : 100,newOccupiedWeight : 50, newOccupiedVolume : 50});
 
-   /* editPositionByID(422,"800234543412",{});
-    editPositionByID(404,"900234543410",{position : "900234543413"});
-    editPositionByID(200,"900234543413",{position : "900234543413"});*/
+    /*editPositionByID(422,"800234543412",{});
+    editPositionByID(404,"800234543412",{position : "900234543413"});
+    editPositionByID(200,"800234543412",{position : "900234543413"});*/
 });
 
 describe('DELETE Position', () => {
 
     beforeEach(async () => {
         await dbHAndler.deleteAllTablesData();
-        await posRep.addPosition({positionID : "101020203030", 
+        await posRep.addPOS({positionID : "101020203030", 
         aisleID : "1010",
         row : "2020",
         col : "3030", 
