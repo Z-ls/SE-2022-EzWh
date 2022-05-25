@@ -52,9 +52,11 @@ async (req, res) => {
         return res.status(422).send("Unprocessable entity");
     }
     try{
-        const code=posController.editPosition(req.body, req.params.positionID);
-        return res.status(code).send();
+        const code= await posController.editPosition(req.body, req.params.positionID);
+        console.log(code);
+        return code? res.status(200).send('edited') : res.status(404).send('not found');
     }catch(error){
+        console.log(error);
         return res.status(503).send(error);
     }}
     );
@@ -68,9 +70,10 @@ async (req, res) => {
         return res.status(422).send("Unprocessable entity");
     }
     try{
-        const editID=posController.editPositionID(req.body, req.params.positionID);
+        const editID= await posController.editPositionID(req.body, req.params.positionID);
         return res.status(editID).send();
     }catch(error){
+        console.log(err);
         return res.status(503).send(error);
     }}
 );
@@ -84,7 +87,7 @@ async (req, res) => {
     } 
     try{
         const deleted = await posController.deletePosition(req.params.positionID);
-        return deleted ? res.status(204).send('Deleted') : res.status(422).send('Unprocessable Entity');
+        return deleted ? res.status(204).send('deleted') : res.status(422).send('Unprocessable Entity');
     }catch(error){
         return res.status(503).send(error);
     }

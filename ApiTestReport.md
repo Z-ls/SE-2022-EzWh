@@ -151,6 +151,7 @@ Jest test cases applied to them, and the mock ups used, if any> Jest test cases 
 | testResultRepository     |              | Test Result Unit Test                                                                                                                             |
 | restockOrderRepository   |              | testAddSKUItems(id, expected, skuItems = undefined), testAddRO(id, expected, ro = undefined), {testReturnItems(id, expected, skuItem = undefined) |
 | internalOrderRepository  |              | testAdd(expected, io = undefined), testUpdateState(id, newState, expected, products = undefined)                                                  |
+| testReturnOrderRepository |           | testAddReturnOrder(id, expected, returnDate, products, restockOrderID)|
 
 ## Step 2
 
@@ -163,6 +164,7 @@ Jest test cases applied to them, and the mock ups used, if any> Jest test cases 
 | testDescriptorController |              | Test Descriptor Unit Test                                                                          |
 | testResultController     |              | Test Result Unit Test                                                                              |
 | testResultController     |              | Test Result Unit Test                                                                              |
+
 
 ## Step 3
 
@@ -178,6 +180,7 @@ Jest test cases applied to them, and the mock ups used, if any> Jest test cases 
 | router/testResult     |              | Test Result API Test                                                                                                                                                                                                                                                                                                     |
 | router/restockOrder   |              | Test Restock Order API                                                                                                                                                                                                                                                                                                   |
 | router/internalOrder  |              | Test Internal Order                                                                                                                                                                                                                                                                                                      |
+| router/returnOrder  |              | Test Return Order                                                                                                                                                                                                                                                                                                      |
 
 # API testing - Scenarios
 
@@ -291,6 +294,22 @@ referring the UC in the OfficialRequirements that they detail>
 | 1              | Q requests to delete a test result associated to a SKU Item |
 | 3              |                   Q confirms the deletion                   |
 
+## Scenario UC 6-2
+
+| Scenario       |             Return Order of any SKU items            |
+| -------------- | :---------------------------------------------------------: |
+| Precondition   |         Manager M exists and is logged in          |
+|                |                        SKU S exists                         |
+|                |                    Restock order RO exists and is in state = COMPLETEDRETURN                   |
+|                |             Restock order RO has at least 1 units of S that passed quality tests and need to be returned anyway              |
+| Post condition |            Return Order REO registered into system            |
+| Step#          |                         Description                         |
+| 1              | M inserts RO.ID |
+| 2              |                   Return order starts                   |
+| 3              |                   System provide RFID of SKU items                   |
+| 4              |                   M adds all items to REO                   |
+| 5              |                   Supplier is notified by the system, REO is registered                   |
+
 ## Scenario UC 12-4
 
 | Scenario       |      Update test description      |
@@ -356,6 +375,7 @@ Report also for each of the scenarios the (one or more) API Mocha tests that cov
 | Scenario 12-5                                          | FR 3.2 Manage Quality Tests                          | Test Descriptor API Test ><br/>TEST GET /api/testDescriptor/:id                                                                                                                                                                                                                 |
 | Scenario 3-1                                           | FR6.3 Define quantity of SKU to be ordered           | addRO(expectedStatus, ro)                                                                                                                                                                                                                                                       |
 | Scenario 5-1-1                                         | FR5.7 Change state of a restock order                | testSkuItems(expectedStatus, id, skuItems)                                                                                                                                                                                                                                      |
+| Scenario 6-2                                         | FR5.11 Change state of a restock order                | TestAddRetOrd(expectedStatus, ro)                                                                                                                                                                                                                                      |
 | Scenario 9-1                                           | FR6.6 Accept, reject or cancel an internal order     | testAddInternalOrder(expectedStatus, io) <br /> testUpdateState(expectedStatus, id, obj)                                                                                                                                                                                        |
 | Scenario 9-2                                           | FR6.6 Accept, reject or cancel an internal order     | testUpdateState(expectedStatus, id, obj)                                                                                                                                                                                                                                        |
 | Scenario 9-3                                           | FR6.6 Accept, reject or cancel an internal order     | testUpdateState(expectedStatus, id, obj)                                                                                                                                                                                                                                        |
