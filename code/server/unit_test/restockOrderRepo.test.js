@@ -39,7 +39,7 @@ describe('list return items of an order', () => {
     await skuRepo.addSKU(new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]));
     await userRepo.add(new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier"));
     await itemRepo.addItem(new Item(1, "item description", 10, 1, 1));
-    await testDescriptorRepo.addTestDescriptor(new TestDescriptor('test descriptor', 'procedure description', 1));
+    await testDescriptorRepo.addTestDescriptor(new TestDescriptor(1, 'test descriptor', 'procedure description', 1));
 
     await restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",
       [
@@ -136,7 +136,7 @@ function testAddRO(id, expected, ro = undefined) {
 function testReturnItems(id, expected, skuItem = undefined) {
   test('list return items of an order', async () => {
     if (skuItem) {
-      let tr = new testResult(1, dateHandler.DayjsToDate(dayjs()), false);
+      let tr = new testResult(1, 1, dateHandler.DayjsToDate(dayjs()), false);
       tr.rfid = skuItem.rfid;
       await testResultRepo.addTestResult(tr);
 
