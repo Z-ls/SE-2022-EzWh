@@ -16,6 +16,7 @@
   "scripts": {
     "apiTest": "mocha test --exit",
     "test": "jest --runInBand",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "freshDB": "cd persistence && node DBHandler.js"
   }
 }

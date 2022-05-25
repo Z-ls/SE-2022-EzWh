@@ -152,4 +152,11 @@ CREATE TABLE IF NOT EXISTS "transportNote" (
 	FOREIGN KEY("ROid") REFERENCES "restockOrder"("id") ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY("ROid")
 );
+
+INSERT INTO "user" ("username","name","surname","password","type") values	("user1@ezwh.com","name","surname","testpassword","customer");
+INSERT INTO "user" ("username","name","surname","password","type") values	("qualityEmployee1@ezwh.com","name","surname","testpassword","qualityEmployee");
+INSERT INTO "user" ("username","name","surname","password","type") values	("clerk1@ezwh.com","name","surname","testpassword","clerk");
+INSERT INTO "user" ("username","name","surname","password","type") values	("deliveryEmployee1@ezwh.com","name","surname","testpassword","deliveryEmployee");
+INSERT INTO "user" ("username","name","surname","password","type") values	("supplier1@ezwh.com","name","surname","testpassword","supplier");
+INSERT INTO "user" ("username","name","surname","password","type") values	("manager1@ezwh.com","name","surname","testpassword","manager");
 COMMIT;

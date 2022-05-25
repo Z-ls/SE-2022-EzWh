@@ -1,3 +1,5 @@
+const fs = require('fs');
+const sqlite = require('sqlite3');
 const internalOrderRepository = require("../persistence/internalOrderRepository");
 const itemRepository = require("../persistence/itemRepository");
 const positionRepository = require("../persistence/positionRepository");
@@ -20,9 +22,9 @@ const testDesRepo = new testDescriptorRepository();
 const testResRepo = new testResultRepository();
 const userRepo = new userRepository();
 
-function DBHandler(){
+function DBHandler() {
 
-    this.deleteAllTablesData = async ()=>{
+    this.deleteAllTablesData = async () => {
         await restockRepo.deleteRestockOrderdata();
         await interRepo.deleteInternalOrderdata();
         await returnRepo.deleteReturnOrderdata();
@@ -36,5 +38,43 @@ function DBHandler(){
         await skuRepo.deleteSequence();
     }
 }
+
+freshDB = () => new Promise((resolve, reject) => {
+    const dbPath = "../../ezwh.db";
+    // delete db if exists
+    try {
+        fs.unlinkSync(dbPath);
+    } catch (err) {
+        console.log("ezwh.db is not existing");
+    }
+
+    // create a new one
+    const db = new sqlite.Database(dbPath, [sqlite.OPEN_READWRITE, sqlite.OPEN_CREATE], (err) => {
+        if (err) {
+            reject(err);
+        }
+    });
+
+    // populate it
+    db.run("PRAGMA foreign_keys = ON");
+    try {
+        const queries = fs.readFileSync('../../ezwh.db.sql', 'utf8');
+        db.exec(queries.toString(), err => {
+            if (err) {
+                reject(err);
+            }
+            else {
+                db.close();
+                resolve(true);
+            }
+        });
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+freshDB()
+    .then((x) => console.log(x))
+    .catch((err) => console.log(err));
 
 module.exports = DBHandler;
