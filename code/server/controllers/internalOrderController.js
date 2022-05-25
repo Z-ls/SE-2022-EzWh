@@ -40,88 +40,66 @@ class InternalOrderController {
     }
   }
 
-  get = async (req, res) => {
-    // validation
-    if (!req.params.id || isNaN(parseInt(req.params.id)) || parseInt(req.params.id) < 1)
-      return res.status(422).end();
-
+  get = async (id) => {
     try {
       const result = await Promise.any(
-        [this.IOrepo.get(req.params.id, "other"),
-        this.IOrepo.get(req.params.id, "COMPLETED")]
+        [this.IOrepo.get(id, "other"),
+        this.IOrepo.get(id, "COMPLETED")]
       );
-      return res.status(200).json(result);
+      return result;
     }
     catch (e) {
-      return res.status(404).end();
+      if (e instanceof AggregateError)
+        return { code: 404 };
+      return e;
     }
   }
 
-  add = async (req, res) => {
-    // Validation
-    if (
-      typeof req.body.issueDate !== 'string' ||
-      !this.dateHandler.isDateAndTimeValid(req.body.issueDate) ||
-      !isInt(req.body.customerId) ||
-      isNaN(parseInt(req.body.customerId)) ||
-      !req.body.products ||
-      !Array.isArray(req.body.products) ||
-      !req.body.products.every(p => isInt(p.SKUId) && typeof p.description === 'string' && typeof p.price === 'number' && isInt(p.qty))
-    ) {
-      return res.status(422).end();
+  add = async (io) => {
+    try {
+      return await this.IOrepo.add(io);
     }
+    catch (e) {
+      return e;
+    }
+  }
+
+  updateState = async (id, body) => {
 
     try {
-      const result = await this.IOrepo.add(req.body);
-      return res.status(result.code).end();
+      await await Promise.any([this.IOrepo.get(id, "other"), this.IOrepo.get(id, "COMPLETED")]
+      );
     }
     catch (e) {
-      return res.status(e.code).end();
+      return ({ code: 404 });
     }
-  }
 
-  updateState = async (req, res) => {
-    // validation
-    if (!req.body.newState || !possibleStates.includes(req.body.newState) || !req.params.id || isNaN(parseInt(req.params.id)))
-      return res.status(422).end();
-
-    if (req.body.newState === 'COMPLETED') {
-      // validation
-      console.log("estoy aqui");
-      if (!req.body.products || !Array.isArray(req.body.products) || !req.body.products.every(p => isInt(p.SkuID) && typeof p.RFID === 'string')) {
-        return res.status(422).end();
+    if (body.newState === 'COMPLETED') {
+      try {
+        await Promise.all([this.IOrepo.addToTransactionRFIDs(id, body.products), this.IOrepo.removeInternalTransactions(id)]);
       }
-      else {
-        try {
-          await Promise.all([this.IOrepo.addToTransactionRFIDs(req.params.id, req.body.products), this.IOrepo.removeInternalTransactions(req.params.id)]);
-          return res.status(200).end();
-        }
-        catch (e) {
-          return res.status(e.code).end();
-        }
+      catch (e) {
+        return e;
       }
     }
 
     try {
-      await this.IOrepo.updateState(req.body.newState, req.params.id);
-      return res.status(200).end();
+      await this.IOrepo.updateState(body.newState, id);
+      return { code: 200 };
     }
     catch (e) {
-      return res.status(e.code).end();
+      return e;
     }
   }
 
-  delete = async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id))
-      return res.status(422).end();
+  delete = async (id) => {
 
     try {
       await this.IOrepo.delete(id);
-      return res.status(204).end();
+      return { code: 204 };
     }
     catch (e) {
-      return res.status(e.code).end();
+      return e;
     }
   }
 }

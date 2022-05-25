@@ -439,11 +439,36 @@ Version: 1.0
     <For traceability write the class and method name that contains the test case>
 
 
-| Unit name | Jest test case |
-| --------- | -------------- |
-|           |                |
-|           |                |
-|           |                |
+| Unit name                                          | Jest test case                                               |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| SKURepository.test.js  edit SKU                    | testEditSKU({newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50},1000,[]); |
+| SKURepository.test.js  edit SKU                    | testEditSKU({   newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50  },1,[new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99)]); |
+| SKURepository.test.js edit SKU Position            | testEditSKUPosition("800234523412",1000,[]);                 |
+| SKURepository.test.js edit SKU Position            | testEditSKUPosition("800234523412",1,[new SKU(1,"a new sku",100, 50,"first SKU", "800234523412",50, 10.99)]); |
+| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50},1000,undefined); |
+| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku",newWeight : 100,newVolume : 50,newNotes : "first SKU",newPrice : 10.99,newAvailableQuantity : 50   },1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[]) ); |
+| SKUController.test.js edit SKU Controller          | testEditSKUController({ newDescription : "a new sku 2",newWeight : 100,newVolume : 50,newNotes : "second SKU",newPrice : 11.99,newAvailableQuantity : 50  },2,new SKU(2,"a new sku 2",2, 3,"second SKU", "800234543412",50, 11.99,[]) ); |
+| SKUController.test.js edit SKU Controller          | testEditSKUController({  newDescription : "a new sku 2",newWeight : 20,newVolume : 20,newNotes : "second SKU",newPrice : 11.99,newAvailableQuantity : 50   },2,new SKU(2,"a new sku 2",20, 20,"second SKU", "800234543412",50, 11.99,[])  ); |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543412",1000,undefined); |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("900234523415",1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[])); |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543412",2,new SKU(2,"a new sku 2",2, 3,"second SKU", "800234543412",50, 11.99,[])); |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("800234543413",1,new SKU(1,"a new sku",100, 50,"first SKU", null,50, 10.99,[])); |
+| SKUController.test.js edit SKU Position Controller | testEditSKUPositionController("900234543417",1,new SKU(1,"a new sku",100, 50,"first SKU", "900234543417",50, 10.99,[])); |
+| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"12345678901234567890123456789015", SKUId:1, DateOfStock:"2020/02/28 15:30"}, [new skuItem("12345678901234567890123456789015", 1,0,"2021/11/29 12:30")]); |
+| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"22455678901234567890123456789024", SKUId:2, DateOfStock:"2021/04/28 15:35"},[]); |
+| skuItemRepository.test.js add SKUItem              | testAddSKUItem({ RFID:"22455678901234567890123456789024", SKUId:1, DateOfStock:"2021/04/28 15:35"},[ new skuItem("22455678901234567890123456789024",1,0,"2021/04/28 15:35")]); |
+| skuItemRepository.test.js delete SKUItem           | testDeleteSKUItem("22455678901234567890123456789024",[false,[]]); |
+| skuItemRepository.test.js delete SKUItem           | testDeleteSKUItem("12345678901234567890123456789015", [true,[]]); |
+| skuItemController.test.js edit SKUItem Controller  | testEditSKUItem({newRFID:"22455678901234567890123456789024",newAvailable:1,newDateOfStock:"2021/11/29 12:30"},"22455678901234567890123456789024",undefined); |
+| skuItemController.test.js edit SKUItem Controller  | testEditSKUItem({newRFID:"12345678901234567890123456789015",newAvailable:1,newDateOfStock:"2020/12/29 13:30"},"12345678901234567890123456789015",new skuItem("12345678901234567890123456789015",1,1,"2020/12/29 13:30")); |
+| itemRepository.test.js  add item                   | testAddItem({id : 12,description : "a new item 2",price : 11.99,SKUId : 1, supplierId : 1}, [new Item(12,"a new item",10.99,1,1)]); |
+| itemRepository.test.js  add item                   | testAddItem({id : 12,description : "a new item 2",price : 11.99,SKUId : 1, supplierId : 3}, [new Item(12,"a new item",10.99,1,1)]); |
+| itemRepository.test.js  add item                   | testAddItem({id : 13,description : "a new item 2",price : 11.99,SKUId : 3, supplierId : 1}, []); |
+| itemRepository.test.js  add item                   | testAddItem({id : 13,description : "a new item 2",price : 11.99,SKUId : 2, supplierId : 1}, [new Item(13,"a new item 2",11.99,2,1)]); |
+| itemRepository.test.js  delete item                | testDeleteitem(13,[false,[]]);                               |
+| itemRepository.test.js  delete item                | testDeleteitem(12, [true,[]]);                               |
+| itemController.test.js   edit Item Controller      | testEditItem({newDescription : "a new item 2", newPrice : 11.99},13,undefined); |
+| itemController.test.js   edit Item Controller      | testEditItem({newDescription : "a new item 2", newPrice : 11.99},12,new Item(12,"a new item 2",11.99,1,1)); |
 
 ### Code coverage report
 

@@ -91,12 +91,6 @@ class userRepository {
    */
   add(user) {
     return new Promise(async (resolve, reject) => {
-      // VALIDATION
-      if (typeof user.username !== 'string' || typeof user.name !== 'string' || typeof user.surname !== 'string' ||
-        typeof user.password !== 'string' || user.password.length < 8 || typeof user.type !== 'string' ||
-        !possibleTypes.includes(user.type)) {
-        return reject({ code: 422 });
-      }
       try {
         await this.isUsernameExisting(user.username, user.type);
       }

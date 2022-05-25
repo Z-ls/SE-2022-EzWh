@@ -1,5 +1,6 @@
 
-function TestResult(idTestDescriptor, Date, Result) {
+function TestResult(id, idTestDescriptor, Date, Result) {
+    this.id = id;
     this.idTestDescriptor = idTestDescriptor;
     this.Date = Date;
     this.Result = Result;

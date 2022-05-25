@@ -1,4 +1,4 @@
-const Item = require("../model/Item");
+const Item = require("../model/item");
 const skuRepository = require("../persistence/skuRepository");
 const itemRepository = require("../persistence/itemRepository");
 const userRepository = require("../persistence/userRepository");

@@ -2,9 +2,9 @@
 
 Authors: Edoardo Novara, Riccardo Salvatelli, Zhao Longsheng, Sebastian Gutierrez
 
-Date: 27/04/2022
+Date: 23/05/2022
 
-Version: 1.2
+Version: 2.0
 
 # Contents
 
@@ -29,9 +29,13 @@ We decided to use an MVC pattern with a Client-Server Architecture because the s
 
 ![](images/Backend.PNG)
 
+#### Router
+
+The controller package is in charge of the communication between the front-end and back-end by means of API REST requests.
+
 #### Controller
 
-The controller package is in charge of the communication between the front-end and back-end and performs the functionalities of EZWH application.
+The controller package is in charge of performing and taking care of the logic of the functionalities of EZWH application.
 
 #### Entity
 
@@ -42,6 +46,10 @@ The entity package contains all the entities from the EXWH model which all the d
 This package is composed by repositories where each of which is related to a specific Entity. With this relation is possible to obtain the persistence for each Model class to the EZWH database.
 
 # Low level design
+
+### Router
+
+![](images/Router%20class%20diagram.jpg)
 
 ### Controller
 

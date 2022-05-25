@@ -26,53 +26,44 @@ class userController {
     }
   }
 
-  addUser = async (req, res) => {
+  addUser = async (user) => {
     try {
-      const user =
-      {
-        name: req.body.name,
-        username: req.body.username,
-        surname: req.body.surname,
-        password: req.body.password,
-        type: req.body.type
-      }
       const result = await this.userRepo.add(user);
-      return res.status(result.code).end();
+      return result;
     }
     catch (e) {
-      return res.status(e.code).end();
+      return e;
     }
   }
 
   /**
    * 
-   * @param {{params:{username:string},body:{oldType:string,newType:string}}} req 
-   * @param {*} res 
+   * @param {string} username 
+   * @param {string} oldType 
+   * @param {string} newType 
    * @returns 
    */
-  changeRights = async (req, res) => {
+  changeRights = async (username, oldType, newType) => {
     try {
-      const result = await this.userRepo.modifyRights(req.params.username, req.body.oldType, req.body.newType);
-      return res.status(result.code).end();
+      return await this.userRepo.modifyRights(username, oldType, newType);
     }
     catch (e) {
-      return res.status(e.code).end();
+      return e;
     }
   }
 
   /**
    * 
-   * @param {{params:{username:string,type:string}}} req 
-   * @param {*} res 
+   * @param {string} username 
+   * @param {string} type 
    * @returns 
    */
-  delete = async (req, res) => {
+  delete = async (username, type) => {
     try {
-      const result = await this.userRepo.remove(req.params.username, req.params.type);
-      return res.status(result.code).end();
+      return await this.userRepo.remove(username, type);
     }
     catch (e) {
-      return res.status(e.code).end();
+      return e;
     }
   }
 

@@ -57,8 +57,7 @@ router.post('/restockOrder',
   async (req, res) => {
     // validation stuff
     const errors = validationResult(req);
-    if (!errors.isEmpty() || !dateHandler.isDateAndTimeValid(req.body.issueDate))
-      return res.status(422).end();
+    if (!errors.isEmpty() || !dateHandler.isDateAndTimeValid(req.body.issueDate)) { return res.status(422).end(); }
     let result;
     try {
       result = await roc.add(req.body);
@@ -102,7 +101,7 @@ router.put('/restockOrder/:id/skuItems',
     return res.status(result.code).end();
 
   });
-  
+
 router.put('/restockOrder/:id/transportNote',
   param('id').matches(/^\d+$/).toInt().isInt({ min: 1 }),
   body('transportNote.deliveryDate').exists().isString(),
