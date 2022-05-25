@@ -659,11 +659,6 @@ Version: 1.0
 
 # White Box Unit Tests
 
-
-
-
-# White Box Unit Tests
-
 ### Test cases definition
 
 
