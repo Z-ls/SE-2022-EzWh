@@ -8,14 +8,24 @@ const pos = require('./routes/position');
 const returnOrder = require('./routes/returnOrder');
 const user = require('./routes/user');
 const internalOrder = require('./routes/internalOrder');
+const tdRouter = require('./routes/testDescriptorRoutes');
+const trRouter = require('./routes/testResultRoutes');
+const DBHandler = require('./persistence/DBHandler');
 
+
+const resetDB = async () => {
+  await new DBHandler().freshDB();
+}
+
+
+resetDB();
 // init express
 const app = new express();
 const port = 3001;
-app.use(express.json());
 
-const tdRouter = require('./routes/testDescriptorRoutes');
-const trRouter = require('./routes/testResultRoutes');
+
+
+app.use(express.json());
 app.use(tdRouter);
 app.use(trRouter);
 app.use('/api', returnOrder);
