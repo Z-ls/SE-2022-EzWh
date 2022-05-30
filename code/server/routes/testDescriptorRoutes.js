@@ -4,7 +4,7 @@ const tDController = require('../controllers/testDescriptorController');
 const { check } = require('express-validator');
 
 router.get('/api/testDescriptors', tDController.getTestDescriptors);
-router.get('/api/testDescriptor/:id',
+router.get('/api/testDescriptors/:id',
     check('id').isInt({min: 1}),
     tDController.getTestDescriptorById);
 router.post('/api/testDescriptor', [

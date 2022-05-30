@@ -62,7 +62,7 @@ describe('Test Descriptor API Test', () => {
         init_test();
 
         it("get descriptor", done => {
-            agent.get('/api/testDescriptor/1')
+            agent.get('/api/testDescriptors/1')
                 .then(res => {
                     res.should.have.status(200);
                     res.body.should.have.property("id").equal(1);
@@ -74,7 +74,7 @@ describe('Test Descriptor API Test', () => {
         });
 
         it("get descriptor id non-existent", done => {
-            agent.get('/api/testDescriptor/99')
+            agent.get('/api/testDescriptors/99')
                 .then(res => {
                     res.should.have.status(404);
                     done();
