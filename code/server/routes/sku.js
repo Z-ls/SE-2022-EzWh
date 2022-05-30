@@ -37,12 +37,12 @@ async (req, res) => {
 });
 
 router.post('/sku',
-body('description').exists(),
-body('weight').exists().toFloat().isFloat({gt : 0}),
-body('volume').exists().toFloat().isFloat({gt : 0}),
-body('notes').exists(),
+body('description').exists().matches(/^(?!\s*$).+/),
+body('weight').exists().matches(/^\d+$/).toInt().isInt({gt : 0}),
+body('volume').exists().matches(/^\d+$/).toInt().isInt({gt : 0}),
+body('notes').exists().matches(/^(?!\s*$).+/),
 body('price').exists().toFloat().isFloat({gt : 0}),
-body('availableQuantity').exists().toInt().isInt({min : 0}),
+body('availableQuantity').exists().matches(/^\d+$/).toInt().isInt({min : 0}),
 async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -98,7 +98,7 @@ param('id').matches(/^\d+$/).toInt().isInt({min : 1}),
 async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).send("Unprocessable entity");
+        return res.status(204).send();
     } 
     try{
         const deleted = await skuController.deleteSKU(req.params.id);
