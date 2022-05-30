@@ -12,13 +12,7 @@ const tdRouter = require('./routes/testDescriptorRoutes');
 const trRouter = require('./routes/testResultRoutes');
 const DBHandler = require('./persistence/DBHandler');
 
-
-const resetDB = async () => {
-  await new DBHandler().freshDB();
-}
-
-
-resetDB();
+const dbHandler = new DBHandler();
 // init express
 const app = new express();
 const port = 3001;
@@ -37,9 +31,11 @@ app.use('/api', restockOrder);
 app.use('/api', user);
 app.use('/api', internalOrder);
 
-// activate the server
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+dbHandler.deleteAllTablesData().then(() => {
+  // activate the server
+  app.listen(port, () => {
+    console.log(`Server listening at http://localhost:${port}`);
+  });
 });
 
 module.exports = app;
