@@ -20,9 +20,9 @@
     "nyc": "^15.1.0"
   },
   "scripts": {
-    "apiTest": "./node_modules/.bin/mocha test --timeout 10000 --exit > ./studentApiTestResult.txt",
-    "test": "node_modules/.bin/jest --coverage > ./unitTestResult.txt",
-    "acceptanceTest": "npx mocha --spec acceptanceTest/testEzWhAPI.js --reporter mochawesome",
-    "totalcoverage": "./node_modules/.bin/nyc ./node_modules/.bin/mocha test --timeout 10000 --exit"
+    "apiTest": "./node_modules/.bin/mocha test --runInBand--timeout 10000 --exit > ./studentApiTestResult.txt",
+    "test": "node_modules/.bin/jest --runInBand --coverage > ./unitTestResult.txt",
+    "acceptanceTest": "npx mocha --runInBand --spec acceptanceTest/testEzWhAPI.js --reporter mochawesome --timeout 10000 --exit",
+    "totalcoverage": "./node_modules/.bin/nyc ./node_modules/.bin/mocha test --runInBand --timeout 10000 --exit"
   }
 }
