@@ -94,7 +94,12 @@ db.run("PRAGMA foreign_keys = ON");
                 {
                     reject(err);
                 }else{
-                    resolve(true);
+                    if(this.changes === 0)
+                    {
+                        resolve(false);
+                    }else{
+                        resolve(true);
+                    }
                 }
             });
         });
