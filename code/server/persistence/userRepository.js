@@ -34,7 +34,7 @@ class userRepository {
    */
   allUsers() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT id,name,surname,username FROM  user WHERE type!=\"manager\"";
+      const query = "SELECT id,name,surname,username, type FROM  user WHERE type!=\"manager\"";
       this.db.all(query,
         (err, rows) => {
           if (err)
@@ -166,28 +166,25 @@ class userRepository {
           if (err)
             reject({ code: 503 });
           else {
-            if (this.changes === 0)
-              reject({ code: 404 });
-            else
-              resolve({ code: 204 });
+            resolve({ code: 204 });
           }
         }
       );
     });
   }
 
-  deleteUserdata(){
-    return new Promise((resolve, reject) =>{
-        const sql = 'DELETE FROM user; DELETE FROM sqlite_sequence WHERE name = "user";';
-        this.db.run(sql, (err) => {
-            if(err){
-                reject(err);
-                return;
-            }
-            resolve(true);
-        });
+  deleteUserdata() {
+    return new Promise((resolve, reject) => {
+      const sql = 'DELETE FROM user; DELETE FROM sqlite_sequence WHERE name = "user";';
+      this.db.run(sql, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      });
     });
-}
+  }
 }
 
 module.exports = userRepository;
