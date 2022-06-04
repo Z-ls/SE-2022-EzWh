@@ -28,8 +28,13 @@ const editPosition = async (newPos, id) => {
 
 const editPositionID = async (newID, id) => {
     const posRep = new posRepository();
-    const editedid = await posRep.editPOSID(newID, id);
-    return editedid;
+    let posFound = await posRep.getPOSbyID(id);
+    if(posFound.length !==0){
+    const editedID = await posRep.editPOSID(newID, id);
+    return 200;
+    }
+    else return 404;
+    //return editedID;
 }
 
 const deletePosition = async (id) => {
