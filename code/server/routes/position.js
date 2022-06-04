@@ -73,7 +73,6 @@ async (req, res) => {
         const editID= await posController.editPositionID(req.body, req.params.positionID);
         return res.status(editID).send();
     }catch(error){
-        console.log(err);
         return res.status(503).send(error);
     }}
 );

@@ -1,13 +1,16 @@
 
+const dayjs = require("dayjs");
 const { possibleStates } = require("../model/internalOrder");
 const dateHandler = require("../persistence/dateHandler");
 const InternalOrderRepository = require("../persistence/internalOrderRepository");
+const skuItemRepository = require("../persistence/skuItemRepository");
 const { isInt } = require("../persistence/validate");
 
 class InternalOrderController {
   constructor() {
     this.IOrepo = new InternalOrderRepository();
     this.dateHandler = new dateHandler();
+    this.skuItemRepo = new skuItemRepository();
   }
 
   getAll = async (req, res) => {
@@ -76,6 +79,7 @@ class InternalOrderController {
 
     if (body.newState === 'COMPLETED') {
       try {
+        await Promise.all(body.products.map(p => this.skuItemRepo.addSKUItem({ RFID: p.RFID, SKUId: p.SkuID, DateOfStock: this.dateHandler.DayjsToDateAndTime(dayjs()) })));
         await Promise.all([this.IOrepo.addToTransactionRFIDs(id, body.products), this.IOrepo.removeInternalTransactions(id)]);
       }
       catch (e) {
