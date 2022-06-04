@@ -109,7 +109,8 @@ router.put('/restockOrder/:id/transportNote',
   body('transportNote.deliveryDate').exists().isString(),
   async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty() || !dateHandler.isDateValid(req.body.transportNote.deliveryDate))
+    if (!errors.isEmpty() || /*!dateHandler.isDateValid(req.body.transportNote.deliveryDate))*/
+        !(dateHandler.isDateAndTimeValid(req.body.transportNote.deliveryDate) || (dateHandler.isDateValid(req.body.transportNote.deliveryDate))))
       return res.status(422).end();
     let result;
     try {

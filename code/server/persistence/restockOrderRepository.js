@@ -198,7 +198,7 @@ class restockOrderRepository {
         reject({ code: 503 });
         return;
       }
-      Promise.all(ro.products.map(p => addProduct(roID, p.SKUId, p.qty, this.itemRepo, this.db)))
+      Promise.all(ro.products.map(p => {addProduct(roID, p.SKUId, p.qty, this.itemRepo, this.db)}))
         .then(() => resolve({ code: 201, data: "Restock order successfully created" }))
         .catch((e) => reject({ code: 422, data: "Generic error: " + e }));
     })
@@ -325,7 +325,7 @@ class restockOrderRepository {
       }
       // END VALIDATION
       try {
-        const resAddingSKUItems = await Promise.all(skuItems.map(skuItem => addToSKUITEMTable(skuItem, this.skuitemRepository.addSKUItem, this.dateHandler.DayjsToDateAndTime)));
+        const resAddingSKUItems = await Promise.all(skuItems.map(skuItem => {addToSKUITEMTable(skuItem, this.skuitemRepository.addSKUItem, this.dateHandler.DayjsToDateAndTime)}));
         const result = await addToTransactionSKUTable();
         resolve({ code: result.code });
       }
