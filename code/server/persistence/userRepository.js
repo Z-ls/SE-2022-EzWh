@@ -17,7 +17,7 @@ class userRepository {
    */
   allSuppliers() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT name,surname,username as email FROM  user WHERE type=\"supplier\"";
+      const query = "SELECT id,name,surname,username as email FROM  user WHERE type=\"supplier\"";
       this.db.all(query,
         (err, rows) => {
           if (err)
