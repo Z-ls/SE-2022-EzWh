@@ -22,7 +22,6 @@ router.get('/restockOrders/:id',
       return res.status(result.code).json(result.data);
     }
     catch (e) {
-      // console.log(e);
       return res.status(e.code).end();
     }
   });
@@ -59,8 +58,6 @@ router.post('/restockOrder',
     // validation stuff
     const errors = validationResult(req);
     if (!errors.isEmpty() || !dateHandler.isDateAndTimeValid(req.body.issueDate)) {
-      console.log("pesce");
-      console.log(errors.errors);
       return res.status(422).end();
     }
     let result;
@@ -101,7 +98,6 @@ router.put('/restockOrder/:id/skuItems',
     try {
       result = await roc.addSKUItems(req.params.id, req.body.skuItems);
     } catch (e) {
-      // console.log(e);
       result = e;
     }
     return res.status(result.code).end();

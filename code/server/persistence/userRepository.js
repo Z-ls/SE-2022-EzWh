@@ -34,7 +34,7 @@ class userRepository {
    */
   allUsers() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT name,surname,username as email, type FROM  user WHERE type!=\"manager\"";
+      const query = "SELECT id,name,surname,username as email, type FROM  user WHERE type!=\"manager\"";
       this.db.all(query,
         (err, rows) => {
           if (err)
