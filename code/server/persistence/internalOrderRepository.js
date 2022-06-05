@@ -72,7 +72,7 @@ class InternalOrderRepository {
           }
           else {
             try {
-              const internalOrders = await Promise.all(rows.map(row => this.get(row.id, row.state)));
+              const internalOrders = await Promise.all(rows.map(row => { this.get(row.id, row.state) }));
               resolve({ code: 200, data: internalOrders });
             }
             catch (e) {
