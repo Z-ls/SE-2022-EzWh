@@ -72,7 +72,7 @@ class InternalOrderRepository {
           }
           else {
             try {
-              const internalOrders = await Promise.all(rows.map(row => { this.get(row.id, row.state) }));
+              const internalOrders = await Promise.all(rows.map(row => { return this.get(row.id, row.state) }));
               resolve({ code: 200, data: internalOrders });
             }
             catch (e) {
@@ -91,8 +91,9 @@ class InternalOrderRepository {
         query,
         products.flatMap(p => [id, p.SKUId, p.qty]),
         (err) => {
-          if (err)
+          if (err) {
             return reject({ addToInternalTransaction: true, code: 503, data: err });
+          }
           else
             return resolve({ code: 200 });
         }
@@ -120,7 +121,6 @@ class InternalOrderRepository {
         })
     });
   }
-  // NON AGGIUNGE SU INTERNAL TRANSACTION
   add(internalOrder) {
     return new Promise(async (resolve, reject) => {
       let id;
@@ -131,9 +131,9 @@ class InternalOrderRepository {
       }
       catch (e) {
         if (e.addToInternalTransaction) {
-          this.db.run("DELETE FROM internalOrder WHERE idInternalOrder=?", id);
+          console.log("pippo qui");
+          this.db.run("DELETE FROM internalOrder WHERE idInternalOrder=?", id, (_err) => { reject({ code: e.code }); });
         }
-        reject({ code: e.code });
       }
     });
   }
@@ -149,8 +149,9 @@ class InternalOrderRepository {
       const query = "UPDATE internalOrder SET state=? WHERE idInternalOrder=?";
       this.db.run(query, [state, id],
         function (err) {
-          if (err)
+          if (err) {
             reject({ code: 503 });
+          }
           else {
             if (this.changes === 0) {
               reject({ code: 404 });
@@ -169,6 +170,7 @@ class InternalOrderRepository {
       this.db.run(query, products.flatMap(p => [id, p.RFID]),
         (err) => {
           if (err) {
+            console.log(JSON.stringify(products));
             reject({ code: 503, data: "error while adding to internalOrderTransactionRFID. " + err });
           }
           else resolve(true);
