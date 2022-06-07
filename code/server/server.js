@@ -31,11 +31,11 @@ app.use('/api', restockOrder);
 app.use('/api', user);
 app.use('/api', internalOrder);
 
-dbHandler.deleteAllTablesData().then(() => {
+/* dbHandler.deleteAllTablesData().then(() => {
   // activate the server
   app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
   });
-});
+}); */
 
 module.exports = app;
