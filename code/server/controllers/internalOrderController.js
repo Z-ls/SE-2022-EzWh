@@ -106,6 +106,9 @@ class InternalOrderController {
 
     try {
       await this.IOrepo.delete(id);
+      const allInternarOrders = await this.IOrepo.getAll('all');
+      if(allInternarOrders.data.length === 0)
+        await this.IOrepo.deleteSequence();
       return { code: 204 };
     }
     catch (e) {

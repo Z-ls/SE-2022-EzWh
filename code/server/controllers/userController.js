@@ -60,7 +60,16 @@ class userController {
    */
   delete = async (username, type) => {
     try {
-      return await this.userRepo.remove(username, type);
+      const status = await this.userRepo.remove(username, type);
+      const allusers = await this.userRepo.allUsers();
+      if(allusers.data.length === 0)
+      {
+        await this.userRepo.deleteSequenceRI();
+        const allSuppliers = await this.userRepo.allSuppliers();
+        if(allSuppliers.data.length === 0)
+          await this.userRepo.deleteSequence();
+      }
+      return status;
     }
     catch (e) {
       return e;

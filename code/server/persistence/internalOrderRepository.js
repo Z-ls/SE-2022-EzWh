@@ -217,9 +217,21 @@ class InternalOrderRepository {
     });
   }
 
+  deleteSequence = () =>{
+    return new Promise((resolve, reject) =>{
+        const sql = ' DELETE FROM sqlite_sequence WHERE name = ? ;';
+        this.db.run(sql, "internalOrder", (err) => {
+            if(err){
+                reject(err);
+            }
+            resolve(true);
+        });
+    });
+}
+
   deleteInternalOrderdata() {
     return new Promise((resolve, reject) => {
-      const sql = 'DELETE FROM internalOrder; DELETE FROM sqlite_sequence WHERE name = "internalOrder";';
+      const sql = 'DELETE FROM internalOrder;';
       this.db.run(sql, (err) => {
         if (err) {
           reject(err);

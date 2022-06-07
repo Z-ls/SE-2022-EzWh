@@ -166,9 +166,33 @@ class userRepository {
     });
   }
 
+  deleteSequenceRI = () =>{
+    return new Promise((resolve, reject) =>{
+        const sql = ' DELETE FROM sqlite_sequence WHERE name IN (?,?) ;';
+        this.db.run(sql, ["restockOder","internalOrder"], (err) => {
+            if(err){
+                reject(err);
+            }
+            resolve(true);
+        });
+    });
+  }
+
+  deleteSequence = () =>{
+    return new Promise((resolve, reject) =>{
+        const sql = ' DELETE FROM sqlite_sequence WHERE name = ? ;';
+        this.db.run(sql, "user", (err) => {
+            if(err){
+                reject(err);
+            }
+            resolve(true);
+        });
+    });
+  }
+
   deleteUserdata() {
     return new Promise((resolve, reject) => {
-      const sql = 'DELETE FROM user; DELETE FROM sqlite_sequence WHERE name = "user";';
+      const sql = 'DELETE FROM user;';
       this.db.run(sql, (err) => {
         if (err) {
           reject(err);
