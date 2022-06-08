@@ -18,11 +18,18 @@ async(req, res) => {
 });
 
 router.get('/returnOrders/:id', 
-param('id').matches(/^\d+$/).toInt().isInt({min : 1}),
+param('id').matches(/^\d+$/).toInt().isInt({min : 0}),
 async(req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).send("Unprocessable entity");
+    }
     try{
-        let returns = await returnController.getReturnOrdersByID(req.params.id)
-        return res.status(200).json(returns);
+        let returns = await returnController.getReturnOrdersByID(req.params.id);
+        if(returns === undefined){
+            return res.status(404).send("Not found");
+        }
+        return res.status(200).json(returns[0]);
     }catch(error){
         return res.status(500).send(error);
     }
@@ -38,8 +45,12 @@ async (req, res) => {
         return res.status(422).send("Unprocessable entity");
     } 
     try{
-        const deleted = await returnController.addReturnOrder(req.body);
-        return deleted ? res.status(201).send('return Order Added') : res.status(404).send('Unprocessable Entity');
+        const retOrd = await returnController.addReturnOrder(req.body);
+        if(retOrd !== undefined){
+            return res.status(201).send('return Order Added');
+        }
+        else {
+            return res.status(404).send('restock Order ID not found');}
     }catch(error){
         return res.status(503).send(error);
     }
