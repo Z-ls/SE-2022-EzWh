@@ -37,40 +37,6 @@ function DBHandler() {
         await posRepo.deletePositiondata();
         await skuRepo.deleteSequence();
     }
-
-    this.freshDB = () => new Promise((resolve, reject) => {
-        const dbPath = "../ezwh.db";
-        // delete db if exists
-        try {
-            fs.unlinkSync(dbPath);
-        } catch (err) {
-            console.log("ezwh.db is not existing");
-        }
-
-        // create a new one
-        const db = new sqlite.Database(dbPath, [sqlite.OPEN_READWRITE, sqlite.OPEN_CREATE], (err) => {
-            if (err) {
-                reject(err);
-            }
-        });
-
-        // populate it
-        db.run("PRAGMA foreign_keys = ON");
-        try {
-            const queries = fs.readFileSync('../ezwh.db.sql', 'utf8');
-            db.exec(queries.toString(), err => {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    db.close();
-                    resolve(true);
-                }
-            });
-        } catch (err) {
-            console.error(err);
-        }
-    });
 }
 
 module.exports = DBHandler;
