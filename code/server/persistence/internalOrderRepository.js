@@ -131,7 +131,6 @@ class InternalOrderRepository {
       }
       catch (e) {
         if (e.addToInternalTransaction) {
-          console.log("pippo qui");
           this.db.run("DELETE FROM internalOrder WHERE idInternalOrder=?", id, (_err) => { reject({ code: e.code }); });
         }
       }
@@ -170,7 +169,6 @@ class InternalOrderRepository {
       this.db.run(query, products.flatMap(p => [id, p.RFID]),
         (err) => {
           if (err) {
-            console.log(JSON.stringify(products));
             reject({ code: 503, data: "error while adding to internalOrderTransactionRFID. " + err });
           }
           else resolve(true);

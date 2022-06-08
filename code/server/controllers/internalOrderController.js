@@ -82,8 +82,6 @@ class InternalOrderController {
         body.products.forEach(async (p) => {
           await this.skuItemRepo.addSKUItem({ RFID: p.RFID, SKUId: p.SkuID, DateOfStock: this.dateHandler.DayjsToDateAndTime(dayjs()) });
         });
-        console.log("fregna");
-        console.log(JSON.stringify(body.products));
         await Promise.all([this.IOrepo.addToTransactionRFIDs(id, body.products), this.IOrepo.removeInternalTransactions(id)]);
         //await this.IOrepo.addToTransactionRFIDs(id, body.products)
         //await this.IOrepo.removeInternalTransactions(id);
@@ -107,7 +105,7 @@ class InternalOrderController {
     try {
       await this.IOrepo.delete(id);
       const allInternarOrders = await this.IOrepo.getAll('all');
-      if(allInternarOrders.data.length === 0)
+      if (allInternarOrders.data.length === 0)
         await this.IOrepo.deleteSequence();
       return { code: 204 };
     }
