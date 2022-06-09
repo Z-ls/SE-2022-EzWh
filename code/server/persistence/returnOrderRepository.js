@@ -92,7 +92,8 @@ this.getReturnOrderbyID = (id)=>
         db.all(sql, id, (err, rows) =>{
             if(err){
                 reject(err);
-            }else{
+            }
+            else{
                 resolve(rows.map((ro)=>{
                     return new RETURN(ro.id, dayjs(ro.returnDate).format("YYYY/MM/DD HH:mm"), ro.products, ro.restockOrderId);
                 }));
@@ -136,10 +137,13 @@ this.addReturnOrder = (returnDate, restockOrderID)=>
 this.addReturnOrderTransaction = (returnOrderID,products) =>
     {
         return new Promise((resolve, reject) =>{
-            const sql = ("INSERT INTO returnOrderTransaction (idReturnOrder,RFID) values " + "(?,?),".repeat(products.length)).slice(0, -1);
-            db.run(sql,[returnOrderID, products.flatMap(p => p.RFID)],(err)=>{
+            let parameters = products.map((p) => { return "("+returnOrderID+","+"\'"+p.RFID+"\'"+ ")"+","}).join('');
+            parameters = parameters.slice(0,-1);
+            const sql = ("INSERT INTO returnOrderTransaction (idReturnOrder,RFID) VALUES " + parameters + ";");
+            db.run(sql,(err)=>{
                 if(err)
                 {
+                    console.error(err);
                     reject(err);
                 }else{
                     resolve(true);
@@ -148,5 +152,6 @@ this.addReturnOrderTransaction = (returnOrderID,products) =>
         });
     }
 }
+
 
 module.exports = retRepository;

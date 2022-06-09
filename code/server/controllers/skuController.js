@@ -5,9 +5,7 @@ const positionRepository = require("../persistence/positionRepository");
 
 const getSKUS = async () => {
     const skuRep = new skuRepository();
-    const testDesRep = new TestDescriptorRepository()
-    /* await skuRep.dropTable();
-    await skuRep.newTableSKU(); */
+    const testDesRep = new TestDescriptorRepository();
     let skus = await skuRep.getSKUS();
     for (let index = 0; index < skus.length; index++) {
         let s = skus[index];
@@ -95,6 +93,9 @@ const editSKUPosition = async (position, id) => {
 const deleteSKU = async (id) => {
     const skuRep = new skuRepository();
     const deleted = await skuRep.deleteSKU(id);
+    let skus = await skuRep.getSKUS();
+    if(skus.length === 0)
+        await skuRep.deleteSequence();
     return deleted;
 }
 

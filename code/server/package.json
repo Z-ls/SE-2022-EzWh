@@ -8,7 +8,7 @@
     "sqlite3": "^5.0.8"
   },
   "devDependencies": {
-    "babel": "^6.23.0", 
+    "babel": "^6.23.0",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "check-code-coverage": "^1.10.0",
@@ -22,7 +22,7 @@
   "scripts": {
     "apiTest": "./node_modules/.bin/mocha test --runInBand--timeout 10000 --exit > ./studentApiTestResult.txt",
     "test": "node_modules/.bin/jest --runInBand --coverage > ./unitTestResult.txt",
-    "acceptanceTest": "npx mocha --runInBand --spec acceptanceTest/testEzWhAPI.js --reporter mochawesome --timeout 10000 --exit",
+    "acceptanceTest": "npx mocha --runInBand --spec acceptanceTest/testEzWhAPI.js --reporter mochawesome --timeout 30000 --exit",
     "totalcoverage": "./node_modules/.bin/nyc ./node_modules/.bin/mocha test --runInBand --timeout 10000 --exit"
   }
 }
