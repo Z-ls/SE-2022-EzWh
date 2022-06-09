@@ -55,10 +55,10 @@ class restockOrderRepository {
    * @param {number} id of the restock order
    * @returns {Promise} 
    */
-  getOrderItems(id) {
+  getOrderItems(id, supplierId) {
     return new Promise((resolve) => {
-      const query = "SELECT SKUId, quantity, item.description as description, item.price as price FROM restockTransactionItem JOIN item on restockTransactionItem.idItem=item.id WHERE idRestockOrder=?";
-      this.db.all(query, [id],
+      const query = "SELECT SKUId, item.id as itemId, quantity, item.description as description, item.price as price FROM restockTransactionItem JOIN item on restockTransactionItem.idItem=item.id WHERE idRestockOrder=? AND supplierId=?";
+      this.db.all(query, [id,supplierId],
         (err, rows) => {
           if (err)
             reject(err);
@@ -75,10 +75,10 @@ class restockOrderRepository {
    * @param {number} id 
    * @returns {Promise}
    */
-  getOrderRFIDs(id) {
+  getOrderRFIDs(id,supplierId) {
     return new Promise((resolve) => {
-      const query = "SELECT SKUITEM.RFID, SKUId FROM restockTransactionSKU join SKUITEM on restockTransactionSKU.RFID=SKUITEM.RFID WHERE restockTransactionSKU.idRestockOrder=?";
-      this.db.all(query, id,
+      const query = "SELECT SKUId, item.id as itemId, SKUITEM.RFID FROM restockTransactionSKU join SKUITEM on restockTransactionSKU.RFID=SKUITEM.RFID join item on item.SKUId=SKUItem.SKUId WHERE restockTransactionSKU.idRestockOrder=? AND item.supplierId=?";
+      this.db.all(query, [id,supplierId],
         (_err, rows) => {
           resolve(
             rows.map(row => ({ SKUId: row.SKUId, rfid: row.RFID }))
@@ -111,7 +111,7 @@ class restockOrderRepository {
         },
         async () => {
           ROs = await Promise.all(ROs.map(async (ro) => {
-            const [orderItems, orderRFIDs] = await Promise.all([this.getOrderItems(ro.id), this.getOrderRFIDs(ro.id)])
+            const [orderItems, orderRFIDs] = await Promise.all([this.getOrderItems(ro.id, ro.supplierId), this.getOrderRFIDs(ro.id,ro.supplierId)])
               .catch((err) => resolve({ code: 500, data: err }));
             ro.products = orderItems;
             ro.skuItems = orderRFIDs;
