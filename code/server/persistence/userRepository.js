@@ -17,7 +17,7 @@ class userRepository {
    */
   allSuppliers() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT id,name,surname,username FROM  user WHERE type=\"supplier\"";
+      const query = "SELECT id,name,surname,username as email FROM  user WHERE type=\"supplier\"";
       this.db.all(query,
         (err, rows) => {
           if (err)
@@ -34,7 +34,7 @@ class userRepository {
    */
   allUsers() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT id,name,surname,username FROM  user WHERE type!=\"manager\"";
+      const query = "SELECT id,name,surname,username as email, type FROM  user WHERE type!=\"manager\"";
       this.db.all(query,
         (err, rows) => {
           if (err)
@@ -47,16 +47,18 @@ class userRepository {
 
   get(username) {
     return new Promise((resolve, reject) => {
-      const query = "SELECT id, name, surname,password, type, username FROM user WHERE username=?";
+      const query = "SELECT name, surname,password, type, username FROM user WHERE username=?";
       this.db.get(query, username,
         (err, row) => {
-          if (err)
+          if (err) {
             reject({ code: 503 });
-          else
+          }
+          else {
             if (row.length === 0)
               reject({ code: 404 });
             else
               resolve({ code: 200, data: row });
+          }
         })
     });
   }
@@ -150,44 +152,56 @@ class userRepository {
       if (typeof username !== 'string' || typeof type !== 'string' || !possibleTypes.includes(type))
         return reject({ code: 422 });
 
-      try {
-        const user = await this.get(username);
-        if (['manager', 'administrator'].includes(user.data.type))
-          return reject({ code: 422 });
-      }
-      catch (e) {
-        return reject({ code: e.code });
-      }
-
-      const query = "DELETE FROM user WHERE username=? and type=?";
+      const query = "DELETE FROM user WHERE username=? and type=? AND type!='manager' AND type!='administrator'";
       this.db.run(
         query,
         [username, type], function (err) {
           if (err)
             reject({ code: 503 });
           else {
-            if (this.changes === 0)
-              reject({ code: 404 });
-            else
-              resolve({ code: 204 });
+            resolve({ code: 204 });
           }
         }
       );
     });
   }
 
-  deleteUserdata(){
+  deleteSequenceRI = () =>{
     return new Promise((resolve, reject) =>{
-        const sql = 'DELETE FROM user; DELETE FROM sqlite_sequence WHERE name = "user";';
-        this.db.run(sql, (err) => {
+        const sql = ' DELETE FROM sqlite_sequence WHERE name IN (?,?) ;';
+        this.db.run(sql, ["restockOder","internalOrder"], (err) => {
             if(err){
                 reject(err);
-                return;
             }
             resolve(true);
         });
     });
-}
+  }
+
+  deleteSequence = () =>{
+    return new Promise((resolve, reject) =>{
+        const sql = ' DELETE FROM sqlite_sequence WHERE name = ? ;';
+        this.db.run(sql, "user", (err) => {
+            if(err){
+                reject(err);
+            }
+            resolve(true);
+        });
+    });
+  }
+
+  deleteUserdata() {
+    return new Promise((resolve, reject) => {
+      const sql = 'DELETE FROM user;';
+      this.db.run(sql, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      });
+    });
+  }
 }
 
 module.exports = userRepository;

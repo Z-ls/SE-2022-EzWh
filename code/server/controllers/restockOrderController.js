@@ -84,6 +84,9 @@ class RestockOrderController {
 
     try {
       const result = await this.RORepo.remove(id);
+      const ro = await this.RORepo.getAll();
+      if(ro.data.length === 0)
+        this.RORepo.deleteSequence();
       return res.status(result.code).end();
     }
     catch (e) {

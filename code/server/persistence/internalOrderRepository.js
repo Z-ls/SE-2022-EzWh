@@ -67,11 +67,12 @@ class InternalOrderRepository {
       const query = "SELECT internalOrder.idInternalOrder as id, internalOrder.state as state from internalOrder " + (filter === 'all' ? '' : whereCondition);
       this.db.all(query,
         async (err, rows) => {
-          if (err)
+          if (err) {
             reject({ code: 500 });
+          }
           else {
             try {
-              const internalOrders = await Promise.all(rows.map(row => this.get(row.id, row.state)));
+              const internalOrders = await Promise.all(rows.map(row => { return this.get(row.id, row.state) }));
               resolve({ code: 200, data: internalOrders });
             }
             catch (e) {
@@ -90,8 +91,9 @@ class InternalOrderRepository {
         query,
         products.flatMap(p => [id, p.SKUId, p.qty]),
         (err) => {
-          if (err)
+          if (err) {
             return reject({ addToInternalTransaction: true, code: 503, data: err });
+          }
           else
             return resolve({ code: 200 });
         }
@@ -105,8 +107,9 @@ class InternalOrderRepository {
       const query = "INSERT INTO internalOrder (issueDate,customerId,state) values (?,?,'ISSUED')";
       this.db.run(query, [internalOrder.issueDate, internalOrder.customerId],
         function (err) {
-          if (err)
+          if (err) {
             return reject({ code: 503, data: err });
+          }
           else {
             if (this.lastID) {
               resolve(this.lastID);
@@ -118,20 +121,18 @@ class InternalOrderRepository {
         })
     });
   }
-
   add(internalOrder) {
     return new Promise(async (resolve, reject) => {
       let id;
       try {
         id = await this.addToInternalOrder(internalOrder);
         await this.addToInternalTransaction(id, internalOrder.products);
-        resolve({ code: 200 });
+        resolve({ code: 201 });
       }
       catch (e) {
         if (e.addToInternalTransaction) {
-          this.db.run("DELETE FROM internalOrder WHERE idInternalOrder=?", id);
+          this.db.run("DELETE FROM internalOrder WHERE idInternalOrder=?", id, (_err) => { reject({ code: e.code }); });
         }
-        reject({ code: e.code });
       }
     });
   }
@@ -147,8 +148,9 @@ class InternalOrderRepository {
       const query = "UPDATE internalOrder SET state=? WHERE idInternalOrder=?";
       this.db.run(query, [state, id],
         function (err) {
-          if (err)
+          if (err) {
             reject({ code: 503 });
+          }
           else {
             if (this.changes === 0) {
               reject({ code: 404 });
@@ -162,11 +164,13 @@ class InternalOrderRepository {
 
   // used in updateState
   addToTransactionRFIDs(id, products) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const query = ("INSERT INTO internalOrderTransactionRFID (IOid, RFID) values " + "(?,?),".repeat(products.length)).slice(0, -1);
       this.db.run(query, products.flatMap(p => [id, p.RFID]),
         (err) => {
-          if (err) reject({ code: 503, data: "error while adding to internalOrderTransactionRFID. " + err });
+          if (err) {
+            reject({ code: 503, data: "error while adding to internalOrderTransactionRFID. " + err });
+          }
           else resolve(true);
         })
     });
@@ -211,9 +215,22 @@ class InternalOrderRepository {
     });
   }
 
+  deleteSequence = () => {
+    return new Promise((resolve, reject) => {
+      const sql = ' DELETE FROM sqlite_sequence WHERE name = ? ;';
+      this.db.run(sql, "internalOrder", (err) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(true);
+      });
+    });
+  }
+
   deleteInternalOrderdata() {
     return new Promise((resolve, reject) => {
-      const sql = 'DELETE FROM internalOrder; DELETE FROM sqlite_sequence WHERE name = "internalOrder";';
+      this.db.run('DELETE FROM sqlite_sequence;');
+      const sql = 'DELETE FROM internalOrder;';
       this.db.run(sql, (err) => {
         if (err) {
           reject(err);

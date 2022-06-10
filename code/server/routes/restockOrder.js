@@ -22,7 +22,6 @@ router.get('/restockOrders/:id',
       return res.status(result.code).json(result.data);
     }
     catch (e) {
-      console.log(e);
       return res.status(e.code).end();
     }
   });
@@ -58,7 +57,9 @@ router.post('/restockOrder',
   async (req, res) => {
     // validation stuff
     const errors = validationResult(req);
-    if (!errors.isEmpty() || !dateHandler.isDateAndTimeValid(req.body.issueDate)) { return res.status(422).end(); }
+    if (!errors.isEmpty() || !dateHandler.isDateAndTimeValid(req.body.issueDate)) {
+      return res.status(422).end();
+    }
     let result;
     try {
       result = await roc.add(req.body);
@@ -97,7 +98,6 @@ router.put('/restockOrder/:id/skuItems',
     try {
       result = await roc.addSKUItems(req.params.id, req.body.skuItems);
     } catch (e) {
-      console.log(e);
       result = e;
     }
     return res.status(result.code).end();
@@ -109,7 +109,8 @@ router.put('/restockOrder/:id/transportNote',
   body('transportNote.deliveryDate').exists().isString(),
   async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty() || !dateHandler.isDateValid(req.body.transportNote.deliveryDate))
+    if (!errors.isEmpty() || /*!dateHandler.isDateValid(req.body.transportNote.deliveryDate))*/
+      !(dateHandler.isDateAndTimeValid(req.body.transportNote.deliveryDate) || (dateHandler.isDateValid(req.body.transportNote.deliveryDate))))
       return res.status(422).end();
     let result;
     try {

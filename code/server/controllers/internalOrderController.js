@@ -1,13 +1,16 @@
 
+const dayjs = require("dayjs");
 const { possibleStates } = require("../model/internalOrder");
 const dateHandler = require("../persistence/dateHandler");
 const InternalOrderRepository = require("../persistence/internalOrderRepository");
+const skuItemRepository = require("../persistence/skuItemRepository");
 const { isInt } = require("../persistence/validate");
 
 class InternalOrderController {
   constructor() {
     this.IOrepo = new InternalOrderRepository();
     this.dateHandler = new dateHandler();
+    this.skuItemRepo = new skuItemRepository();
   }
 
   getAll = async (req, res) => {
@@ -67,8 +70,7 @@ class InternalOrderController {
   updateState = async (id, body) => {
 
     try {
-      await await Promise.any([this.IOrepo.get(id, "other"), this.IOrepo.get(id, "COMPLETED")]
-      );
+      await await Promise.any([this.IOrepo.get(id, "other"), this.IOrepo.get(id, "COMPLETED")]);
     }
     catch (e) {
       return ({ code: 404 });
@@ -76,7 +78,13 @@ class InternalOrderController {
 
     if (body.newState === 'COMPLETED') {
       try {
+        //await Promise.all(body.products.map((p) => { return this.skuItemRepo.addSKUItem({ RFID: p.RFID, SKUId: p.SkuID, DateOfStock: this.dateHandler.DayjsToDateAndTime(dayjs()) }) }));
+        body.products.forEach(async (p) => {
+          await this.skuItemRepo.addSKUItem({ RFID: p.RFID, SKUId: p.SkuID, DateOfStock: this.dateHandler.DayjsToDateAndTime(dayjs()) });
+        });
         await Promise.all([this.IOrepo.addToTransactionRFIDs(id, body.products), this.IOrepo.removeInternalTransactions(id)]);
+        //await this.IOrepo.addToTransactionRFIDs(id, body.products)
+        //await this.IOrepo.removeInternalTransactions(id);
       }
       catch (e) {
         return e;
@@ -96,6 +104,9 @@ class InternalOrderController {
 
     try {
       await this.IOrepo.delete(id);
+      const allInternarOrders = await this.IOrepo.getAll('all');
+      if (allInternarOrders.data.length === 0)
+        await this.IOrepo.deleteSequence();
       return { code: 204 };
     }
     catch (e) {
