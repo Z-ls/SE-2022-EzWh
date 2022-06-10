@@ -153,7 +153,6 @@ class restockOrderRepository {
             try {
               [orderItems, orderRFIDs] = await Promise.all([this.getOrderItems(RO.id), this.getOrderRFIDs(RO.id)]);
             } catch (error) {
-              console.log(error);
               reject({ code: 500, data: error });
               return;
             }
@@ -219,7 +218,6 @@ class restockOrderRepository {
       await Promise.all(ro.products.map(p => addProduct(roID, p.SKUId, p.qty, this.itemRepo, this.db, p.itemId)))
         .then(() => resolve({ code: 201, data: "Restock order successfully created" }))
         .catch((e) => {
-          console.log(e);
           reject({ code: 422, data: "Generic error: " + e })
         }
         );
