@@ -42,7 +42,6 @@ class RestockOrderController {
   add = async (ro) => {
     try {
       return await this.RORepo.add(ro);
-
     }
     catch (e) {
       return e;
@@ -85,7 +84,7 @@ class RestockOrderController {
     try {
       const result = await this.RORepo.remove(id);
       const ro = await this.RORepo.getAll();
-      if(ro.data.length === 0)
+      if (ro.data.length === 0)
         this.RORepo.deleteSequence();
       return res.status(result.code).end();
     }
