@@ -53,6 +53,7 @@ router.post('/restockOrder',
   body('products.*.qty').exists().isInt(),
   body('products.*.price').exists().isNumeric(),
   body('products.*.description').exists().isString(),
+  body('products.*.itemId').exists().isInt(),
   body('supplierId').exists().isInt(),
   async (req, res) => {
     // validation stuff
@@ -89,6 +90,7 @@ router.put('/restockOrder/:id/skuItems',
   param('id').matches(/^\d+$/).toInt().isInt({ min: 1 }),
   body('skuItems').exists().isArray(),
   body('skuItems.*.SKUId').exists().isInt(),
+  body('skuItems.*.itemId').exists().isInt(),
   body('skuItems.*.rfid').exists().isLength({ min: 32, max: 32 }).matches(/^\d+$/),
   async (req, res) => {
     const errors = validationResult(req);

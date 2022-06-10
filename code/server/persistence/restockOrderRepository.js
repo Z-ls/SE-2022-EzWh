@@ -56,9 +56,9 @@ class restockOrderRepository {
    * @returns {Promise} 
    */
   getOrderItems(id, supplierId) {
-    return new Promise((resolve) => {
-      const query = "SELECT SKUId, item.id as itemId, quantity, item.description as description, item.price as price FROM restockTransactionItem JOIN item on restockTransactionItem.idItem=item.id WHERE idRestockOrder=? AND supplierId=?";
-      this.db.all(query, [id,supplierId],
+    return new Promise((resolve, reject) => {
+      const query = "SELECT SKUId, item.id as itemId, quantity, item.description as description, item.price as price FROM restockTransactionItem JOIN item on restockTransactionItem.idItem=item.id WHERE idRestockOrder=? AND restockTransactionItem.supplierId=?";
+      this.db.all(query, [id, supplierId],
         (err, rows) => {
           if (err)
             reject(err);
@@ -75,10 +75,10 @@ class restockOrderRepository {
    * @param {number} id 
    * @returns {Promise}
    */
-  getOrderRFIDs(id,supplierId) {
+  getOrderRFIDs(id, supplierId) {
     return new Promise((resolve) => {
-      const query = "SELECT SKUId, item.id as itemId, SKUITEM.RFID FROM restockTransactionSKU join SKUITEM on restockTransactionSKU.RFID=SKUITEM.RFID join item on item.SKUId=SKUItem.SKUId WHERE restockTransactionSKU.idRestockOrder=? AND item.supplierId=?";
-      this.db.all(query, [id,supplierId],
+      const query = "SELECT SKUITEM.SKUId, item.id as itemId, SKUITEM.RFID FROM restockTransactionSKU join SKUITEM on restockTransactionSKU.RFID=SKUITEM.RFID join item on item.SKUId=SKUItem.SKUId WHERE restockTransactionSKU.idRestockOrder=? AND item.supplierId=?";
+      this.db.all(query, [id, supplierId],
         (_err, rows) => {
           resolve(
             rows.map(row => ({ SKUId: row.SKUId, rfid: row.RFID }))
@@ -111,8 +111,13 @@ class restockOrderRepository {
         },
         async () => {
           ROs = await Promise.all(ROs.map(async (ro) => {
-            const [orderItems, orderRFIDs] = await Promise.all([this.getOrderItems(ro.id, ro.supplierId), this.getOrderRFIDs(ro.id,ro.supplierId)])
-              .catch((err) => resolve({ code: 500, data: err }));
+            let orderItems, orderRFIDs;
+            try {
+              [orderItems, orderRFIDs] = await Promise.all([this.getOrderItems(ro.id, ro.supplierId), this.getOrderRFIDs(ro.id, ro.supplierId)]);
+            } catch (error) {
+              resolve({ code: 500, data: error });
+              return;
+            }
             ro.products = orderItems;
             ro.skuItems = orderRFIDs;
             return ro;
@@ -144,8 +149,14 @@ class restockOrderRepository {
               return;
             }
             const RO = new RestockOrder(row.id, dayjs(row.issueDate), row.state, [], row.supplierId, row.deliveryDate ? { deliveryDate: dayjs(row.deliveryDate) } : {}, []);
-            const [orderItems, orderRFIDs] = await Promise.all([this.getOrderItems(RO.id), this.getOrderRFIDs(RO.id)])
-              .catch(() => reject({ code: 500 }));
+            let orderItems, orderRFIDs;
+            try {
+              [orderItems, orderRFIDs] = await Promise.all([this.getOrderItems(RO.id), this.getOrderRFIDs(RO.id)]);
+            } catch (error) {
+              console.log(error);
+              reject({ code: 500, data: error });
+              return;
+            }
             RO.products = orderItems;
             RO.skuItems = orderRFIDs;
             resolve({ code: 200, data: RO.toString() });
@@ -173,11 +184,18 @@ class restockOrderRepository {
       });
     }
 
-    function addProduct(idRO, skuid, quantity, itemRepo, db) {
+    function addProduct(idRO, skuid, quantity, itemRepo, db, itemId) {
       return new Promise(async (resolve, reject) => {
-        const item = await itemRepo.getItemsBySupplierAndSKUId({ supplierId: ro.supplierId, SKUId: skuid, id: '' });
-        if (!item[0]) {
-          reject("Error while getting item");
+        let item;
+        try {
+          item = await itemRepo.getItemsBySupplierAndSKUId({ supplierId: ro.supplierId, SKUId: skuid, id: itemId });
+          if (item.length === 0) {
+            reject('Item not found in addProduct');
+            return;
+          }
+        }
+        catch (error) {
+          reject('Error while getting item in addProduct: ' + error);
           return;
         }
         const query = "INSERT INTO restockTransactionItem (idRestockOrder, quantity, idItem, supplierId) VALUES(?,?,?,?)";
@@ -195,12 +213,16 @@ class restockOrderRepository {
       let roID
       try { roID = await addRO(); }
       catch (e) {
-        reject({ code: 503 });
+        reject({ code: 422 });
         return;
       }
-      Promise.all(ro.products.map(p => {addProduct(roID, p.SKUId, p.qty, this.itemRepo, this.db)}))
+      await Promise.all(ro.products.map(p => addProduct(roID, p.SKUId, p.qty, this.itemRepo, this.db, p.itemId)))
         .then(() => resolve({ code: 201, data: "Restock order successfully created" }))
-        .catch((e) => reject({ code: 422, data: "Generic error: " + e }));
+        .catch((e) => {
+          console.log(e);
+          reject({ code: 422, data: "Generic error: " + e })
+        }
+        );
     })
   }
 
@@ -324,8 +346,9 @@ class restockOrderRepository {
         return;
       }
       // END VALIDATION
+
       try {
-        const resAddingSKUItems = await Promise.all(skuItems.map(skuItem => {addToSKUITEMTable(skuItem, this.skuitemRepository.addSKUItem, this.dateHandler.DayjsToDateAndTime)}));
+        const resAddingSKUItems = await Promise.all(skuItems.map(skuItem => addToSKUITEMTable(skuItem, this.skuitemRepository.addSKUItem, this.dateHandler.DayjsToDateAndTime)));
         const result = await addToTransactionSKUTable();
         resolve({ code: result.code });
       }
@@ -409,17 +432,17 @@ class restockOrderRepository {
     });
   }
 
-  deleteSequence = () =>{
-    return new Promise((resolve, reject) =>{
-        const sql = ' DELETE FROM sqlite_sequence WHERE name = ? ;';
-        this.db.run(sql, "restockOrder", (err) => {
-            if(err){
-                reject(err);
-            }
-            resolve(true);
-        });
+  deleteSequence = () => {
+    return new Promise((resolve, reject) => {
+      const sql = ' DELETE FROM sqlite_sequence WHERE name = ? ;';
+      this.db.run(sql, "restockOrder", (err) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(true);
+      });
     });
-}
+  }
 
   deleteRestockOrderdata() {
     return new Promise((resolve, reject) => {
