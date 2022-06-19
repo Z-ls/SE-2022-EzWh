@@ -9,9 +9,9 @@ const getItems = async() => {
     return message;
 }
 
-const getSingleItem = async(id) =>{
+const getSingleItem = async(id,supplierId) =>{
     const itemRep = new itemRepository();
-    let item = await itemRep.getSingleItem(id);
+    let item = await itemRep.getSingleItem(id,supplierId);
     return item.length !== 0 ? item[0]: undefined;
 
 }
@@ -27,20 +27,20 @@ const addItem = async(newItem) =>{
     return message ? 201 : 404;
 }
 
-const editItem = async(newItem, id) =>{
+const editItem = async(newItem, id, supplierId) =>{
     const itemRep = new itemRepository();
-    let item = await itemRep.getSingleItem(id);
+    let item = await itemRep.getSingleItem(id, supplierId);
     if(item.length !==0)
     {
-        let message = await itemRep.editItem(newItem, id);
+        let message = await itemRep.editItem(newItem, id, supplierId);
         return message;
     }  
     return false;
 }
 
-const deleteItem = async(id) =>{
+const deleteItem = async(id, suppierId) =>{
     const itemRep = new itemRepository();
-    let deleted = await itemRep.deleteItem(id);
+    let deleted = await itemRep.deleteItem(id, suppierId);
     return deleted;
 }
 
