@@ -64,7 +64,7 @@ class restockOrderRepository {
             reject(err);
           else
             resolve(
-              rows.map(row => ({ SKUId: row.SKUId, description: row.description, price: row.price, qty: row.quantity }))
+              rows.map(row => ({ SKUId: row.SKUId, itemId: row.itemId, description: row.description, price: row.price, qty: row.quantity }))
             );
         })
     })
@@ -414,9 +414,11 @@ class restockOrderRepository {
         return;
       }
 
-      const query = 'SELECT SKUId, SKUITEM.RFID as rfid FROM ' +
-        'restockTransactionSKU join TestResult on restockTransactionSKU.RFID = TestResult.rfid ' +
-        'JOIN SKUITEM on TestResult.rfid = SKUITEM.RFID ' +
+      const query =
+			'SELECT SKUId, restockTransactionItem.idItem as itemId, SKUITEM.RFID as rfid FROM ' +
+			'restockTransactionSKU join TestResult on restockTransactionSKU.RFID = TestResult.rfid ' +
+			'JOIN SKUITEM on TestResult.rfid = SKUITEM.RFID ' +
+			'JOIN restockTransactionItem ON restockTransactionItem.idRestockOrder = restockTransactionSKU.idRestockOrder';
         'WHERE  restockTransactionSKU.idRestockOrder=? AND result="false"';
       this.db.all(
         query,
