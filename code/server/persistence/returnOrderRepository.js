@@ -56,7 +56,7 @@ this.newTableRETURN = () =>{
 
 this.getProductsbyID = (id) =>{
     return new Promise((resolve, reject) => {
-        const sql = "SELECT S.id as SKUId, I.description  AS description, I.price AS price, SI.RFID AS RFID "
+        const sql = "SELECT S.id as SKUId, I.id AS itemId, I.description  AS description, I.price AS price, SI.RFID AS RFID "
         + "FROM returnOrder R, returnOrderTransaction RT, SKUITEM SI, SKU S, ITEM I "
         + "WHERE R.id = RT.idReturnOrder AND I.SKUId = S.id AND RT.RFID=SI.RFID AND SI.SKUId=S.id AND R.id = ?";
         db.all(sql, id, (err, rows) => {
