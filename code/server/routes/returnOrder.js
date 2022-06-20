@@ -38,7 +38,6 @@ async(req, res) => {
 router.post('/returnOrder',
 body('returnDate').exists(),
 body('products').exists().isArray(),
-body('itemId').exists().isInt({min : 1}),
 body('restockOrderId').exists().isInt({min : 1}),
 async (req, res) => {
     const errors = validationResult(req);

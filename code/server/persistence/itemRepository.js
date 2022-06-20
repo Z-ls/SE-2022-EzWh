@@ -64,10 +64,10 @@ function itemRepository() {
         });
     }
 
-    this.getSingleItem = (id,supplierId) => {
+    this.getSingleItem = (id) => {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM ITEM WHERE id = ? AND supplierId = ?';
-            db.all(sql, [id,supplierId], (err, rows) => {
+            const sql = 'SELECT * FROM ITEM WHERE id = ?';
+            db.all(sql, [id], (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -107,10 +107,10 @@ function itemRepository() {
         });
     }
 
-    this.editItem = (item, id, supplierId) => {
+    this.editItem = (item, id) => {
         return new Promise((resolve, reject) => {
-            const sql = 'UPDATE ITEM SET description = ?, price = ? WHERE id = ? AND supplierId = ?;';
-            db.run(sql, [item.newDescription, item.newPrice, id, supplierId], (err) => {
+            const sql = 'UPDATE ITEM SET description = ?, price = ? WHERE ID = ?;';
+            db.run(sql, [item.newDescription, item.newPrice, id], (err) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -120,10 +120,10 @@ function itemRepository() {
         });
     }
 
-    this.deleteItem = (id, suppierId) => {
+    this.deleteItem = (id) => {
         return new Promise((resolve, reject) => {
-            const sql = 'DELETE FROM ITEM WHERE id = ? AND supplierId = ?';
-            db.run(sql, [id, suppierId], function (err) {
+            const sql = 'DELETE FROM ITEM WHERE id = ?';
+            db.run(sql, id, function (err) {
                 if (err) {
                     reject(err);
                 } else {
