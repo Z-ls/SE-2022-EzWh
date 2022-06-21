@@ -1,8 +1,8 @@
 # Integration and API Test Report
 
-Date: 23/05/2022
+Date: 21/06/2022
 
-Version: 1.0
+Version: 2.0
 
 # Contents
 
@@ -143,7 +143,7 @@ Jest test cases applied to them, and the mock ups used, if any> Jest test cases 
 | ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | SKURepository            |              | testEditSKU(newSKU, id, expected), testEditSKUPosition(position, id, expected)                                                                    |
 | SKUItemRepository        |              | testAddSKUItem(newSKUItem,expected),testDeleteSKUItem(rfid,expected)                                                                              |
-| ItemRepository           |              | testAddItem(newitem,expected), testDeleteitem(id,expected)                                                                                        |
+| ItemRepository           |              | testAddItem(newitem,expected), testDeleteitem(id,supplierId,expected)                                                                          |
 | PositionRepository       |              | testGetPosition(id, expected), testEditPositionID(pos, id, newid, expected), testEditPositionByID(pos, id, newid, expected)                       |
 | testDescriptorRepository |              | Test Descriptor Unit Test                                                                                                                         |
 | testDescriptorRepository |              | Test Descriptor Unit Test                                                                                                                         |
@@ -155,15 +155,15 @@ Jest test cases applied to them, and the mock ups used, if any> Jest test cases 
 
 ## Step 2
 
-| Classes                  | mock up used | Jest test cases                                                                                    |
-| ------------------------ | ------------ | -------------------------------------------------------------------------------------------------- |
+| Classes                  | mock up used | Jest test cases                                              |
+| ------------------------ | ------------ | ------------------------------------------------------------ |
 | SKUController            | -            | testEditSKUController(newSKU, id, expected), testEditSKUPositionController(position, id, expected) |
-| SKUItemController        | -            | testEditSKUItem(newSKUItem,rfid,expected)                                                          |
-| ItemController           | -            | testEditItem(newItem,id,expected)                                                                  |
-| testDescriptorController |              | Test Descriptor Unit Test                                                                          |
-| testDescriptorController |              | Test Descriptor Unit Test                                                                          |
-| testResultController     |              | Test Result Unit Test                                                                              |
-| testResultController     |              | Test Result Unit Test                                                                              |
+| SKUItemController        | -            | testEditSKUItem(newSKUItem,rfid,expected)                    |
+| ItemController           | -            | testEditItem(newItem,id,supplierId,expected)                 |
+| testDescriptorController |              | Test Descriptor Unit Test                                    |
+| testDescriptorController |              | Test Descriptor Unit Test                                    |
+| testResultController     |              | Test Result Unit Test                                        |
+| testResultController     |              | Test Result Unit Test                                        |
 
 
 ## Step 3
@@ -172,7 +172,7 @@ Jest test cases applied to them, and the mock ups used, if any> Jest test cases 
 | --------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | router/SKU            | -            | addSKU(expectedHTTPStatus, newSKU)<br/>getSingleSKU(expectedHTTPStatus, expectedBody, id)<br/>getSKUs(expectedHTTPStatus, expectedBody)<br/>editSKU(expectedHTTPStatus, id, newSKU)<br/>editSKUPosition(expectedHTTPStatus, id, position)<br/>deleteSKU(expectedHTTPStatus, id)                                          |
 | router/SKUItem        | -            | addSKUItem(expectedHTTPStatus, newSKUItem) <br/>getSKUItemByRFID(expectedHTTPStatus, expectedBody, rfid)<br/>getSKUItemBySKUId(expectedHTTPStatus, expectedBody, id)<br/>getSKUItems(expectedHTTPStatus, expectedBody)<br/>editSKUItem(expectedHTTPStatus, rfid, newSKUItem)<br/>deleteSKUItem(expectedHTTPStatus, rfid) |
-| router/Item           | -            | addItem(expectedHTTPStatus, newItem)<br/>getItemById(expectedHTTPStatus, expectedBody, id)<br/>getItems(expectedHTTPStatus, expectedBody)<br/>editItem(expectedHTTPStatus, id, newItem)<br/>deleteSKU(expectedHTTPStatus, id)                                                                                            |
+| router/Item           | -            | addItem(expectedHTTPStatus, newItem)<br/>getItemById(expectedHTTPStatus, expectedBody, id,supplierId)<br/>getItems(expectedHTTPStatus, expectedBody)<br/>editItem(expectedHTTPStatus, id, supplierId, newItem)<br/>deleteSKU(expectedHTTPStatus, id, supplierId)                                                         |
 | router/Position       | -            | addPosition(expectedHTTPStatus, newPosition)<br/>getPositions(expectedHTTPStatus, expectedBody)<br/>editPosition(expectedHTTPStatus, id, newPosition)<br/>editPositionByID(xpectedHTTPStatus, id, newPosition)<br/>deletePosition(expectedHTTPStatus, id)                                                                |
 | router/testDescriptor |              | Test Descriptor API Test                                                                                                                                                                                                                                                                                                 |
 | router/testDescriptor |              | Test Descriptor API Test                                                                                                                                                                                                                                                                                                 |

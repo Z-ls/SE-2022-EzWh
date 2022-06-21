@@ -40,14 +40,14 @@ describe('edit Item Controller',() =>{
             } );
     });
 
-    testEditItem({newDescription : "a new item 2", newPrice : 11.99},13,undefined);
-    testEditItem({newDescription : "a new item 2", newPrice : 11.99},12,new Item(12,"a new item 2",11.99,1,1));
+    testEditItem({newDescription : "a new item 2", newPrice : 11.99},13,1,undefined);
+    testEditItem({newDescription : "a new item 2", newPrice : 11.99},12,1,new Item(12,"a new item 2",11.99,1,1));
 });
 
-async function testEditItem(newItem,id,expected) {
+async function testEditItem(newItem,id,supplierId,expected) {
     test('edit Item Controller', async () => {
         await itemController.editItem(newItem,id);
-        let res = await itemController.getSingleItem(id);
+        let res = await itemController.getSingleItem(id,supplierId);
         expect(res).toEqual(expected);
     });
 }

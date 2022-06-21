@@ -23,4 +23,4 @@ These figures will not be used to evaluate neither the project nor the team, the
 | may 30 - jun 5 | | | | | | 10 persons hours | | |
 | jun 6 - 12 | | | | | | 10 persons hours | | |
 | jun 13 -19 | |  | 2 persons hours | | | | | |
-| jun 20 - 26 | | 1 person hour | | | | | | |
+| jun 20 - 26 | | 1 person hour | | | | | 4 persons hours | |

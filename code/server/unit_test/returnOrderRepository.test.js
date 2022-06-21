@@ -39,21 +39,21 @@ describe('add return Order and retrieve it', () => {
 
     await restockRepo.add(new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",
       [
-        { SKUId: 1, description: "item description", price: 3, qty: 2 }
+        { SKUId: 1, itemId:1, description: "item description", price: 3, qty: 2 }
       ]
       , 1, {}, []));
 
 
     await restockRepo.updateState(1, "DELIVERED");
     await restockRepo.addSKUItems(1, [
-      { SKUId: 1, rfid: rfid1 },
-      { SKUId: 1, rfid: rfid2 }
+      { SKUId: 1, itemId:1, rfid: rfid1 },
+      { SKUId: 1, itemId:1, rfid: rfid2 }
     ]
     );
   });
-  const products = [{ SKUId: 1, description: "item description", price: 10, RFID : "12345678901234567890123456789016" }]
+  const products = [{ SKUId: 1, itemId:1, description: "item description", price: 10, RFID : "12345678901234567890123456789016" }]
   testAddRO(1, [new retOrd(1, "2021/11/29 09:33",   [
-    { SKUId: 1, description: "item description", price: 10, RFID : "12345678901234567890123456789016" }
+    { SKUId: 1, itemId:1, description: "item description", price: 10, RFID : "12345678901234567890123456789016" }
   ] ,1)], "2021/11/29 09:33", products, 1);
 });
 

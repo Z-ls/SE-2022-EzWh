@@ -50,23 +50,23 @@ describe('list return items of an order', () => {
 
     await restockRepo.updateState(1, "DELIVERED");
     await restockRepo.addSKUItems(1, [
-      { SKUId: 1, rfid: rfid1 },
-      { SKUId: 1, rfid: rfid2 }
+      { SKUId: 1, itemId:1, rfid: rfid1 },
+      { SKUId: 1, itemId:1, rfid: rfid2 }
     ]
     );
     await restockRepo.updateState(1, "COMPLETEDRETURN");
   });
 
   testReturnItems(1, []);
-  testReturnItems(1, [{ SKUId: 1, rfid: rfid1 }], [{ SKUId: 1, rfid: rfid1 }]);
-  testReturnItems(1, [{ SKUId: 1, rfid: rfid2 }], [{ SKUId: 1, rfid: rfid2 }, { SKUId: 1, rfid: rfid1 }]);
+  testReturnItems(1, [{ SKUId: 1, itemId:1,rfid: rfid1 }], [{ SKUId: 1, itemId:1,rfid: rfid1 }]);
+  testReturnItems(1, [{ SKUId: 1, itemId:1,rfid: rfid2 }], [{ SKUId: 1, itemId:1,rfid: rfid2 }, { SKUId: 1, itemId:1, rfid: rfid1 }]);
 });
 
 describe('add restockOrder', () => {
   const item = new Item(1, "item description", 10, 1, 1)
   let ro = new RestockOrder(1, dayjs(), "ISSUED",
     [
-      { SKUId: 1, description: item.description, price: item.price, qty: 2 }
+      { SKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }
     ]
     , 1, {}, []);
   ro = ro.toString();
@@ -81,17 +81,17 @@ describe('add restockOrder', () => {
   testAddRO(1, { code: 404 });
   testAddRO(1, { code: 200, data: ro }, ro);
 
-  ro1 = new RestockOrder(1, dayjs(), "ISSUED", [{ SKUId: 999, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
+  ro1 = new RestockOrder(1, dayjs(), "ISSUED", [{ SKUId: 999, itemId:1, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
   testAddRO(1, { code: 422, data: "Generic error: Error while getting item" }, ro1); // adding non-existing SKUid
 
-  ro2 = new RestockOrder(1, dayjs(), "ISSUED", [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], 999, {}, []);
+  ro2 = new RestockOrder(1, dayjs(), "ISSUED", [{ SKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], 999, {}, []);
   testAddRO(1, { code: 422, data: "Generic error: Error while getting item" }, ro1); // adding non-existing supplierId
 });
 
 describe('add SKU items', () => {
   const ro = new RestockOrder(undefined, dateHandler.DayjsToDateAndTime(dayjs()), "ISSUED",
     [
-      { SKUId: 1, description: "item description", price: 3, qty: 2 }
+      { SKUId: 1, itemId:1, description: "item description", price: 3, qty: 2 }
     ]
     , 1, {}, []);
   beforeEach(async () => {
@@ -108,15 +108,15 @@ describe('add SKU items', () => {
 
   const rfid1 = "12345678901234567890123456789016";
   const rfid2 = "12345678901234567890123456789017";
-  const skus = [{ SKUId: 1, rfid: rfid1 }, { SKUId: 1, rfid: rfid2 }];
+  const skus = [{ SKUId: 1, itemId:1, rfid: rfid1 }, { SKUId: 1, itemId:1, rfid: rfid2 }];
   testAddSKUItems(1, skus, skus);
 
   testAddSKUItems(999, { code: 404, data: "Error while getting restock order with id=999" }, skus);
 
-  const skusWithWrongSKUId = [{ SKUId: 999, rfid: rfid1 }, { SKUId: 1, rfid: rfid2 }];
+  const skusWithWrongSKUId = [{ SKUId: 999, itemId:1, rfid: rfid1 }, { SKUId: 1, itemId:1, rfid: rfid2 }];
   testAddSKUItems(1, { code: 422 }, skusWithWrongSKUId);
 
-  const skusSameRFID = [{ SKUId: 1, rfid: rfid1 }, { SKUId: 1, rfid: rfid1 }];
+  const skusSameRFID = [{ SKUId: 1, itemId:1, rfid: rfid1 }, { SKUId: 1, itemId:1, rfid: rfid1 }];
   testAddSKUItems(1, { code: 422 }, skusSameRFID);
 });
 
@@ -133,7 +133,7 @@ function testAddSKUItems(id, expected, skuItems = undefined) {
 
     }
     const res = await restockRepo.get(id);
-    expect(res.data.skuItems).toEqual(expected.map(s => ({ SKUId: s.SKUId, rfid: s.rfid })));
+    expect(res.data.skuItems).toEqual(expected.map(s => ({ SKUId: s.SKUId, itemId: s.itemId, rfid: s.rfid })));
   });
 }
 

@@ -79,8 +79,8 @@ describe('GET Item', () => {
     })
 
     getItemById(422,{});
-    getItemById(404,{},2);
-    getItemById(200,{ id:12,description : "a new item",price : 10.99,SKUId : 1,supplierId : 1},12);
+    getItemById(404,{},2,1);
+    getItemById(200,{ id:12,description : "a new item",price : 10.99,SKUId : 1,supplierId : 1},12,1);
     getItems(200,[{ id:12,description : "a new item",price : 10.99,SKUId : 1,supplierId : 1}]);
 });
 
@@ -116,10 +116,10 @@ describe('PUT Item', () => {
         );
     })
 
-    editItem(422,12,{ newPrice : 10.99});
+    editItem(422,12,1,{ newPrice : 10.99});
     editItem(422,{ newDescription : "a new sku", newPrice : 10.99});
-    editItem(404,13,{ newDescription : "a new sku", newPrice : 10.99});
-    editItem(200,12,{ newDescription : "a new sku", newPrice : 10.99});
+    editItem(404,13,1,{ newDescription : "a new sku", newPrice : 10.99});
+    editItem(200,12,1,{ newDescription : "a new sku", newPrice : 10.99});
 });
 
 describe('DELETE Item', () => {
@@ -155,8 +155,8 @@ describe('DELETE Item', () => {
     })
 
     deleteSKU(422);
-    deleteSKU(422, 13);
-    deleteSKU(204, 12);
+    deleteSKU(422, 13,1);
+    deleteSKU(204, 12,1);
 });
 
 function addItem(expectedHTTPStatus, newItem) {
@@ -170,9 +170,9 @@ function addItem(expectedHTTPStatus, newItem) {
     });
 }
 
-function getItemById(expectedHTTPStatus, expectedBody, id) {
+function getItemById(expectedHTTPStatus, expectedBody, id, supplierid) {
     it('GET Item By ID', function (done) {
-        agent.get('/api/items/'+ id)
+        agent.get('/api/items/'+ id+'/'+supplierid)
             .then(function (res) {
                 res.should.have.status(expectedHTTPStatus);
                 res.body.should.eql(expectedBody);
@@ -192,9 +192,9 @@ function getItems(expectedHTTPStatus, expectedBody) {
     });
 }
 
-function editItem(expectedHTTPStatus, id, newItem) {
+function editItem(expectedHTTPStatus, id,supplierId, newItem) {
     it('PUT edit Item', function (done) {
-        agent.put('/api/item/'+ id)
+        agent.put('/api/item/'+ id+'/'+supplierId)
             .send(newItem)
             .then(function (res) {
                 res.should.have.status(expectedHTTPStatus);
@@ -203,9 +203,9 @@ function editItem(expectedHTTPStatus, id, newItem) {
     });
 }
 
-function deleteSKU(expectedHTTPStatus, id) {
+function deleteSKU(expectedHTTPStatus, id,supplierId) {
     it('DELETE Item', function (done) {
-        agent.delete('/api/items/' + id)
+        agent.delete('/api/items/' + id+'/'+supplierId)
             .then(function (res) {
                 res.should.have.status(expectedHTTPStatus);
                 done();

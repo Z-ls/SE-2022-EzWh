@@ -38,7 +38,7 @@ describe('POST returnOrder', () => {
   const position = new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0);
   const sku1 = new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]);
   const user1 = new User(1, "Franco", "Panella", "franco.panella", "password1234", "supplier");
-  const ro = new RestockOrder(1, "2021/11/11 09:33", "ISSUED", [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
+  const ro = new RestockOrder(1, "2021/11/11 09:33", "ISSUED", [{ SKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
 
   beforeEach(async () => {
     await dbHandler.deleteAllTablesData();
@@ -56,21 +56,21 @@ describe('POST returnOrder', () => {
 
   addRetOrd(201, {
     returnDate:"2021/11/29 09:33",
-    products: [{SKUId:1, description:"item description", price:10, RFID:"12345678901234567890123456789016"}],
+    products: [{SKUId:1, itemId:1, description:"item description", price:10, RFID:"12345678901234567890123456789016"}],
     restockOrderId : 1
 }
 );
 
 addRetOrd(503, {
     returnDate:"2021/11/29 09:33",
-    products: [{SKUId:1, description:"item description", price:10, RFID:"12345678901234567890123456789016"}],
+    products: [{SKUId:1, itemId:1, description:"item description", price:10, RFID:"12345678901234567890123456789016"}],
     restockOrderId : 10
 }
 );
 
 addRetOrd(422, {
     returnDate:undefined,
-    products: [{SKUId:1, description:"item description", price:10, RFID:"12345678901234567890123456789016"}],
+    products: [{SKUId:1, itemId:1, description:"item description", price:10, RFID:"12345678901234567890123456789016"}],
     restockOrderId : 10
 }
 );

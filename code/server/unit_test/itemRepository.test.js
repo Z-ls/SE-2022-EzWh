@@ -87,22 +87,22 @@ describe('delete item',() =>{
             );
     });
 
-    testDeleteitem(13,[false,[]]);
-    testDeleteitem(12, [true,[]]);
+    testDeleteitem(13,1,[false,[]]);
+    testDeleteitem(12,1, [true,[]]);
 });
 
 async function testAddItem(newitem,expected) {
     test('add item', async () => {
         await itemRep.addItem(newitem);
-        let res = await itemRep.getSingleItem(newitem.id);
+        let res = await itemRep.getSingleItem(newitem.id, newitem.supplierId);
         expect(res).toEqual(expected);
     });
 }
 
-async function testDeleteitem(id,expected) {
+async function testDeleteitem(id,supplierId,expected) {
     test('delete item', async () => {
-        let res2 = await itemRep.deleteItem(id);
-        let res = await itemRep.getSingleItem(id);
+        let res2 = await itemRep.deleteItem(id,supplierId);
+        let res = await itemRep.getSingleItem(id,supplierId);
         expect([res2,res]).toEqual(expected);
     });
 }
