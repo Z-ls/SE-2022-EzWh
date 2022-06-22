@@ -64,8 +64,14 @@ class restockOrderRepository {
             reject(err);
           else
             resolve(
-              rows.map(row => ({ SKUId: row.SKUId, itemId: row.itemId, description: row.description, price: row.price, qty: row.quantity }))
-            );
+				rows.map(row => ({
+					SKUId: row.SKUId,
+          itemId: row.itemId,
+          description: row.description,
+					price: row.price,
+					qty: row.quantity
+				}))
+			);
         })
     })
   }
@@ -79,9 +85,9 @@ class restockOrderRepository {
     return new Promise((resolve) => {
       const query = "SELECT SKUITEM.SKUId, item.id as itemId, SKUITEM.RFID FROM restockTransactionSKU join SKUITEM on restockTransactionSKU.RFID=SKUITEM.RFID join item on item.SKUId=SKUItem.SKUId WHERE restockTransactionSKU.idRestockOrder=? AND item.supplierId=?";
       this.db.all(query, [id, supplierId],
-        (_err, rows) => {
+        (err, rows) => {
           resolve(
-            rows.map(row => ({ SKUId: row.SKUId, rfid: row.RFID }))
+            rows.map(row => ({ SKUId: row.SKUId, itemId: row.itemId, rfid: row.RFID }))
           )
         }
       )
@@ -151,7 +157,10 @@ class restockOrderRepository {
             const RO = new RestockOrder(row.id, dayjs(row.issueDate), row.state, [], row.supplierId, row.deliveryDate ? { deliveryDate: dayjs(row.deliveryDate) } : {}, []);
             let orderItems, orderRFIDs;
             try {
-              [orderItems, orderRFIDs] = await Promise.all([this.getOrderItems(RO.id), this.getOrderRFIDs(RO.id)]);
+              [orderItems, orderRFIDs] = await Promise.all([
+					this.getOrderItems(RO.id, RO.supplierId),
+					this.getOrderRFIDs(RO.id, RO.supplierId)
+				]);
             } catch (error) {
               reject({ code: 500, data: error });
               return;
@@ -415,10 +424,10 @@ class restockOrderRepository {
       }
 
       const query =
-			'SELECT SKUId, restockTransactionItem.idItem as itemId, SKUITEM.RFID as rfid FROM ' +
-			'restockTransactionSKU join TestResult on restockTransactionSKU.RFID = TestResult.rfid ' +
-			'JOIN SKUITEM on TestResult.rfid = SKUITEM.RFID ' +
-			'JOIN restockTransactionItem ON restockTransactionItem.idRestockOrder = restockTransactionSKU.idRestockOrder';
+			"SELECT SKUId, restockTransactionItem.idItem as itemId, SKUITEM.RFID as rfid FROM " +
+			"restockTransactionSKU join TestResult on restockTransactionSKU.RFID = TestResult.rfid " +
+			"JOIN SKUITEM on TestResult.rfid = SKUITEM.RFID " +
+			"JOIN restockTransactionItem ON restockTransactionItem.idRestockOrder = restockTransactionSKU.idRestockOrder " + 
         'WHERE  restockTransactionSKU.idRestockOrder=? AND result="false"';
       this.db.all(
         query,
