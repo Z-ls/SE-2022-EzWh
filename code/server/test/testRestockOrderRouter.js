@@ -40,7 +40,7 @@ describe('POST restockOrder', () => {
   const position = new Position("800234543412", "8002", "3454", "3412", 100, 100, 0, 0);
   const sku1 = new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]);
   const user1 = new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier");
-  const correctRO = new RestockOrder(1, "2021/11/11 09:33", "ISSUED", [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
+  const correctRO = new RestockOrder(1, "2021/11/11 09:33", "ISSUED", [{ SKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
 
   beforeEach(async () => {
     await dbHandler.deleteAllTablesData();
@@ -52,18 +52,18 @@ describe('POST restockOrder', () => {
 
   // correct { id: 1, issueDate: "2021/11/11 09:33", state: "ISSUED", products: [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] })
   // wrong issueDate
-  addRO(422, { id: 1, issueDate: "2021/15/11 09:33", state: "ISSUED", products: [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] });
+  addRO(422, { id: 1, issueDate: "2021/15/11 09:33", state: "ISSUED", products: [{ SKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] });
 
   // wrong state
-  addRO(422, { id: 1, issueDate: "2021/15/11 09:33", state: "wrongState", products: [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] });
+  addRO(422, { id: 1, issueDate: "2021/15/11 09:33", state: "wrongState", products: [{ SKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] });
 
   // wrong products structure
-  addRO(422, { id: 1, issueDate: "2021/15/11 09:33", state: "ISSUED", products: [{ SKKUId: 1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] });
+  addRO(422, { id: 1, issueDate: "2021/15/11 09:33", state: "ISSUED", products: [{ SKKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] });
 
   // non existing supplierId
-  addRO(422, { id: 1, issueDate: "2021/15/11 09:33", state: "ISSUED", products: [{ SKKUId: 1, description: item.description, price: item.price, qty: 2 }], supplierId: 999, transportNote: {}, skuItems: [] });
+  addRO(422, { id: 1, issueDate: "2021/15/11 09:33", state: "ISSUED", products: [{ SKKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], supplierId: 999, transportNote: {}, skuItems: [] });
 
-  addRO(201, { id: 1, issueDate: "2021/11/11 09:33", state: "ISSUED", products: [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] });
+  addRO(201, { id: 1, issueDate: "2021/11/11 09:33", state: "ISSUED", products: [{ SKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], supplierId: 1, transportNote: {}, skuItems: [] });
 
 });
 
@@ -74,7 +74,7 @@ describe('PUT skuItems', () => {
   const sku1 = new SKU(1, "sku description", 2, 3, "note", "800234543412", 5, 10, [1]);
   const sku2 = new SKU(2, "sku2 description", 6, 7, "note", "800234543412", 5, 10, [1]);
   const user1 = new User(1, "Riccardo", "Salvatelli", "riccardo.salvatelli", "passwordd", "supplier");
-  const ro = new RestockOrder(1, "2021/11/11 09:33", "ISSUED", [{ SKUId: 1, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
+  const ro = new RestockOrder(1, "2021/11/11 09:33", "ISSUED", [{ SKUId: 1, itemId:1, description: item.description, price: item.price, qty: 2 }], 1, {}, []);
 
 
   beforeEach(async () => {
@@ -94,22 +94,22 @@ describe('PUT skuItems', () => {
   
   // wrong id
   testSkuItems(404, 999, { skuItems: [] });
-  testSkuItems(422, 3.2, { skuItems: [{ SKUId: 1, rfid: "12345678901234567890123456789016" }] });
-  testSkuItems(422, -1, { skuItems: [{ SKUId: 1, rfid: "12345678901234567890123456789016" }] });
+  testSkuItems(422, 3.2, { skuItems: [{ SKUId: 1, itemId:1, rfid: "12345678901234567890123456789016" }] });
+  testSkuItems(422, -1, { skuItems: [{ SKUId: 1, itemId:1, rfid: "12345678901234567890123456789016" }] });
 
   // wrong skuItems structure
-  testSkuItems(422, 1, [{ SKUId: 1, rfid: "12345678901234567890123456789016" }]);
+  testSkuItems(422, 1, [{ SKUId: 1, itemId:1, rfid: "12345678901234567890123456789016" }]);
   testSkuItems(422, 1, { skuItems: {} });
   testSkuItems(422, 1, {});
-  testSkuItems(422, 1, { skuItems: [{ SKUId: 1, rfid: "!= than 32 chars" }] });
-  testSkuItems(422, 1, { skuItems: [{ SKUId: "1", rfid: "!= than 32 chars" }] });
-  testSkuItems(422, 1, { skuItems: [{ SKUId: 1, rfid: "!= than 32 chars" }] })
+  testSkuItems(422, 1, { skuItems: [{ SKUId: 1, itemId:1, rfid: "!= than 32 chars" }] });
+  testSkuItems(422, 1, { skuItems: [{ SKUId: "1", itemId:1, rfid: "!= than 32 chars" }] });
+  testSkuItems(422, 1, { skuItems: [{ SKUId: 1, itemId:1, rfid: "!= than 32 chars" }] })
 
   // non-existing SKUId
   testSkuItems(422, 1, { skuItems: [{ SKUId: 999, rfid: "12345678901234567890123456789016" }] });
 
   // correct
-  testSkuItems(200, 1, { skuItems: [{ SKUId: 1, rfid: "12345678901234567890123456789016" }] });
+  testSkuItems(200, 1, { skuItems: [{ SKUId: 1, itemId:1, rfid: "12345678901234567890123456789016" }] });
 });
 
 function addRO(expectedStatus, ro) {
